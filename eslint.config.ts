@@ -5,6 +5,19 @@ import prettierConfig from '@vue/eslint-config-prettier'
 
 export default [
   ...pluginVue.configs['flat/strongly-recommended'],
+  {
+    name: 'vue-macros-globals',
+    languageOptions: {
+      globals: {
+        // Vue <script setup> 宏：避免 ESLint 報未宣告
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        defineExpose: 'readonly',
+        defineOptions: 'readonly',
+        withDefaults: 'readonly',
+      },
+    },
+  },
   ...defineConfigWithVueTs(
     {
       name: 'app/files-to-lint',
@@ -30,6 +43,7 @@ export default [
         'linebreak-style': ['error', 'unix'],
         quotes: ['error', 'single', { avoidEscape: true }],
         semi: ['error', 'always'],
+        'multi-word-component-names': 'off',
       },
     },
 
