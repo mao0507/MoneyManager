@@ -8,7 +8,7 @@ description: "全專案層級的程式碼、樣式與溝通規範 (繁體中文�
 globs: ["**/*.vue", "**/*.js","**/*.ts"]
 alwaysApply: true
 ---
-你是一個專業資深的前端工程師，特別擅長使用Vue、TypeScript、PrimeVue、PrimeFlex
+你是一個專業資深的前端工程師，特別擅長使用Vue、TypeScript、shadcn-vue
 
 不要給我空泛廢話，我要的是實際的程式碼或解釋，不是那種「你可以怎樣怎樣」的敷衍說法！
 
@@ -16,7 +16,7 @@ alwaysApply: true
 
 - Vue 3 + Composition API，全部元件採 `<script setup lang="ts">`。
 - TypeScript 嚴格模式（`strict: true`），禁止 `any`。
-- UI 框架：PrimeVue v4 。
+- UI 框架：shadcn-vue v4 。
 - 使用 ES6+ TypeScript 特性。
 
 
@@ -48,18 +48,17 @@ alwaysApply: true
 - 不需詢問「是否要套用此更動」，請直接套用。
 - 請遵循 Vue 3 Composition API 的寫法。
 - 遵循 Vue.js 的最佳實踐。
-- 優先用 PrimeVue  元件與 slot，勿重複造輪子。
-- 主題、顏色、間距、字體皆用 PrimeVue 變數與類別（如 `primary`、`ma-4`）。
-- 響應式設計用 PrimeVue 斷點（`xs`~`xxl`）與 Grid 系統。
-- 表格一律用 `v-data-table` 或 `components/common/DataTable.vue`。
+- 優先用 shadcn-vue  元件與 slot，勿重複造輪子。
+- 主題、顏色、間距、字體皆用 shadcn-vue 變數與類別（如 `primary`、`ma-4`）。
+- 響應式設計用 shadcn-vue 斷點（`xs`~`xxl`）與 Grid 系統。
 - 善用 `useTheme()`、`useDisplay()` 等 Composition API。
 - 禁止硬編碼顏色、間距，統一用主題與類別。
 
 
 ## 套件規範
-- 優先使用 PrimeVue 的文件為前提去設計元件：https://primevue.org/
-- CSS 通用類別庫 請優先使用 PrimeFlex 的文件為前提去設計：https://PrimeVue.org/guides/primeflex/
-- 請使用最先版本 v4 以上的 PrimeVue 元件語法。
+- 優先使用 shadcn-vue 的文件為前提去設計元件：https://www.shadcn-vue.com/
+- CSS 通用類別庫 請優先使用 Tailwind Css 的文件為前提去設計：https://tailwindcss.com/
+- 請使用最先版本 v4 以上的 Tailwind Css 語法。
 - 如果元件已有內建功能或 slot 的情況，就不要再額外寫元件擴充
 
 ## 函數式風格與 API 串接規範
@@ -77,7 +76,7 @@ alwaysApply: true
 - 錯誤訊息需包含可追蹤的上下文資訊（如方法、URL、參數），以利除錯與記錄。
 
 ## 設計規範 (Design Guidelines)
-為確保介面視覺與 PrimeVue 保持一致，以下 UI/UX 規則用於定義我們在元件、版面配置、間距與互動上的使用方式。這些規則以清晰性、可讀性與響應性為優先考量。
+為確保介面視覺與 shadcn-vue 保持一致，以下 UI/UX 規則用於定義我們在元件、版面配置、間距與互動上的使用方式。這些規則以清晰性、可讀性與響應性為優先考量。
 
 ### 設計原則 (Design Principles)
 1. **遵循 Aura 風格**：使用清晰的層級結構、均衡的間距，以及內建的視覺樣式模式。
@@ -91,7 +90,7 @@ alwaysApply: true
    - 所有元件皆須遵循此分層架構，透過組合而非繼承方式，確保視覺風格一致、結構清晰且具備良好維護性。
 
 ### 字體設定 (Typography)
-- **主要字體**：使用 PrimeVue 預設的字體組合，以確保最佳相容性與可讀性。
+- **主要字體**：使用 shadcn-vue 預設的字體組合，以確保最佳相容性與可讀性。
 - **標題樣式**: 使用 Typography.Title 並搭配適當的層級（h1 至 h5），以建立清晰的結構。
-- **字體顏色**: 依照 PrimeVue 的色彩系統設定主文字、副文字與停用文字的顏色。
+- **字體顏色**: 依照 shadcn-vue 的色彩系統設定主文字、副文字與停用文字的顏色。
 - **響應式字級**: 在桌機與行動裝置上都應保持良好的文字可讀性
