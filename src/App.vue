@@ -1,30 +1,50 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// 導航配置
+const navigationItems = [
+  { path: '/', label: 'Dashboard', icon: '📊' },
+  { path: '/subscriptions', label: 'Subscriptions', icon: '📋' },
+  { path: '/reports', label: 'Reports', icon: '📈' },
+  { path: '/notifications', label: 'Notifications', icon: '🔔' },
+  { path: '/settings', label: 'Settings', icon: '⚙️' },
+] as const
+
+// 檢查路由是否為當前活躍狀態
+const isActive = (path: string) => computed(() => route.path === path)
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="min-h-dvh">
+    <header class="border-b">
+      <div class="container mx-auto px-4 h-14 flex items-center gap-3">
+        <span class="font-semibold">SubManager</span>
+        <nav class="ml-auto flex items-center gap-2 text-sm">
+          <RouterLink
+            v-for="item in navigationItems"
+            :key="item.path"
+            :to="item.path"
+            :class="[
+              'px-2 py-1 rounded-md transition-colors flex items-center gap-1',
+              isActive(item.path).value ? 'bg-secondary' : 'hover:bg-secondary cursor-pointer',
+            ]"
+          >
+            <span class="text-xs">{{ item.icon }}</span>
+            {{ item.label }}
+          </RouterLink>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 md:py-8">
+      <RouterView />
+    </main>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+/* 頁面樣式盡量以 Tailwind 類別完成，這裡不做客製 */
 </style>

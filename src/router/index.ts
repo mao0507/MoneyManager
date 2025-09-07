@@ -1,9 +1,13 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import type { RouteMeta } from '@/types'
 
 // 擴展路由元數據類型
 declare module 'vue-router' {
-  interface RouteMeta extends RouteMeta {}
+  interface RouteMeta {
+    title: string
+    description?: string
+    icon?: string
+    requiresAuth?: boolean
+  }
 }
 
 const routes: RouteRecordRaw[] = [
