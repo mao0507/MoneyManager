@@ -6,11 +6,12 @@ const route = useRoute()
 
 // 導航配置
 const navigationItems = [
-  { path: '/', label: 'Dashboard', icon: '📊' },
-  { path: '/subscriptions', label: 'Subscriptions', icon: '📋' },
-  { path: '/reports', label: 'Reports', icon: '📈' },
-  { path: '/notifications', label: 'Notifications', icon: '🔔' },
-  { path: '/settings', label: 'Settings', icon: '⚙️' },
+  { path: '/', label: '儀表板', icon: '📊' },
+  { path: '/subscriptions', label: '訂閱管理', icon: '📋' },
+  { path: '/expense-records', label: '消費紀錄', icon: '💰' },
+  { path: '/reports', label: '支出報表', icon: '📈' },
+  { path: '/notifications', label: '通知設定', icon: '🔔' },
+  { path: '/settings', label: '設定', icon: '⚙️' },
 ] as const
 
 // 檢查路由是否為當前活躍狀態
@@ -21,7 +22,7 @@ const isActive = (path: string) => computed(() => route.path === path)
   <div class="min-h-dvh">
     <header class="border-b">
       <div class="container mx-auto px-4 h-14 flex items-center gap-3">
-        <span class="font-semibold">SubManager</span>
+        <span class="font-semibold">MoneyManager</span>
         <nav class="ml-auto flex items-center gap-2 text-sm">
           <RouterLink
             v-for="item in navigationItems"

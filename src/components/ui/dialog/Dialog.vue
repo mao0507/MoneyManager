@@ -36,25 +36,17 @@ const handleOverlayClick = () => {
         class="fixed inset-0 z-50 flex items-center justify-center"
         @click="handleOverlayClick"
       >
-        <!-- 背景模糊層（淡入動畫） -->
+        <!-- 遮罩層（漸進式變暗） -->
         <div
-          class="absolute inset-0 backdrop-blur-sm transform transition-opacity duration-300 ease-out"
+          class="absolute inset-0 bg-black/50 transform transition-opacity duration-300 ease-out"
           :style="{
             opacity: open ? 1 : 0,
           }"
         ></div>
 
-        <!-- 遮罩層（透明度動畫） -->
+        <!-- 對話框內容（與遮罩同步出現） -->
         <div
-          class="absolute inset-0 bg-black/50 transform transition-all duration-300 ease-out"
-          :style="{
-            opacity: open ? 1 : 0,
-          }"
-        ></div>
-
-        <!-- 對話框內容 -->
-        <div
-          class="relative z-10 max-h-[90vh] w-full max-w-md overflow-auto rounded-lg bg-background shadow-lg transform transition-all duration-300 ease-out delay-150"
+          class="relative z-10 max-h-[90vh] w-full max-w-md overflow-auto rounded-lg bg-background shadow-lg transform transition-all duration-300 ease-out"
           :class="open ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'"
           @click.stop
         >

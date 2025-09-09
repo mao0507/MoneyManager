@@ -5,44 +5,42 @@ import { Badge } from '@/components/ui/badge'
 defineOptions({ name: 'DashboardPage' })
 
 const stats = [
-  { title: 'Monthly Spending', value: '¥57.23', hint: 'Current month expenses' },
-  { title: 'Yearly Spending', value: '¥2,087.33', hint: 'Current year total expenses' },
-  { title: 'Active Subscriptions', value: '6', hint: 'Total services' },
+  { title: '本月支出', value: 'NT$57', hint: '當月消費' },
+  { title: '年度支出', value: 'NT$2,087', hint: '當年總支出' },
+  { title: '活躍訂閱', value: '6', hint: '總服務數' },
 ]
 
 const recentlyPaid = [
-  { name: 'YouTube Premium', amount: '¥57.23', date: '2025年7月8日' },
-  { name: 'VPS-HK', amount: '¥28.00', date: '2025年7月5日' },
+  { name: 'YouTube Premium', amount: 'NT$57', date: '2025年7月8日' },
+  { name: 'VPS-HK', amount: 'NT$28', date: '2025年7月5日' },
 ]
 
 const upcomingRenewals = [
-  { name: 'Spotify Family', amount: '¥143.27', date: '2025年7月15日', daysLeft: 2 },
-  { name: 'VPS-HK', amount: '¥28.00', date: '2025年7月26日', daysLeft: 13 },
+  { name: 'Spotify Family', amount: 'NT$143', date: '2025年7月15日', daysLeft: 2 },
+  { name: 'VPS-HK', amount: 'NT$28', date: '2025年7月26日', daysLeft: 13 },
 ]
 
 const spendingByCategory = [
-  { category: '音樂串流', amount: '¥1,710.20', percentage: 45 },
-  { category: '影片串流', amount: '¥856.10', percentage: 22 },
-  { category: '生產力工具', amount: '¥780.00', percentage: 20 },
-  { category: 'VPS服務', amount: '¥336.00', percentage: 9 },
-  { category: '其他', amount: '¥150.00', percentage: 4 },
+  { category: '音樂串流', amount: 'NT$1,710', percentage: 45 },
+  { category: '影片串流', amount: 'NT$856', percentage: 22 },
+  { category: '生產力工具', amount: 'NT$780', percentage: 20 },
+  { category: 'VPS服務', amount: 'NT$336', percentage: 9 },
+  { category: '其他', amount: 'NT$150', percentage: 4 },
 ]
 
 const topVendors = [
-  { name: 'Spotify', amount: '¥1,710.20', subscriptions: 1 },
-  { name: 'YouTube', amount: '¥856.10', subscriptions: 1 },
-  { name: 'Monica', amount: '¥780.00', subscriptions: 1 },
-  { name: 'Cursor', amount: '¥716.33', subscriptions: 1 },
+  { name: 'Spotify', amount: 'NT$1,710', subscriptions: 1 },
+  { name: 'YouTube', amount: 'NT$856', subscriptions: 1 },
+  { name: 'Monica', amount: 'NT$780', subscriptions: 1 },
+  { name: 'Cursor', amount: 'NT$716', subscriptions: 1 },
 ]
 </script>
 
 <template>
   <div>
     <div>
-      <h1 class="text-2xl font-bold">Dashboard</h1>
-      <p class="text-sm text-muted-foreground mt-1">
-        Overview of your subscription expenses and activity
-      </p>
+      <h1 class="text-2xl font-bold">儀表板</h1>
+      <p class="text-sm text-muted-foreground mt-1">訂閱費用和活動概覽</p>
     </div>
 
     <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3 mt-6">
@@ -60,8 +58,8 @@ const topVendors = [
     <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mt-6">
       <Card>
         <CardHeader>
-          <CardTitle>Recently Paid</CardTitle>
-          <CardDescription>Subscriptions paid in the last 7 days</CardDescription>
+          <CardTitle>最近付款</CardTitle>
+          <CardDescription>過去7天內付款的訂閱</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
@@ -82,8 +80,8 @@ const topVendors = [
 
       <Card>
         <CardHeader>
-          <CardTitle>Upcoming Renewals</CardTitle>
-          <CardDescription>Subscriptions renewing in the next 7 days</CardDescription>
+          <CardTitle>即將續費</CardTitle>
+          <CardDescription>未來7天內續費的訂閱</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
@@ -98,7 +96,7 @@ const topVendors = [
               </div>
               <div class="text-right">
                 <div class="font-medium">{{ item.amount }}</div>
-                <Badge variant="destructive" class="text-xs">{{ item.daysLeft }} days</Badge>
+                <Badge variant="destructive" class="text-xs">{{ item.daysLeft }} 天</Badge>
               </div>
             </div>
           </div>
@@ -107,8 +105,8 @@ const topVendors = [
 
       <Card>
         <CardHeader>
-          <CardTitle>Spending by Category</CardTitle>
-          <CardDescription>Annual breakdown by category</CardDescription>
+          <CardTitle>按類別支出</CardTitle>
+          <CardDescription>年度類別細分</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
@@ -129,8 +127,8 @@ const topVendors = [
 
       <Card>
         <CardHeader>
-          <CardTitle>Top Vendors</CardTitle>
-          <CardDescription>Highest spending vendors</CardDescription>
+          <CardTitle>主要供應商</CardTitle>
+          <CardDescription>支出最高的供應商</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
@@ -141,9 +139,7 @@ const topVendors = [
             >
               <div>
                 <div class="text-sm font-medium">{{ item.name }}</div>
-                <div class="text-xs text-muted-foreground">
-                  {{ item.subscriptions }} subscription
-                </div>
+                <div class="text-xs text-muted-foreground">{{ item.subscriptions }} 個訂閱</div>
               </div>
               <span class="font-medium">{{ item.amount }}</span>
             </div>

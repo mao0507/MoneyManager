@@ -16,8 +16,8 @@ const routes: RouteRecordRaw[] = [
     name: 'dashboard',
     component: () => import('@/pages/Dashboard.vue'),
     meta: {
-      title: 'Dashboard',
-      description: 'Overview of your subscription management',
+      title: '儀表板',
+      description: '訂閱費用和活動概覽',
       icon: '📊',
     },
   },
@@ -26,8 +26,8 @@ const routes: RouteRecordRaw[] = [
     name: 'subscriptions',
     component: () => import('@/pages/Subscriptions.vue'),
     meta: {
-      title: 'Subscriptions',
-      description: 'Manage all your subscription services',
+      title: '訂閱管理',
+      description: '管理所有訂閱服務',
       icon: '📋',
     },
   },
@@ -36,8 +36,8 @@ const routes: RouteRecordRaw[] = [
     name: 'reports',
     component: () => import('@/pages/Reports.vue'),
     meta: {
-      title: 'Reports',
-      description: 'Detailed analysis of your subscription spending',
+      title: '支出報表',
+      description: '訂閱支出的詳細分析',
       icon: '📈',
     },
   },
@@ -46,9 +46,19 @@ const routes: RouteRecordRaw[] = [
     name: 'notifications',
     component: () => import('@/pages/Notifications.vue'),
     meta: {
-      title: 'Notifications',
-      description: 'Manage your notification preferences',
+      title: '通知設定',
+      description: '管理通知偏好設定',
       icon: '🔔',
+    },
+  },
+  {
+    path: '/expense-records',
+    name: 'expense-records',
+    component: () => import('@/pages/ExpenseRecords.vue'),
+    meta: {
+      title: '消費紀錄',
+      description: '管理日常消費紀錄和支出分析',
+      icon: '💰',
     },
   },
   {
@@ -56,8 +66,8 @@ const routes: RouteRecordRaw[] = [
     name: 'settings',
     component: () => import('@/pages/Settings.vue'),
     meta: {
-      title: 'Settings',
-      description: 'Configure your application preferences',
+      title: '設定',
+      description: '配置應用程式偏好設定',
       icon: '⚙️',
     },
   },

@@ -82,12 +82,18 @@ const getCategoryColor = (category?: string) => {
         <div class="flex items-center gap-2">
           <!-- 狀態標籤 -->
           <div class="flex flex-col gap-1">
-            <Badge v-if="props.active" variant="default" class="text-xs">
-              <div class="mr-1 h-1.5 w-1.5 rounded-full bg-green-500"></div>
-              Active
+            <Badge
+              :variant="props.active ? 'default' : 'secondary'"
+              class="text-xs w-16 justify-center"
+            >
+              <div v-if="props.active" class="mr-1 h-1.5 w-1.5 rounded-full bg-green-500"></div>
+              {{ props.active ? '啟用' : '停用' }}
             </Badge>
-            <Badge :variant="props.cycle === 'Monthly' ? 'secondary' : 'outline'" class="text-xs">
-              {{ props.cycle }}
+            <Badge
+              :variant="props.cycle === 'Monthly' ? 'secondary' : 'outline'"
+              class="text-xs w-16 justify-center"
+            >
+              {{ props.cycle === 'Monthly' ? '月費' : '年費' }}
             </Badge>
           </div>
 
@@ -97,7 +103,7 @@ const getCategoryColor = (category?: string) => {
               <Button
                 variant="ghost"
                 size="icon"
-                class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                class="h-8 w-8 opacity-60 hover:opacity-100 hover:bg-muted transition-all duration-200"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -119,7 +125,7 @@ const getCategoryColor = (category?: string) => {
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                Edit
+                編輯
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +136,7 @@ const getCategoryColor = (category?: string) => {
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                View Details
+                查看詳情
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +147,7 @@ const getCategoryColor = (category?: string) => {
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
                   />
                 </svg>
-                Export
+                匯出
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem class="text-destructive">
@@ -153,7 +159,7 @@ const getCategoryColor = (category?: string) => {
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                   />
                 </svg>
-                Cancel Subscription
+                取消訂閱
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -166,7 +172,7 @@ const getCategoryColor = (category?: string) => {
       <div class="mb-4">
         <div class="text-2xl font-bold text-foreground">{{ props.price }}</div>
         <p class="text-sm text-muted-foreground">
-          {{ props.cycle === 'Monthly' ? 'per month' : 'per year' }}
+          {{ props.cycle === 'Monthly' ? '每月' : '每年' }}
         </p>
       </div>
 
@@ -175,50 +181,19 @@ const getCategoryColor = (category?: string) => {
       <!-- 詳細資訊 -->
       <div class="space-y-3">
         <div v-if="props.nextPayment" class="flex items-center justify-between">
-          <span class="text-sm text-muted-foreground">Next payment</span>
+          <span class="text-sm text-muted-foreground">下次付款</span>
           <span class="text-sm font-medium text-foreground">{{ props.nextPayment }}</span>
         </div>
         <div v-if="props.paymentMethod" class="flex items-center justify-between">
-          <span class="text-sm text-muted-foreground">Payment method</span>
+          <span class="text-sm text-muted-foreground">付款方式</span>
           <span class="text-sm font-medium text-foreground">{{ props.paymentMethod }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-sm text-muted-foreground">Renewal</span>
+          <span class="text-sm text-muted-foreground">續費</span>
           <Badge :variant="props.renewal === 'Automatic' ? 'default' : 'secondary'" class="text-xs">
-            {{ props.renewal }}
+            {{ props.renewal === 'Automatic' ? '自動' : '手動' }}
           </Badge>
         </div>
-      </div>
-
-      <!-- 底部操作按鈕 -->
-      <div class="mt-6 flex gap-2">
-        <Button variant="outline" size="sm" class="flex-1">
-          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          Manage
-        </Button>
-        <Button variant="outline" size="sm">
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-        </Button>
       </div>
     </CardContent>
   </Card>

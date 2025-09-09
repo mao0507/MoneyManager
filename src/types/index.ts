@@ -122,3 +122,44 @@ export interface AppError {
   message: string
   details?: unknown
 }
+
+// 消費紀錄類型
+export interface ExpenseRecord {
+  id: string
+  title: string
+  description?: string
+  amount: number
+  category: string
+  date: string
+  paymentMethod: string
+  tags?: string[]
+  receipt?: string
+  subscriptionId?: string
+  createdAt: string
+  updatedAt: string
+}
+
+// 消費類別類型
+export interface ExpenseCategory {
+  id: string
+  name: string
+  icon: string
+  color: string
+  budget?: number
+}
+
+// 消費統計類型
+export interface ExpenseStats {
+  totalAmount: number
+  averageAmount: number
+  recordCount: number
+  categoryCount: number
+  monthlyTotal: number
+  yearlyTotal: number
+}
+
+// 消費篩選類型
+export type ExpenseFilter = 'All' | 'This Month' | 'This Year' | 'Last 30 Days' | 'Custom'
+
+// 消費排序類型
+export type ExpenseSortBy = 'date' | 'amount' | 'category' | 'title'

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SubscriptionCard from '@/components/common/SubscriptionCard.vue'
+import AddSubscriptionDialog from '@/components/common/AddSubscriptionDialog.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,6 +15,7 @@ const { originalItems, filteredItems, stats, searchQuery, filterStatus } = useSu
 // 本地狀態
 const sortBy = ref<'name' | 'price' | 'nextPayment'>('name')
 const viewMode = ref<'grid' | 'list'>('grid')
+const isAddDialogOpen = ref(false)
 
 // 排序後的資料
 const sortedItems = computed(() => {
@@ -36,6 +38,28 @@ const sortedItems = computed(() => {
 
   return items
 })
+
+// 處理新增訂閱
+const handleAddSubscription = (data: {
+  name: string
+  plan: string
+  price: string
+  cycle: 'Monthly' | 'Yearly'
+  category: string
+  paymentMethod: string
+  renewal: 'Automatic' | 'Manual'
+  nextPayment: string
+}) => {
+  console.log('新增訂閱:', data)
+  // 這裡可以調用 API 或更新本地數據
+  // 暫時只是關閉彈出視窗
+  isAddDialogOpen.value = false
+}
+
+// 打開新增訂閱彈出視窗
+const openAddDialog = () => {
+  isAddDialogOpen.value = true
+}
 </script>
 
 <template>
@@ -43,8 +67,8 @@ const sortedItems = computed(() => {
     <!-- 頁面標題和操作 -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight">Subscriptions</h1>
-        <p class="text-muted-foreground">Manage all your subscription services</p>
+        <h1 class="text-3xl font-bold tracking-tight">訂閱管理</h1>
+        <p class="text-muted-foreground">管理所有訂閱服務</p>
       </div>
       <div class="flex items-center gap-2">
         <Button variant="outline" size="icon" title="Refresh">
@@ -80,7 +104,7 @@ const sortedItems = computed(() => {
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card>
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Total</CardTitle>
+          <CardTitle class="text-sm font-medium">總計</CardTitle>
           <svg
             class="h-4 w-4 text-muted-foreground"
             fill="none"
@@ -103,7 +127,7 @@ const sortedItems = computed(() => {
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Active</CardTitle>
+          <CardTitle class="text-sm font-medium">活躍</CardTitle>
           <svg
             class="h-4 w-4 text-muted-foreground"
             fill="none"
@@ -126,7 +150,7 @@ const sortedItems = computed(() => {
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Monthly</CardTitle>
+          <CardTitle class="text-sm font-medium">月度</CardTitle>
           <svg
             class="h-4 w-4 text-muted-foreground"
             fill="none"
@@ -142,14 +166,14 @@ const sortedItems = computed(() => {
           </svg>
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">¥{{ stats.monthlyTotal.toFixed(2) }}</div>
+          <div class="text-2xl font-bold">NT${{ stats.monthlyTotal.toFixed(0) }}</div>
           <p class="text-xs text-muted-foreground">per month</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Yearly</CardTitle>
+          <CardTitle class="text-sm font-medium">年度</CardTitle>
           <svg
             class="h-4 w-4 text-muted-foreground"
             fill="none"
@@ -165,7 +189,7 @@ const sortedItems = computed(() => {
           </svg>
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">¥{{ stats.yearlyTotal.toFixed(2) }}</div>
+          <div class="text-2xl font-bold">NT${{ stats.yearlyTotal.toFixed(0) }}</div>
           <p class="text-xs text-muted-foreground">per year</p>
         </CardContent>
       </Card>
@@ -175,12 +199,7 @@ const sortedItems = computed(() => {
     <div class="flex flex-col lg:flex-row gap-4">
       <!-- 搜尋框 -->
       <div class="relative flex-1 max-w-sm">
-        <Input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search subscriptions..."
-          class="pl-10"
-        />
+        <Input v-model="searchQuery" type="text" placeholder="搜尋訂閱..." class="pl-10" />
         <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -196,7 +215,7 @@ const sortedItems = computed(() => {
       <!-- 篩選按鈕 -->
       <div class="flex gap-2">
         <Button
-          v-for="status in ['All', 'Active', 'Trial', 'Cancelled']"
+          v-for="status in ['全部', '活躍', '試用', '已取消']"
           :key="status"
           @click="filterStatus = status as any"
           :variant="filterStatus === status ? 'default' : 'outline'"
@@ -223,7 +242,7 @@ const sortedItems = computed(() => {
               d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
             />
           </svg>
-          Sort by {{ sortBy === 'name' ? 'Name' : sortBy === 'price' ? 'Price' : 'Date' }}
+          排序：{{ sortBy === 'name' ? '名稱' : sortBy === 'price' ? '價格' : '日期' }}
         </Button>
 
         <div class="flex border rounded-md">
@@ -267,7 +286,7 @@ const sortedItems = computed(() => {
         <span>Showing {{ sortedItems.length }} of {{ originalItems.length }} subscriptions</span>
       </div>
       <div class="flex gap-2">
-        <Button size="sm">
+        <Button size="sm" @click="openAddDialog">
           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -276,7 +295,7 @@ const sortedItems = computed(() => {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             />
           </svg>
-          Add Subscription
+          新增訂閱
         </Button>
         <Button variant="outline" size="sm">
           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,7 +306,7 @@ const sortedItems = computed(() => {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
             />
           </svg>
-          Import
+          匯入
         </Button>
         <Button variant="outline" size="sm">
           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,7 +317,7 @@ const sortedItems = computed(() => {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          Export
+          匯出
         </Button>
       </div>
     </div>
@@ -358,9 +377,15 @@ const sortedItems = computed(() => {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             />
           </svg>
-          Add Subscription
+          新增訂閱
         </Button>
       </div>
     </div>
   </div>
+
+  <!-- 新增訂閱彈出視窗 -->
+  <AddSubscriptionDialog
+    v-model:is-open="isAddDialogOpen"
+    @add-subscription="handleAddSubscription"
+  />
 </template>

@@ -7,13 +7,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // 格式化貨幣
-export function formatCurrency(amount: number, currency = '¥'): string {
+export function formatCurrency(amount: number, currency = 'NT$'): string {
   return `${currency}${amount.toLocaleString()}`
 }
 
 // 格式化日期
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date, format?: string): string {
   const d = new Date(date)
+
+  if (format === 'YYYY年MM月') {
+    return (
+      d
+        .toLocaleDateString('zh-TW', {
+          year: 'numeric',
+          month: '2-digit',
+        })
+        .replace('/', '年') + '月'
+    )
+  }
+
   return d.toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'long',
@@ -37,7 +49,7 @@ export function formatRelativeTime(date: string | Date): string {
 
 // 解析價格字符串
 export function parsePrice(priceString: string): number {
-  return parseFloat(priceString.replace(/[¥$,]/g, ''))
+  return parseFloat(priceString.replace(/[NT$,]/g, ''))
 }
 
 // 生成唯一 ID

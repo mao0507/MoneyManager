@@ -13,7 +13,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'Spotify',
     plan: 'Family',
-    price: '¥143.27 ($20.00)',
+    price: 'NT$143',
     cycle: 'Monthly',
     active: true,
     nextPayment: '2025年7月15日',
@@ -24,7 +24,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'VPS-HK',
     plan: '4H4G',
-    price: '¥28.00',
+    price: 'NT$28',
     cycle: 'Monthly',
     active: true,
     nextPayment: '2025年7月26日',
@@ -35,7 +35,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'YouTube',
     plan: 'Premium',
-    price: '¥57.23 ($7.99)',
+    price: 'NT$57',
     cycle: 'Monthly',
     active: true,
     nextPayment: '2025年8月8日',
@@ -46,7 +46,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: '阿里雲',
     plan: '.top',
-    price: '¥39.00',
+    price: 'NT$39',
     cycle: 'Yearly',
     active: true,
     nextPayment: '2025年10月11日',
@@ -57,7 +57,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'Monica',
     plan: 'Unlimited',
-    price: '¥780.00',
+    price: 'NT$780',
     cycle: 'Yearly',
     active: true,
     nextPayment: '2025年12月7日',
@@ -68,7 +68,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'Cursor',
     plan: 'Pro',
-    price: '¥716.33 ($100.00)',
+    price: 'NT$716',
     cycle: 'Yearly',
     active: true,
     nextPayment: '2026年4月17日',
@@ -79,7 +79,7 @@ const originalItems = ref<SubscriptionItem[]>([
   {
     name: 'Netflix',
     plan: 'Standard',
-    price: '¥68.00',
+    price: 'NT$68',
     cycle: 'Monthly',
     active: false,
     nextPayment: '已取消',
@@ -97,10 +97,10 @@ const stats = computed(
     cancelled: originalItems.value.filter((item) => !item.active).length,
     monthlyTotal: originalItems.value
       .filter((item) => item.active && item.cycle === 'Monthly')
-      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[¥$,]/g, '')), 0),
+      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[NT$,]/g, '')), 0),
     yearlyTotal: originalItems.value
       .filter((item) => item.active && item.cycle === 'Yearly')
-      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[¥$,]/g, '')), 0),
+      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[NT$,]/g, '')), 0),
   }),
 )
 
@@ -112,7 +112,7 @@ const categoryStats = computed((): CategoryStats[] => {
     .filter((item) => item.active && item.category)
     .forEach((item) => {
       const category = item.category!
-      const amount = parseFloat(item.price.replace(/[¥$,]/g, ''))
+      const amount = parseFloat(item.price.replace(/[NT$,]/g, ''))
       categoryMap.set(category, (categoryMap.get(category) || 0) + amount)
     })
 
@@ -133,7 +133,7 @@ const vendorStats = computed((): VendorStats[] => {
     .filter((item) => item.active)
     .forEach((item) => {
       const vendor = item.name
-      const amount = parseFloat(item.price.replace(/[¥$,]/g, ''))
+      const amount = parseFloat(item.price.replace(/[NT$,]/g, ''))
       const existing = vendorMap.get(vendor)
 
       if (existing) {

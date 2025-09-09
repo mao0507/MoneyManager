@@ -48,7 +48,7 @@ const notifications = ref([
     id: 2,
     type: 'payment',
     title: '付款成功',
-    message: 'YouTube Premium 月費 ¥57.23 已成功扣款',
+    message: 'YouTube Premium 月費 NT$57 已成功扣款',
     timestamp: '2025-01-08 09:15',
     read: true,
     priority: 'medium',
@@ -127,17 +127,15 @@ const getPriorityColor = (priority: string) => {
     <!-- 頁面標題 -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight">Notifications</h1>
-        <p class="text-muted-foreground">
-          Manage your notification preferences and view recent alerts
-        </p>
+        <h1 class="text-3xl font-bold tracking-tight">通知設定</h1>
+        <p class="text-muted-foreground">管理通知偏好設定並查看最近的提醒</p>
       </div>
       <div class="flex items-center gap-2">
         <Badge v-if="unreadCount > 0" variant="destructive" class="text-sm">
-          {{ unreadCount }} unread
+          {{ unreadCount }} 未讀
         </Badge>
         <Button v-if="unreadCount > 0" variant="outline" size="sm" @click="markAllAsRead">
-          Mark all as read
+          全部標為已讀
         </Button>
       </div>
     </div>
@@ -147,34 +145,34 @@ const getPriorityColor = (priority: string) => {
       <div class="lg:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle>Notification Settings</CardTitle>
-            <CardDescription>Configure how you receive notifications</CardDescription>
+            <CardTitle>通知設定</CardTitle>
+            <CardDescription>配置接收通知的方式</CardDescription>
           </CardHeader>
           <CardContent class="space-y-6">
             <!-- Email 通知 -->
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium">Email Notifications</h4>
-                  <p class="text-sm text-muted-foreground">Receive notifications via email</p>
+                  <h4 class="font-medium">電子郵件通知</h4>
+                  <p class="text-sm text-muted-foreground">透過電子郵件接收通知</p>
                 </div>
                 <Switch v-model:checked="notificationSettings.email.enabled" />
               </div>
               <div v-if="notificationSettings.email.enabled" class="ml-4 space-y-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Renewal reminders</span>
+                  <span class="text-sm">續費提醒</span>
                   <Switch v-model:checked="notificationSettings.email.renewal" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Payment confirmations</span>
+                  <span class="text-sm">付款確認</span>
                   <Switch v-model:checked="notificationSettings.email.payment" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">New subscriptions</span>
+                  <span class="text-sm">新訂閱</span>
                   <Switch v-model:checked="notificationSettings.email.newSubscription" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Cancellations</span>
+                  <span class="text-sm">取消訂閱</span>
                   <Switch v-model:checked="notificationSettings.email.cancellation" />
                 </div>
               </div>
@@ -186,26 +184,26 @@ const getPriorityColor = (priority: string) => {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium">Push Notifications</h4>
-                  <p class="text-sm text-muted-foreground">Receive browser notifications</p>
+                  <h4 class="font-medium">推播通知</h4>
+                  <p class="text-sm text-muted-foreground">接收瀏覽器通知</p>
                 </div>
                 <Switch v-model:checked="notificationSettings.push.enabled" />
               </div>
               <div v-if="notificationSettings.push.enabled" class="ml-4 space-y-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Renewal reminders</span>
+                  <span class="text-sm">續費提醒</span>
                   <Switch v-model:checked="notificationSettings.push.renewal" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Payment confirmations</span>
+                  <span class="text-sm">付款確認</span>
                   <Switch v-model:checked="notificationSettings.push.payment" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">New subscriptions</span>
+                  <span class="text-sm">新訂閱</span>
                   <Switch v-model:checked="notificationSettings.push.newSubscription" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Cancellations</span>
+                  <span class="text-sm">取消訂閱</span>
                   <Switch v-model:checked="notificationSettings.push.cancellation" />
                 </div>
               </div>
@@ -217,26 +215,26 @@ const getPriorityColor = (priority: string) => {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium">SMS Notifications</h4>
-                  <p class="text-sm text-muted-foreground">Receive text message alerts</p>
+                  <h4 class="font-medium">簡訊通知</h4>
+                  <p class="text-sm text-muted-foreground">接收簡訊提醒</p>
                 </div>
                 <Switch v-model:checked="notificationSettings.sms.enabled" />
               </div>
               <div v-if="notificationSettings.sms.enabled" class="ml-4 space-y-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Renewal reminders</span>
+                  <span class="text-sm">續費提醒</span>
                   <Switch v-model:checked="notificationSettings.sms.renewal" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Payment confirmations</span>
+                  <span class="text-sm">付款確認</span>
                   <Switch v-model:checked="notificationSettings.sms.payment" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">New subscriptions</span>
+                  <span class="text-sm">新訂閱</span>
                   <Switch v-model:checked="notificationSettings.sms.newSubscription" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm">Cancellations</span>
+                  <span class="text-sm">取消訂閱</span>
                   <Switch v-model:checked="notificationSettings.sms.cancellation" />
                 </div>
               </div>
@@ -249,8 +247,8 @@ const getPriorityColor = (priority: string) => {
       <div class="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Notifications</CardTitle>
-            <CardDescription>Your latest notification history</CardDescription>
+            <CardTitle>最近通知</CardTitle>
+            <CardDescription>您最近的通知歷史</CardDescription>
           </CardHeader>
           <CardContent>
             <div v-if="notifications.length > 0" class="space-y-4">

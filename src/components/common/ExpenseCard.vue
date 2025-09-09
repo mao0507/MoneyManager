@@ -1,0 +1,221 @@
+<script setup lang="ts">
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import type { ExpenseRecord } from '@/types'
+import { formatCurrency, formatDate } from '@/lib/utils'
+
+interface Props {
+  expense: ExpenseRecord
+}
+
+const props = defineProps<Props>()
+defineOptions({ name: 'ExpenseCard' })
+
+// 獲取類別圖示和顏色
+const getCategoryIcon = (category: string) => {
+  const icons: Record<string, string> = {
+    餐飲: '🍽️',
+    交通: '🚗',
+    購物: '🛍️',
+    娛樂: '🎬',
+    醫療: '🏥',
+    教育: '📚',
+    生活用品: '🏠',
+    其他: '📦',
+  }
+  return icons[category] || '📦'
+}
+
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    餐飲: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+    交通: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    購物: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400',
+    娛樂: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+    醫療: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    教育: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    生活用品: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    其他: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+  }
+  return colors[category] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
+}
+
+const getPaymentMethodIcon = (method: string) => {
+  const icons: Record<string, string> = {
+    信用卡: '💳',
+    現金: '💵',
+    'Apple Pay': '📱',
+    悠遊卡: '🚌',
+    'Google Pay': '📱',
+    'Line Pay': '💚',
+  }
+  return icons[method] || '💳'
+}
+</script>
+
+<template>
+  <Card
+    class="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+  >
+    <CardHeader class="pb-3">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center text-lg font-bold text-primary"
+          >
+            {{ getCategoryIcon(props.expense.category) }}
+          </div>
+          <div>
+            <CardTitle class="text-lg">{{ props.expense.title }}</CardTitle>
+            <p v-if="props.expense.description" class="text-sm text-muted-foreground">
+              {{ props.expense.description }}
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <Badge :class="getCategoryColor(props.expense.category)" class="text-xs">
+            {{ props.expense.category }}
+          </Badge>
+          <div class="flex items-center gap-1 text-xs text-muted-foreground">
+            <span>{{ getPaymentMethodIcon(props.expense.paymentMethod) }}</span>
+            <span>{{ props.expense.paymentMethod }}</span>
+          </div>
+        </div>
+      </div>
+    </CardHeader>
+
+    <CardContent class="space-y-4">
+      <div class="flex items-end justify-between">
+        <div class="text-3xl font-bold text-foreground">
+          {{ formatCurrency(props.expense.amount) }}
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                />
+              </svg>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              編輯
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              查看詳情
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                />
+              </svg>
+              匯出發票
+            </DropdownMenuItem>
+            <DropdownMenuItem class="text-destructive">
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              刪除紀錄
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <Separator />
+
+      <div class="space-y-3 text-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-muted-foreground">消費日期</span>
+          <span class="font-medium">{{ formatDate(props.expense.date) }}</span>
+        </div>
+        <div
+          v-if="props.expense.tags && props.expense.tags.length > 0"
+          class="flex items-center justify-between"
+        >
+          <span class="text-muted-foreground">標籤</span>
+          <div class="flex gap-1">
+            <Badge v-for="tag in props.expense.tags" :key="tag" variant="secondary" class="text-xs">
+              {{ tag }}
+            </Badge>
+          </div>
+        </div>
+        <div v-if="props.expense.subscriptionId" class="flex items-center justify-between">
+          <span class="text-muted-foreground">關聯訂閱</span>
+          <Badge variant="outline" class="text-xs"> 訂閱相關 </Badge>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-4 border-t border-border/30">
+        <Button variant="outline" size="sm" class="flex-1">
+          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+          編輯
+        </Button>
+        <Button variant="outline" size="sm">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+</template>

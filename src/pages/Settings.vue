@@ -21,11 +21,12 @@ const notifications = ref({
   payment: true,
 })
 
-const currency = ref('CNY')
+const currency = ref('TWD')
 const language = ref('zh-TW')
 const theme = ref('light')
 
 const currencies = [
+  { value: 'TWD', label: '新台幣 (NT$)' },
   { value: 'CNY', label: '人民幣 (¥)' },
   { value: 'USD', label: '美元 ($)' },
   { value: 'EUR', label: '歐元 (€)' },
@@ -35,7 +36,7 @@ const currencies = [
 const languages = [
   { value: 'zh-TW', label: '繁體中文' },
   { value: 'zh-CN', label: '簡體中文' },
-  { value: 'en', label: 'English' },
+  { value: 'en', label: '英文' },
   { value: 'ja', label: '日本語' },
 ]
 
@@ -50,14 +51,14 @@ const userProfile = {
   email: 'user@example.com',
   memberSince: '2025年1月',
   totalSubscriptions: 6,
-  totalSpent: '¥2,087.33',
+  totalSpent: 'NT$2,087',
 }
 </script>
 
 <template>
   <div>
     <div>
-      <h1 class="text-2xl font-bold">Settings</h1>
+      <h1 class="text-2xl font-bold">設定</h1>
       <p class="text-sm text-muted-foreground mt-1">管理您的帳戶設定和偏好</p>
     </div>
 
