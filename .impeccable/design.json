@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-14T01:00:00.000Z",
+  "title": "Design System: MoneyManager",
+  "extensions": {
+    "colorMeta": {
+      "quiet-violet": {
+        "role": "primary",
+        "displayName": "Quiet Violet",
+        "canonical": "oklch(0.5 0.18 300)",
+        "tonalRamp": ["oklch(0.20 0.18 300)", "oklch(0.30 0.18 300)", "oklch(0.40 0.18 300)", "oklch(0.5 0.18 300)", "oklch(0.6 0.16 300)", "oklch(0.72 0.14 300)", "oklch(0.85 0.08 300)", "oklch(0.94 0.03 300)"]
+      },
+      "quiet-violet-ring": {
+        "role": "ring",
+        "displayName": "Quiet Violet Ring",
+        "canonical": "oklch(0.6 0.16 300)",
+        "tonalRamp": ["oklch(0.30 0.16 300)", "oklch(0.40 0.16 300)", "oklch(0.50 0.16 300)", "oklch(0.6 0.16 300)", "oklch(0.70 0.14 300)", "oklch(0.80 0.10 300)", "oklch(0.90 0.05 300)", "oklch(0.96 0.02 300)"]
+      },
+      "ink-black": {
+        "role": "primary",
+        "displayName": "Ink Black",
+        "canonical": "oklch(0.205 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.205 0 0)", "oklch(0.28 0 0)", "oklch(0.38 0 0)", "oklch(0.48 0 0)", "oklch(0.58 0 0)", "oklch(0.70 0 0)", "oklch(0.85 0 0)"]
+      },
+      "paper-white-on-ink": {
+        "role": "primary-foreground",
+        "displayName": "Paper White on Ink",
+        "canonical": "oklch(0.985 0 0)",
+        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
+      },
+      "near-black-text": {
+        "role": "neutral",
+        "displayName": "Near-Black Text",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": ["oklch(0.10 0 0)", "oklch(0.145 0 0)", "oklch(0.22 0 0)", "oklch(0.32 0 0)", "oklch(0.42 0 0)", "oklch(0.55 0 0)", "oklch(0.70 0 0)", "oklch(0.85 0 0)"]
+      },
+      "whisper-gray": {
+        "role": "neutral",
+        "displayName": "Whisper Gray",
+        "canonical": "oklch(0.97 0 0)",
+        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
+      },
+      "slate-gray": {
+        "role": "neutral",
+        "displayName": "Slate Gray",
+        "canonical": "oklch(0.556 0 0)",
+        "tonalRamp": ["oklch(0.30 0 0)", "oklch(0.40 0 0)", "oklch(0.48 0 0)", "oklch(0.556 0 0)", "oklch(0.62 0 0)", "oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.90 0 0)"]
+      },
+      "hairline-gray": {
+        "role": "neutral",
+        "displayName": "Hairline Gray",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.78 0 0)", "oklch(0.85 0 0)", "oklch(0.90 0 0)", "oklch(0.922 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)"]
+      },
+      "focus-ring-gray": {
+        "role": "neutral",
+        "displayName": "Focus Ring Gray",
+        "canonical": "oklch(0.708 0 0)",
+        "tonalRamp": ["oklch(0.45 0 0)", "oklch(0.55 0 0)", "oklch(0.62 0 0)", "oklch(0.708 0 0)", "oklch(0.78 0 0)", "oklch(0.85 0 0)", "oklch(0.92 0 0)", "oklch(0.97 0 0)"]
+      },
+      "warning-red": {
+        "role": "destructive",
+        "displayName": "Warning Red",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": ["oklch(0.20 0.245 27.325)", "oklch(0.30 0.245 27.325)", "oklch(0.40 0.245 27.325)", "oklch(0.50 0.245 27.325)", "oklch(0.577 0.245 27.325)", "oklch(0.65 0.20 27.325)", "oklch(0.78 0.12 27.325)", "oklch(0.90 0.06 27.325)"]
+      }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Body", "purpose": "內文、次要說明文字、表單標籤。系統中最常見的文字角色。" },
+      "title": { "displayName": "Title", "purpose": "卡片標題（CardTitle）。粗體、行高收緊，用於區塊標題。" }
+    },
+    "shadows": [
+      { "name": "card-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Card 與背景的極淡區隔（Tailwind shadow-sm）。" },
+      { "name": "control-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "按鈕/輸入框/Badge 的極淡邊界暗示（Tailwind shadow-xs）。" }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "主要動作按鈕，Ink Black 背景。",
+      "html": "<button class=\"ds-btn-primary\">新增訂閱</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-primary:hover { background: oklch(0.5 0.18 300 / 0.9); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "次要動作按鈕，透明底 + 邊框。",
+      "html": "<button class=\"ds-btn-outline\">取消</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(1 0 0); color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-outline:hover { background: oklch(0.97 0 0); }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "破壞性操作按鈕（刪除訂閱）。",
+      "html": "<button class=\"ds-btn-destructive\">刪除訂閱</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.577 0.245 27.325); color: oklch(1 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.9); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "內容容器，統計卡、表單卡皆用此樣式。",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">月度</h3><p class=\"ds-card-value\">NT$228</p></div>",
+      "css": ".ds-card { background: oklch(1 0 0); color: oklch(0.145 0 0); border-radius: 14px; padding: 24px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); display: flex; flex-direction: column; gap: 8px; } .ds-card-title { font-size: 14px; font-weight: 500; color: oklch(0.556 0 0); margin: 0; } .ds-card-value { font-size: 24px; font-weight: 700; margin: 0; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge-default",
+      "description": "狀態標籤（啟用/停用、月費/年費）。",
+      "html": "<span class=\"ds-badge\">啟用</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "文字輸入框（搜尋、表單欄位）。",
+      "html": "<input class=\"ds-input\" placeholder=\"搜尋訂閱...\" />",
+      "css": ".ds-input { width: 100%; height: 36px; background: transparent; color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 8px; padding: 4px 12px; font-size: 14px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input::placeholder { color: oklch(0.556 0 0); } .ds-input:focus-visible { border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Ledger",
+    "overview": "MoneyManager 是純自用的個人訂閱與消費管理工具，沒有對外定位或行銷需求。視覺實作是 shadcn-vue「new-york」風格搭 neutral 基底色，中性黑白灰為主，強調色（Quiet Violet 紫）只落在「主要動作」這個語意角色（主按鈕、連結、focus ring、預設 Badge），紅色是獨立的警示/刪除語意色。這是「安靜帳本」的字面體現：紙一樣白的背景、灰階分層資訊優先級，只有一處紫色落點，稀有才有力道。",
+    "keyCharacteristics": [
+      "中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立",
+      "元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言",
+      "目前為平面為主、極淡陰影（shadow-xs/shadow-sm）僅作邊界暗示，非立體層次系統",
+      "無自訂字體，沿用 Tailwind 預設系統字型堆疊；尚無系統化的字級/字重階層"
+    ],
+    "rules": [],
+    "dos": [
+      "Do 保持紅色（Warning Red）只用在破壞性操作與驗證錯誤，維持它的警示訊號強度。",
+      "Do 讓 Quiet Violet 只落在主要動作語意角色，不擴散進中性表面。",
+      "Do 新元件優先重用既有 rounded-md(8px)/rounded-xl(14px) 兩級圓角，不要引入第三種圓角尺度。",
+      "Do 新頁面統計數字延續 text-2xl font-bold 的視覺重量，這是目前唯一算一致的字級用法。"
+    ],
+    "donts": [
+      "Don't 把 Warning Red 用在非警示/破壞性語境。",
+      "Don't 把 Quiet Violet 也用在中性表面（次要背景、邊框）上裝飾。",
+      "Don't 個別元件各自加深陰影追求「立體感」；應系統性設計一組 elevation token。"
+    ]
+  }
+}
