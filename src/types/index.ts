@@ -1,14 +1,30 @@
 // 訂閱相關類型
 export interface SubscriptionItem {
+  id: string
   name: string
   plan: string
-  price: string
+  amount: number
+  currency: 'TWD' | 'USD'
   cycle: 'Monthly' | 'Yearly'
   active: boolean
+  startDate: string
   nextPayment: string
   paymentMethod: string
   renewal: 'Automatic' | 'Manual'
   category?: string
+}
+
+// 新增訂閱時的輸入（不含系統自動產生/計算的欄位）
+export interface NewSubscriptionInput {
+  name: string
+  plan: string
+  amount: number
+  currency: 'TWD' | 'USD'
+  cycle: 'Monthly' | 'Yearly'
+  category?: string
+  paymentMethod: string
+  renewal: 'Automatic' | 'Manual'
+  startDate: string
 }
 
 // 統計數據類型

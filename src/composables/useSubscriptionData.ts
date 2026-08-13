@@ -1,6 +1,10 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from './useAuth'
+import { calculateNextPayment } from '@/lib/subscription-calc'
 import type {
   SubscriptionItem,
+  NewSubscriptionInput,
   SubscriptionStats,
   CategoryStats,
   VendorStats,
@@ -8,88 +12,69 @@ import type {
   FilterStatus,
 } from '@/types'
 
-// 原始訂閱數據
-const originalItems = ref<SubscriptionItem[]>([
-  {
-    name: 'Spotify',
-    plan: 'Family',
-    price: 'NT$143',
-    cycle: 'Monthly',
-    active: true,
-    nextPayment: '2025年7月15日',
-    paymentMethod: 'Apple Pay',
-    renewal: 'Automatic',
-    category: '音樂串流',
-  },
-  {
-    name: 'VPS-HK',
-    plan: '4H4G',
-    price: 'NT$28',
-    cycle: 'Monthly',
-    active: true,
-    nextPayment: '2025年7月26日',
-    paymentMethod: 'Wechat Pay',
-    renewal: 'Manual',
-    category: 'VPS服務',
-  },
-  {
-    name: 'YouTube',
-    plan: 'Premium',
-    price: 'NT$57',
-    cycle: 'Monthly',
-    active: true,
-    nextPayment: '2025年8月8日',
-    paymentMethod: 'Google Pay',
-    renewal: 'Manual',
-    category: '影片串流',
-  },
-  {
-    name: '阿里雲',
-    plan: '.top',
-    price: 'NT$39',
-    cycle: 'Yearly',
-    active: true,
-    nextPayment: '2025年10月11日',
-    paymentMethod: 'Alipay',
-    renewal: 'Manual',
-    category: '域名服務',
-  },
-  {
-    name: 'Monica',
-    plan: 'Unlimited',
-    price: 'NT$780',
-    cycle: 'Yearly',
-    active: true,
-    nextPayment: '2025年12月7日',
-    paymentMethod: 'Alipay',
-    renewal: 'Manual',
-    category: '生產力工具',
-  },
-  {
-    name: 'Cursor',
-    plan: 'Pro',
-    price: 'NT$716',
-    cycle: 'Yearly',
-    active: true,
-    nextPayment: '2026年4月17日',
-    paymentMethod: 'Credit Card',
-    renewal: 'Manual',
-    category: '軟體工具',
-  },
-  {
-    name: 'Netflix',
-    plan: 'Standard',
-    price: 'NT$68',
-    cycle: 'Monthly',
-    active: false,
-    nextPayment: '已取消',
-    paymentMethod: 'Credit Card',
-    renewal: 'Manual',
-    category: '影片串流',
-  },
-])
+interface SubscriptionRow {
+  id: string
+  name: string
+  plan: string
+  amount: number
+  currency: 'TWD' | 'USD'
+  cycle: 'Monthly' | 'Yearly'
+  category: string | null
+  payment_method: string
+  renewal: 'Automatic' | 'Manual'
+  start_date: string
+  next_payment: string
+  active: boolean
+}
 
-// 計算統計數據
+function mapRowToItem(row: SubscriptionRow): SubscriptionItem {
+  return {
+    id: row.id,
+    name: row.name,
+    plan: row.plan,
+    amount: row.amount,
+    currency: row.currency,
+    cycle: row.cycle,
+    active: row.active,
+    startDate: row.start_date,
+    nextPayment: row.next_payment,
+    paymentMethod: row.payment_method,
+    renewal: row.renewal,
+    category: row.category ?? undefined,
+  }
+}
+
+// 原始訂閱數據（來自 Supabase）
+const originalItems = ref<SubscriptionItem[]>([])
+const isLoading = ref(false)
+
+async function fetchSubscriptions() {
+  isLoading.value = true
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (!error && data) {
+    originalItems.value = (data as SubscriptionRow[]).map(mapRowToItem)
+  }
+  isLoading.value = false
+}
+
+const { user } = useAuth()
+watch(
+  user,
+  (currentUser) => {
+    if (currentUser) {
+      fetchSubscriptions()
+    } else {
+      originalItems.value = []
+    }
+  },
+  { immediate: true },
+)
+
+// 計算統計數據（月/年互算修正留給 T4，這裡維持既有邏輯不變，只是改吃 amount number）
 const stats = computed(
   (): SubscriptionStats => ({
     total: originalItems.value.length,
@@ -97,10 +82,10 @@ const stats = computed(
     cancelled: originalItems.value.filter((item) => !item.active).length,
     monthlyTotal: originalItems.value
       .filter((item) => item.active && item.cycle === 'Monthly')
-      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[NT$,]/g, '')), 0),
+      .reduce((sum, item) => sum + item.amount, 0),
     yearlyTotal: originalItems.value
       .filter((item) => item.active && item.cycle === 'Yearly')
-      .reduce((sum, item) => sum + parseFloat(item.price.replace(/[NT$,]/g, '')), 0),
+      .reduce((sum, item) => sum + item.amount, 0),
   }),
 )
 
@@ -112,8 +97,7 @@ const categoryStats = computed((): CategoryStats[] => {
     .filter((item) => item.active && item.category)
     .forEach((item) => {
       const category = item.category!
-      const amount = parseFloat(item.price.replace(/[NT$,]/g, ''))
-      categoryMap.set(category, (categoryMap.get(category) || 0) + amount)
+      categoryMap.set(category, (categoryMap.get(category) || 0) + item.amount)
     })
 
   const total = Array.from(categoryMap.values()).reduce((sum, amount) => sum + amount, 0)
@@ -133,14 +117,13 @@ const vendorStats = computed((): VendorStats[] => {
     .filter((item) => item.active)
     .forEach((item) => {
       const vendor = item.name
-      const amount = parseFloat(item.price.replace(/[NT$,]/g, ''))
       const existing = vendorMap.get(vendor)
 
       if (existing) {
-        existing.amount += amount
+        existing.amount += item.amount
         existing.subscriptions += 1
       } else {
-        vendorMap.set(vendor, { amount, subscriptions: 1 })
+        vendorMap.set(vendor, { amount: item.amount, subscriptions: 1 })
       }
     })
 
@@ -152,19 +135,17 @@ const vendorStats = computed((): VendorStats[] => {
   }))
 })
 
-// 月度數據（用於報表）
-const monthlyData = computed((): MonthlyData[] => {
-  // 這裡可以根據實際的歷史數據來計算
-  // 目前使用模擬數據
-  return [
+// 月度數據（用於報表，暫時使用模擬數據）
+const monthlyData = computed(
+  (): MonthlyData[] => [
     { month: '2025年1月', amount: 1234.56, change: '+5.2%' },
     { month: '2025年2月', amount: 1456.78, change: '+18.0%' },
     { month: '2025年3月', amount: 1678.9, change: '+15.2%' },
     { month: '2025年4月', amount: 1890.12, change: '+12.6%' },
     { month: '2025年5月', amount: 2012.34, change: '+6.5%' },
     { month: '2025年6月', amount: 2134.56, change: '+6.1%' },
-  ]
-})
+  ],
+)
 
 // 搜尋和篩選功能
 const searchQuery = ref('')
@@ -173,7 +154,6 @@ const filterStatus = ref<FilterStatus>('All')
 const filteredItems = computed(() => {
   let result = originalItems.value
 
-  // 狀態篩選
   if (filterStatus.value === 'Active') {
     result = result.filter((item) => item.active)
   } else if (filterStatus.value === 'Cancelled') {
@@ -182,7 +162,6 @@ const filteredItems = computed(() => {
     result = result.filter((item) => item.plan.toLowerCase().includes('trial'))
   }
 
-  // 搜尋篩選
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(
@@ -196,6 +175,88 @@ const filteredItems = computed(() => {
   return result
 })
 
+async function addSubscription(input: NewSubscriptionInput) {
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    throw new Error('必須登入才能新增訂閱')
+  }
+
+  const nextPayment = calculateNextPayment(input.startDate, input.cycle)
+
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .insert({
+      user_id: currentUser.id,
+      name: input.name,
+      plan: input.plan,
+      amount: input.amount,
+      currency: input.currency,
+      cycle: input.cycle,
+      category: input.category || null,
+      payment_method: input.paymentMethod,
+      renewal: input.renewal,
+      start_date: input.startDate,
+      next_payment: nextPayment,
+      active: true,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  originalItems.value = [mapRowToItem(data as SubscriptionRow), ...originalItems.value]
+}
+
+async function updateSubscription(
+  id: string,
+  updates: Partial<NewSubscriptionInput> & { active?: boolean },
+) {
+  const dbUpdates: Record<string, unknown> = {}
+
+  if (updates.name !== undefined) dbUpdates.name = updates.name
+  if (updates.plan !== undefined) dbUpdates.plan = updates.plan
+  if (updates.amount !== undefined) dbUpdates.amount = updates.amount
+  if (updates.currency !== undefined) dbUpdates.currency = updates.currency
+  if (updates.cycle !== undefined) dbUpdates.cycle = updates.cycle
+  if (updates.category !== undefined) dbUpdates.category = updates.category || null
+  if (updates.paymentMethod !== undefined) dbUpdates.payment_method = updates.paymentMethod
+  if (updates.renewal !== undefined) dbUpdates.renewal = updates.renewal
+  if (updates.active !== undefined) dbUpdates.active = updates.active
+
+  if (updates.startDate !== undefined) {
+    dbUpdates.start_date = updates.startDate
+    const existing = originalItems.value.find((item) => item.id === id)
+    const cycle = updates.cycle ?? existing?.cycle
+    if (cycle) {
+      dbUpdates.next_payment = calculateNextPayment(updates.startDate, cycle)
+    }
+  }
+
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  const index = originalItems.value.findIndex((item) => item.id === id)
+  if (index !== -1) {
+    originalItems.value[index] = mapRowToItem(data as SubscriptionRow)
+  }
+}
+
+async function removeSubscription(id: string) {
+  const { error } = await supabase.from('subscriptions').delete().eq('id', id)
+  if (error) throw error
+
+  originalItems.value = originalItems.value.filter((item) => item.id !== id)
+}
+
 // 導出 composable
 export function useSubscriptionData() {
   return {
@@ -206,20 +267,15 @@ export function useSubscriptionData() {
     categoryStats,
     vendorStats,
     monthlyData,
+    isLoading,
 
     // 狀態
     searchQuery,
     filterStatus,
 
     // 方法
-    addSubscription: (item: SubscriptionItem) => {
-      originalItems.value.push(item)
-    },
-    updateSubscription: (index: number, item: SubscriptionItem) => {
-      originalItems.value[index] = item
-    },
-    removeSubscription: (index: number) => {
-      originalItems.value.splice(index, 1)
-    },
+    addSubscription,
+    updateSubscription,
+    removeSubscription,
   }
 }

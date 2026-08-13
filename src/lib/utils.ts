@@ -47,11 +47,6 @@ export function formatRelativeTime(date: string | Date): string {
   return `${Math.abs(diffInDays)} 天前`
 }
 
-// 解析價格字符串
-export function parsePrice(priceString: string): number {
-  return parseFloat(priceString.replace(/[NT$,]/g, ''))
-}
-
 // 生成唯一 ID
 export function generateId(): string {
   return Math.random().toString(36).substr(2, 9)

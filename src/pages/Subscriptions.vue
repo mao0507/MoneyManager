@@ -6,16 +6,20 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ref, computed } from 'vue'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
+import type { NewSubscriptionInput, SubscriptionItem } from '@/types'
 
 defineOptions({ name: 'SubscriptionsPage' })
 
 // 使用共用的訂閱數據
-const { originalItems, filteredItems, stats, searchQuery, filterStatus } = useSubscriptionData()
+const { originalItems, filteredItems, stats, searchQuery, filterStatus, addSubscription, updateSubscription, removeSubscription } =
+  useSubscriptionData()
 
 // 本地狀態
 const sortBy = ref<'name' | 'price' | 'nextPayment'>('name')
 const viewMode = ref<'grid' | 'list'>('grid')
 const isAddDialogOpen = ref(false)
+const editingItem = ref<SubscriptionItem | null>(null)
+const submitError = ref<string | null>(null)
 
 // 排序後的資料
 const sortedItems = computed(() => {
@@ -26,9 +30,7 @@ const sortedItems = computed(() => {
       case 'name':
         return a.name.localeCompare(b.name)
       case 'price':
-        return (
-          parseFloat(a.price.replace(/[^\d.]/g, '')) - parseFloat(b.price.replace(/[^\d.]/g, ''))
-        )
+        return a.amount - b.amount
       case 'nextPayment':
         return new Date(a.nextPayment).getTime() - new Date(b.nextPayment).getTime()
       default:
@@ -39,26 +41,54 @@ const sortedItems = computed(() => {
   return items
 })
 
-// 處理新增訂閱
-const handleAddSubscription = (data: {
-  name: string
-  plan: string
-  price: string
-  cycle: 'Monthly' | 'Yearly'
-  category: string
-  paymentMethod: string
-  renewal: 'Automatic' | 'Manual'
-  nextPayment: string
-}) => {
-  console.log('新增訂閱:', data)
-  // 這裡可以調用 API 或更新本地數據
-  // 暫時只是關閉彈出視窗
-  isAddDialogOpen.value = false
+// 處理新增/編輯訂閱表單送出 - 失敗時 dialog 留著不關，讓使用者看到錯誤並可重試
+const handleSubmit = async (data: NewSubscriptionInput) => {
+  submitError.value = null
+  try {
+    if (editingItem.value) {
+      await updateSubscription(editingItem.value.id, data)
+    } else {
+      await addSubscription(data)
+    }
+    editingItem.value = null
+    isAddDialogOpen.value = false
+  } catch (error) {
+    submitError.value = error instanceof Error ? error.message : '儲存訂閱失敗，請稍後再試'
+  }
 }
 
 // 打開新增訂閱彈出視窗
 const openAddDialog = () => {
+  editingItem.value = null
+  submitError.value = null
   isAddDialogOpen.value = true
+}
+
+// 打開編輯訂閱彈出視窗
+const openEditDialog = (item: SubscriptionItem) => {
+  editingItem.value = item
+  submitError.value = null
+  isAddDialogOpen.value = true
+}
+
+// dialog 關閉（含取消）時清掉編輯目標，避免下次點編輯同一筆時 watch 拿到同一個物件參照
+const handleDialogOpenChange = (open: boolean) => {
+  isAddDialogOpen.value = open
+  if (!open) {
+    editingItem.value = null
+    submitError.value = null
+  }
+}
+
+// 刪除訂閱
+const pageError = ref<string | null>(null)
+const handleDelete = async (item: SubscriptionItem) => {
+  pageError.value = null
+  try {
+    await removeSubscription(item.id)
+  } catch (error) {
+    pageError.value = error instanceof Error ? error.message : '刪除訂閱失敗，請稍後再試'
+  }
 }
 </script>
 
@@ -98,6 +128,14 @@ const openAddDialog = () => {
           </svg>
         </Button>
       </div>
+    </div>
+
+    <!-- 錯誤訊息 -->
+    <div
+      v-if="pageError"
+      class="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive"
+    >
+      {{ pageError }}
     </div>
 
     <!-- 統計卡片 -->
@@ -331,16 +369,19 @@ const openAddDialog = () => {
     >
       <SubscriptionCard
         v-for="item in sortedItems"
-        :key="item.name"
+        :key="item.id"
         :name="item.name"
         :plan="item.plan"
-        :price="item.price"
+        :amount="item.amount"
+        :currency="item.currency"
         :cycle="item.cycle"
         :active="item.active"
         :next-payment="item.nextPayment"
         :payment-method="item.paymentMethod"
         :renewal="item.renewal"
         :category="item.category"
+        @edit="openEditDialog(item)"
+        @delete="handleDelete(item)"
       />
     </div>
 
@@ -383,9 +424,12 @@ const openAddDialog = () => {
     </div>
   </div>
 
-  <!-- 新增訂閱彈出視窗 -->
+  <!-- 新增/編輯訂閱彈出視窗 -->
   <AddSubscriptionDialog
-    v-model:is-open="isAddDialogOpen"
-    @add-subscription="handleAddSubscription"
+    :is-open="isAddDialogOpen"
+    :edit-item="editingItem"
+    :error="submitError"
+    @update:is-open="handleDialogOpenChange"
+    @submit="handleSubmit"
   />
 </template>
