@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 
 // 擴展路由元數據類型
 declare module 'vue-router' {
@@ -29,6 +30,15 @@ const routes: RouteRecordRaw[] = [
       title: '訂閱管理',
       description: '管理所有訂閱服務',
       icon: '📋',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/Login.vue'),
+    meta: {
+      title: '登入',
     },
   },
   {
@@ -81,6 +91,20 @@ const routes: RouteRecordRaw[] = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to) => {
+  if (!to.meta.requiresAuth) return true
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
+
+  return true
 })
 
 export default router

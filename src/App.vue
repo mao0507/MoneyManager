@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const route = useRoute()
+const { isAuthenticated, signOut } = useAuth()
 
 // 導航配置
 const navigationItems = [
@@ -36,6 +38,13 @@ const isActive = (path: string) => computed(() => route.path === path)
             <span class="text-xs">{{ item.icon }}</span>
             {{ item.label }}
           </RouterLink>
+          <button
+            v-if="isAuthenticated"
+            class="px-2 py-1 rounded-md hover:bg-secondary cursor-pointer"
+            @click="signOut"
+          >
+            登出
+          </button>
         </nav>
       </div>
     </header>

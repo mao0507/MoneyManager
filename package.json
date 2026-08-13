@@ -1,5 +1,5 @@
 {
-  "name": "money-manager",
+  "name": "monthly-tracker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "@tailwindcss/vite": "^4.1.13",
     "@vueuse/core": "^13.9.0",
     "class-variance-authority": "^0.7.1",
