@@ -10,8 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Bot, Cloud, Code2, Film, Music, Server, Smartphone, Tv } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { Bot, Server, Smartphone } from 'lucide-vue-next'
 import { formatCurrency } from '@/lib/utils'
+import { findBrandIcon } from '@/lib/brand-icons'
+import BrandLogo from './BrandLogo.vue'
 
 interface Props {
   name: string
@@ -35,19 +38,16 @@ defineOptions({ name: 'SubscriptionCard' })
 
 const currencySymbol = (currency: 'TWD' | 'USD') => (currency === 'USD' ? 'US$' : 'NT$')
 
-// 獲取服務圖示
-const getServiceIcon = (name: string) => {
+// 官方品牌 logo 找不到時的通用圖示（非知名品牌 / simple-icons 未收錄的服務）
+const fallbackServiceIcon = (name: string) => {
   const icons: Record<string, typeof Smartphone> = {
-    Spotify: Music,
-    YouTube: Tv,
-    Netflix: Film,
     'VPS-HK': Server,
-    阿里雲: Cloud,
     Monica: Bot,
-    Cursor: Code2,
   }
   return icons[name] || Smartphone
 }
+
+const brandIcon = computed(() => findBrandIcon(props.name))
 
 // 獲取類別顏色
 const getCategoryColor = (category?: string) => {
@@ -74,7 +74,8 @@ const getCategoryColor = (category?: string) => {
         <!-- 服務資訊 -->
         <div class="flex items-center gap-3">
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
-            <component :is="getServiceIcon(props.name)" class="size-6" aria-hidden="true" />
+            <BrandLogo v-if="brandIcon" :icon="brandIcon" class="size-6" />
+            <component v-else :is="fallbackServiceIcon(props.name)" class="size-6" aria-hidden="true" />
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="font-semibold text-foreground truncate">{{ props.name }}</h3>

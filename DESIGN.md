@@ -175,6 +175,9 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 ### Navigation
 頂部橫向導覽列（`App.vue`），文字 + Lucide icon（`size-4`，與專案其餘元件同一套圖示庫），當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
 
+### Subscription Service Logo
+`SubscriptionCard` 服務圖示優先顯示官方品牌 logo（`simple-icons`，MIT 授權，`src/lib/brand-icons.ts`），用該品牌自己的顏色（例如 Netflix 紅、Spotify 綠），不套用系統中性色 — 這是唯一允許品牌色出現的地方，因為它代表的是「這是哪家公司的服務」這個事實，不是裝飾。目前收錄 Netflix、Spotify、YouTube、Apple、Google、GitHub、Notion、Dropbox、LINE、iCloud、Max、Alibaba Cloud、Cursor。找不到對應品牌時 fallback 到中性 Lucide icon（`Bot`/`Server`/`Smartphone`）。Amazon、Microsoft、Adobe、Disney、OpenAI 等品牌 simple-icons 已因商標考量下架，不手動補回，一律走 fallback。
+
 ### Floating Surfaces（Dialog / Dropdown / Select / Popover）
 - **Dialog：** `shadow-lifted`，最外層浮動內容，配合半透明黑色遮罩（`bg-black/50`）與 fade + scale 進場動畫。
 - **Dropdown Menu / Select / Popover：** `shadow-raised`，貼齊觸發元件的中量級浮動層，比 Dialog 輕但比靜態卡片明顯。
