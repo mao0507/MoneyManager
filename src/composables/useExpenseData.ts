@@ -1,4 +1,15 @@
 import { ref, computed } from 'vue'
+import {
+  BookOpen,
+  Car,
+  Clapperboard,
+  HeartPulse,
+  Home,
+  Package,
+  Repeat,
+  ShoppingBag,
+  Utensils,
+} from 'lucide-vue-next'
 import type {
   ExpenseRecord,
   ExpenseCategory,
@@ -10,15 +21,15 @@ import { generateId } from '@/lib/utils'
 
 // 消費類別數據
 const expenseCategories = ref<ExpenseCategory[]>([
-  { id: '1', name: '訂閱', icon: '📋', color: 'bg-indigo-500' },
-  { id: '2', name: '餐飲', icon: '🍽️', color: 'bg-orange-500' },
-  { id: '3', name: '交通', icon: '🚗', color: 'bg-blue-500' },
-  { id: '4', name: '購物', icon: '🛍️', color: 'bg-pink-500' },
-  { id: '5', name: '娛樂', icon: '🎬', color: 'bg-purple-500' },
-  { id: '6', name: '醫療', icon: '🏥', color: 'bg-red-500' },
-  { id: '7', name: '教育', icon: '📚', color: 'bg-green-500' },
-  { id: '8', name: '生活用品', icon: '🏠', color: 'bg-yellow-500' },
-  { id: '9', name: '其他', icon: '📦', color: 'bg-gray-500' },
+  { id: '1', name: '訂閱', icon: Repeat, color: 'bg-indigo-500' },
+  { id: '2', name: '餐飲', icon: Utensils, color: 'bg-orange-500' },
+  { id: '3', name: '交通', icon: Car, color: 'bg-blue-500' },
+  { id: '4', name: '購物', icon: ShoppingBag, color: 'bg-pink-500' },
+  { id: '5', name: '娛樂', icon: Clapperboard, color: 'bg-purple-500' },
+  { id: '6', name: '醫療', icon: HeartPulse, color: 'bg-red-500' },
+  { id: '7', name: '教育', icon: BookOpen, color: 'bg-green-500' },
+  { id: '8', name: '生活用品', icon: Home, color: 'bg-yellow-500' },
+  { id: '9', name: '其他', icon: Package, color: 'bg-gray-500' },
 ])
 
 // 原始消費紀錄數據
@@ -334,7 +345,7 @@ const getCategoryInfo = (categoryName: string) => {
     expenseCategories.value.find((cat) => cat.name === categoryName) || {
       id: '0',
       name: categoryName,
-      icon: '📦',
+      icon: Package,
       color: 'bg-gray-500',
     }
   )

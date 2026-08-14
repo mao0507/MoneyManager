@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
+import { AlarmClock, CreditCard, Megaphone, PartyPopper, XCircle } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 
 defineOptions({ name: 'NotificationsPage' })
@@ -102,13 +103,13 @@ const deleteNotification = (id: number) => {
 
 // 獲取通知類型圖示
 const getNotificationIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    renewal: '⏰',
-    payment: '💳',
-    new: '🎉',
-    cancellation: '❌',
+  const icons: Record<string, typeof Megaphone> = {
+    renewal: AlarmClock,
+    payment: CreditCard,
+    new: PartyPopper,
+    cancellation: XCircle,
   }
-  return icons[type] || '📢'
+  return icons[type] || Megaphone
 }
 
 // 獲取優先級顏色
@@ -260,9 +261,9 @@ const getPriorityColor = (priority: string) => {
               >
                 <!-- 通知圖示 -->
                 <div
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-lg"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
                 >
-                  {{ getNotificationIcon(notification.type) }}
+                  <component :is="getNotificationIcon(notification.type)" class="size-5" aria-hidden="true" />
                 </div>
 
                 <!-- 通知內容 -->

@@ -6,7 +6,6 @@ declare module 'vue-router' {
   interface RouteMeta {
     title: string
     description?: string
-    icon?: string
     requiresAuth?: boolean
   }
 }
@@ -19,7 +18,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '儀表板',
       description: '訂閱費用和活動概覽',
-      icon: '📊',
     },
   },
   {
@@ -29,7 +27,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '訂閱管理',
       description: '管理所有訂閱服務',
-      icon: '📋',
       requiresAuth: true,
     },
   },
@@ -48,7 +45,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '支出報表',
       description: '訂閱支出的詳細分析',
-      icon: '📈',
     },
   },
   {
@@ -58,7 +54,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '通知設定',
       description: '管理通知偏好設定',
-      icon: '🔔',
     },
   },
   {
@@ -68,7 +63,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '消費紀錄',
       description: '管理日常消費紀錄和支出分析',
-      icon: '💰',
     },
   },
   {
@@ -78,7 +72,6 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '設定',
       description: '配置應用程式偏好設定',
-      icon: '⚙️',
     },
   },
   {

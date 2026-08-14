@@ -1,3 +1,5 @@
+import type { Component } from 'vue'
+
 // 訂閱相關類型
 export interface SubscriptionItem {
   id: string
@@ -98,7 +100,6 @@ export interface NotificationSettings {
 export interface RouteMeta {
   title: string
   description?: string
-  icon?: string
   requiresAuth?: boolean
 }
 
@@ -159,7 +160,7 @@ export interface ExpenseRecord {
 export interface ExpenseCategory {
   id: string
   name: string
-  icon: string
+  icon: Component
   color: string
   budget?: number
 }

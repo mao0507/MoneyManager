@@ -409,7 +409,7 @@ const getTrendColor = (amount: number, average: number) => {
                   :key="category.id"
                   class="flex items-center gap-2 p-2 rounded-lg border"
                 >
-                  <span class="text-lg">{{ category.icon }}</span>
+                  <component :is="category.icon" class="size-5 text-muted-foreground" aria-hidden="true" />
                   <div class="flex-1">
                     <p class="text-sm font-medium">{{ category.name }}</p>
                     <p class="text-xs text-muted-foreground">

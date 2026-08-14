@@ -9,6 +9,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Banknote,
+  BookOpen,
+  Car,
+  Clapperboard,
+  CreditCard,
+  HeartPulse,
+  Home,
+  Package,
+  ShoppingBag,
+  Smartphone,
+  Utensils,
+  Wallet,
+} from 'lucide-vue-next'
 import type { ExpenseRecord } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
@@ -21,17 +35,17 @@ defineOptions({ name: 'ExpenseCard' })
 
 // 獲取類別圖示和顏色
 const getCategoryIcon = (category: string) => {
-  const icons: Record<string, string> = {
-    餐飲: '🍽️',
-    交通: '🚗',
-    購物: '🛍️',
-    娛樂: '🎬',
-    醫療: '🏥',
-    教育: '📚',
-    生活用品: '🏠',
-    其他: '📦',
+  const icons: Record<string, typeof Package> = {
+    餐飲: Utensils,
+    交通: Car,
+    購物: ShoppingBag,
+    娛樂: Clapperboard,
+    醫療: HeartPulse,
+    教育: BookOpen,
+    生活用品: Home,
+    其他: Package,
   }
-  return icons[category] || '📦'
+  return icons[category] || Package
 }
 
 const getCategoryColor = (category: string) => {
@@ -49,15 +63,15 @@ const getCategoryColor = (category: string) => {
 }
 
 const getPaymentMethodIcon = (method: string) => {
-  const icons: Record<string, string> = {
-    信用卡: '💳',
-    現金: '💵',
-    'Apple Pay': '📱',
-    悠遊卡: '🚌',
-    'Google Pay': '📱',
-    'Line Pay': '💚',
+  const icons: Record<string, typeof CreditCard> = {
+    信用卡: CreditCard,
+    現金: Banknote,
+    'Apple Pay': Smartphone,
+    悠遊卡: Wallet,
+    'Google Pay': Smartphone,
+    'Line Pay': Wallet,
   }
-  return icons[method] || '💳'
+  return icons[method] || CreditCard
 }
 </script>
 
@@ -69,9 +83,9 @@ const getPaymentMethodIcon = (method: string) => {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
           <div
-            class="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center text-lg font-bold text-primary"
+            class="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center text-primary"
           >
-            {{ getCategoryIcon(props.expense.category) }}
+            <component :is="getCategoryIcon(props.expense.category)" class="size-5" aria-hidden="true" />
           </div>
           <div>
             <CardTitle class="text-lg">{{ props.expense.title }}</CardTitle>
@@ -85,7 +99,7 @@ const getPaymentMethodIcon = (method: string) => {
             {{ props.expense.category }}
           </Badge>
           <div class="flex items-center gap-1 text-xs text-muted-foreground">
-            <span>{{ getPaymentMethodIcon(props.expense.paymentMethod) }}</span>
+            <component :is="getPaymentMethodIcon(props.expense.paymentMethod)" class="size-3" aria-hidden="true" />
             <span>{{ props.expense.paymentMethod }}</span>
           </div>
         </div>

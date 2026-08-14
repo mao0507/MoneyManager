@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Bot, Cloud, Code2, Film, Music, Server, Smartphone, Tv } from 'lucide-vue-next'
 import { formatCurrency } from '@/lib/utils'
 
 interface Props {
@@ -36,16 +37,16 @@ const currencySymbol = (currency: 'TWD' | 'USD') => (currency === 'USD' ? 'US$' 
 
 // 獲取服務圖示
 const getServiceIcon = (name: string) => {
-  const icons: Record<string, string> = {
-    Spotify: '🎵',
-    YouTube: '📺',
-    Netflix: '🎬',
-    'VPS-HK': '🖥️',
-    阿里雲: '☁️',
-    Monica: '🤖',
-    Cursor: '💻',
+  const icons: Record<string, typeof Smartphone> = {
+    Spotify: Music,
+    YouTube: Tv,
+    Netflix: Film,
+    'VPS-HK': Server,
+    阿里雲: Cloud,
+    Monica: Bot,
+    Cursor: Code2,
   }
-  return icons[name] || '📱'
+  return icons[name] || Smartphone
 }
 
 // 獲取類別顏色
@@ -72,8 +73,8 @@ const getCategoryColor = (category?: string) => {
       <div class="flex items-start justify-between">
         <!-- 服務資訊 -->
         <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
-            {{ getServiceIcon(props.name) }}
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+            <component :is="getServiceIcon(props.name)" class="size-6" aria-hidden="true" />
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="font-semibold text-foreground truncate">{{ props.name }}</h3>
