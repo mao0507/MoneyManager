@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Bell, LayoutDashboard, Receipt, Repeat, Settings, TrendingUp } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 
 const route = useRoute()
@@ -8,12 +9,12 @@ const { isAuthenticated, signOut } = useAuth()
 
 // 導航配置
 const navigationItems = [
-  { path: '/', label: '儀表板', icon: '📊' },
-  { path: '/subscriptions', label: '訂閱管理', icon: '📋' },
-  { path: '/expense-records', label: '消費紀錄', icon: '💰' },
-  { path: '/reports', label: '支出報表', icon: '📈' },
-  { path: '/notifications', label: '通知設定', icon: '🔔' },
-  { path: '/settings', label: '設定', icon: '⚙️' },
+  { path: '/', label: '儀表板', icon: LayoutDashboard },
+  { path: '/subscriptions', label: '訂閱管理', icon: Repeat },
+  { path: '/expense-records', label: '消費紀錄', icon: Receipt },
+  { path: '/reports', label: '支出報表', icon: TrendingUp },
+  { path: '/notifications', label: '通知設定', icon: Bell },
+  { path: '/settings', label: '設定', icon: Settings },
 ] as const
 
 // 檢查路由是否為當前活躍狀態
@@ -35,7 +36,7 @@ const isActive = (path: string) => computed(() => route.path === path)
               isActive(item.path).value ? 'bg-secondary' : 'hover:bg-secondary cursor-pointer',
             ]"
           >
-            <span class="text-xs">{{ item.icon }}</span>
+            <component :is="item.icon" class="size-4" aria-hidden="true" />
             {{ item.label }}
           </RouterLink>
           <button

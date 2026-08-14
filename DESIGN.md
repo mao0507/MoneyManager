@@ -171,7 +171,7 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 - **Error:** `aria-invalid` 時邊框與 ring 轉 Warning Red
 
 ### Navigation
-頂部橫向導覽列（`App.vue`），純文字 + emoji icon，當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
+頂部橫向導覽列（`App.vue`），文字 + Lucide icon（`size-4`，與專案其餘元件同一套圖示庫），當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
 
 ## Do's and Don'ts
 
