@@ -66,7 +66,7 @@ const getCategoryColor = (category?: string) => {
 
 <template>
   <Card
-    class="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+    class="group relative overflow-hidden transition-all duration-200 hover:shadow-raised hover:-translate-y-0.5"
   >
     <CardHeader class="pb-3">
       <div class="flex items-start justify-between">

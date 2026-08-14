@@ -39,6 +39,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --shadow-raised: var(--elevation-raised);
+  --shadow-lifted: var(--elevation-lifted);
 }
 
 :root {
@@ -75,6 +77,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* 互動元件 hover 的抬升層 - 比 shadow-sm 更明顯的雙層陰影，帶真實 offset/blur */
+  --elevation-raised: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08);
+  /* Dialog/Dropdown/Popover 等浮動於畫面上方的層 */
+  --elevation-lifted: 0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1);
 }
 
 .dark {
@@ -110,6 +116,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  /* 深色背景上黑色陰影幾乎不可見，加大不透明度維持層次可讀性 */
+  --elevation-raised: 0 4px 12px -2px oklch(0 0 0 / 0.36), 0 2px 4px -2px oklch(0 0 0 / 0.24);
+  --elevation-lifted: 0 12px 32px -8px oklch(0 0 0 / 0.5), 0 4px 8px -4px oklch(0 0 0 / 0.3);
 }
 
 @layer base {

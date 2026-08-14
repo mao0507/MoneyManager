@@ -82,7 +82,7 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 **Key Characteristics:**
 - 中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立
 - 元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言
-- 目前為平面為主、極淡陰影（`shadow-xs`/`shadow-sm`）僅作邊界暗示，非立體層次系統
+- 靜態內容（統計卡）維持平面 `shadow-sm`；真正互動的元素（按鈕 hover/press、可點擊卡片、浮動層）有明確的 raised/lifted 陰影層次，層次感只給「會動的東西」，不是通篇加陰影
 - 無自訂字體，沿用 Tailwind 預設系統字型堆疊；尚無系統化的字級/字重階層，各頁面標題字級（`text-2xl`/`text-3xl`）為隨頁面手動指定，非統一 token
 
 ## Colors
@@ -129,14 +129,16 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 
 ## Elevation & Depth
 
-目前是平面為主、極淡陰影的系統：`Card` 用 `shadow-sm`，`Button`/`Badge`/`Input` 用 `shadow-xs`，陰影角色是暗示邊界而非製造立體層次，沒有 hover 時明顯抬升的互動陰影。
+雙層系統：靜態內容維持平面極淡陰影（暗示邊界），互動/浮動元素有明確的抬升陰影（`raised`/`lifted` 兩級，帶真實 offset + blur，非零位移色暈）。層次感是「動作的回饋」，不是裝飾。
 
-### Shadow Vocabulary（現況）
-- **Card 邊界陰影**（Tailwind `shadow-sm`）：卡片與背景的極淡區隔，非強調用途。
-- **互動元件邊界陰影**（Tailwind `shadow-xs`）：按鈕、輸入框、Badge 的極淡邊界暗示。
+### Shadow Vocabulary
+- **靜態邊界陰影**（Tailwind `shadow-sm`/`shadow-xs`）：統計卡、Input 靜止狀態，卡片與背景的極淡區隔，非強調用途。
+- **Raised**（`--elevation-raised`，`0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08)`，深色模式加大不透明度至 0.36/0.24）：hover 時的抬升層。用於 Primary/Destructive/Secondary 按鈕 hover、可點擊訂閱卡片 hover（同時搭配 `-translate-y-0.5` 位移，做出真的「浮起來」而非只換陰影）、Dropdown/Select/Popover 這些貼齊觸發元件的浮動選單。
+- **Lifted**（`--elevation-lifted`，`0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1)`，深色模式加大至 0.5/0.3）：Dialog/Modal 這種浮在畫面最上層、有遮罩襯底的內容，陰影範圍更大更柔，強調「離畫面最遠」。
+- **按鈕 active 按下回饋**：hover 的位移與陰影在 `:active` 時收回（`translate-y-0` + `shadow-xs`），模擬按下去的觸感，放開回到 hover 狀態。
 
-### 待定方向
-使用者表達過想要「更有層次感/立體感」，目前實作尚未反映這個方向。要往這個方向做時，建議先確立一組明確的 hover/active 抬升陰影 token（例如 `elevated-sm`/`elevated-md`），而不是零星加深個別元件的陰影值。
+### Named Rules
+**The Earned Depth Rule.** 陰影層次只給使用者會操作、會浮動的東西（按鈕、可點卡片、選單、對話框）。統計卡、標籤這類純顯示內容維持平面 — 陰影是互動回饋，不是裝飾，靜態內容有陰影等於在暗示一個不存在的可點擊行為。
 
 ## Shapes
 
@@ -146,18 +148,18 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 
 ### Buttons
 - **Shape:** `rounded-md`（8px）
-- **Primary:** Quiet Violet 背景 + Paper White 文字，`shadow-xs`，`hover:bg-primary/90`
-- **Secondary:** Whisper Gray 背景 + Ink Black 文字
-- **Outline:** Paper White 背景 + 1px Hairline Gray 邊框，hover 轉 Whisper Gray
-- **Ghost:** 無背景，hover 轉 Whisper Gray
-- **Destructive:** Warning Red 背景 + 白字，用於刪除等破壞性操作
+- **Primary:** Quiet Violet 背景 + Paper White 文字，靜止 `shadow-xs`，hover 轉 `bg-primary/90` + `shadow-raised` + 上移 1px，active 按下回到 `shadow-xs` 原位
+- **Secondary:** Whisper Gray 背景 + Ink Black 文字，hover 轉 `shadow-raised`（無位移，較克制）
+- **Outline:** Paper White 背景 + 1px Hairline Gray 邊框，hover 轉 Whisper Gray（無陰影變化）
+- **Ghost:** 無背景，hover 轉 Whisper Gray（無陰影變化）
+- **Destructive:** Warning Red 背景 + 白字，hover/active 行為同 Primary（`shadow-raised` + 位移 + 按下回饋），用於刪除等破壞性操作
 - **Link:** 純文字 + 底線（hover 顯示），文字色為 Ink Black
 - **Sizes:** `sm`(h-8) / `default`(h-9) / `lg`(h-10) / `icon`(size-9 方形)
 
 ### Cards / Containers
 - **Corner Style:** `rounded-xl`（14px）
 - **Background:** Paper White
-- **Shadow Strategy:** `shadow-sm`，見 Elevation & Depth
+- **Shadow Strategy:** 靜態卡（統計卡）維持 `shadow-sm`；可點擊卡（`SubscriptionCard`）hover 轉 `shadow-raised` + 上移 0.5（`-translate-y-0.5`），見 Elevation & Depth
 - **Border:** 無（僅陰影區隔）
 - **Internal Padding:** `py-6`（垂直）+ 子元件各自 `px-6`
 
@@ -173,6 +175,10 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 ### Navigation
 頂部橫向導覽列（`App.vue`），文字 + Lucide icon（`size-4`，與專案其餘元件同一套圖示庫），當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
 
+### Floating Surfaces（Dialog / Dropdown / Select / Popover）
+- **Dialog：** `shadow-lifted`，最外層浮動內容，配合半透明黑色遮罩（`bg-black/50`）與 fade + scale 進場動畫。
+- **Dropdown Menu / Select / Popover：** `shadow-raised`，貼齊觸發元件的中量級浮動層，比 Dialog 輕但比靜態卡片明顯。
+
 ## Do's and Don'ts
 
 ### Do:
@@ -180,8 +186,10 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 - **Do** 讓 Quiet Violet 只落在「主要動作」語意角色（主按鈕、連結、focus ring、預設 Badge），不擴散進中性表面。
 - **Do** 新元件優先重用既有 `rounded-md`(8px)/`rounded-xl`(14px) 兩級圓角，不要引入第三種圓角尺度。
 - **Do** 新頁面統計數字延續 `text-2xl font-bold` 的視覺重量，這是目前唯一算一致的字級用法。
+- **Do** 新的互動元件（按鈕、可點卡片）用 `shadow-raised` token，浮動層（選單/彈窗）用 `shadow-raised`、Dialog 用 `shadow-lifted`，不要手刻新的陰影值。
 
 ### Don't:
 - **Don't** 把 Warning Red 用在非警示/破壞性語境（例如純裝飾或當作一般強調色），會稀釋它的訊號意義。
 - **Don't** 把 Quiet Violet 也用在中性表面（次要背景、邊框）上裝飾，會稀釋它作為「主要動作」訊號的力道。
-- **Don't** 個別元件各自加深陰影追求「立體感」；使用者想要的層次感應該系統性設計一組 elevation token，不是零星調整。
+- **Don't** 給靜態顯示內容（統計卡、標籤）加 hover 陰影/位移；那是在暗示不存在的可點擊行為。
+- **Don't** 個別元件各自手刻陰影值追求「立體感」；一律用 `shadow-raised`/`shadow-lifted` 兩個 token。

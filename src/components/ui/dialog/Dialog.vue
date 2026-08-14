@@ -46,7 +46,7 @@ const handleOverlayClick = () => {
 
         <!-- 對話框內容（與遮罩同步出現） -->
         <div
-          class="relative z-10 max-h-[90vh] w-full max-w-md overflow-auto rounded-lg bg-background shadow-lg transform transition-all duration-300 ease-out"
+          class="relative z-10 max-h-[90vh] w-full max-w-md overflow-auto rounded-lg bg-background shadow-lifted transform transition-all duration-300 ease-out"
           :class="open ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'"
           @click.stop
         >

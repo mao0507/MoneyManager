@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-14T01:00:00.000Z",
+  "generatedAt": "2026-08-14T02:00:00.000Z",
   "title": "Design System: MoneyManager",
   "extensions": {
     "colorMeta": {
@@ -76,8 +76,10 @@
       "title": { "displayName": "Title", "purpose": "卡片標題（CardTitle）。粗體、行高收緊，用於區塊標題。" }
     },
     "shadows": [
-      { "name": "card-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Card 與背景的極淡區隔（Tailwind shadow-sm）。" },
-      { "name": "control-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "按鈕/輸入框/Badge 的極淡邊界暗示（Tailwind shadow-xs）。" }
+      { "name": "card-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Card 與背景的極淡區隔（Tailwind shadow-sm），靜態內容用。" },
+      { "name": "control-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "按鈕/輸入框/Badge 靜止狀態的極淡邊界暗示（Tailwind shadow-xs）。" },
+      { "name": "raised", "value": "0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08)", "purpose": "互動元素 hover 抬升層：按鈕、可點卡片、Dropdown/Select/Popover。深色模式提高不透明度至 0.36/0.24。" },
+      { "name": "lifted", "value": "0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1)", "purpose": "Dialog 等浮在畫面最上層、有遮罩襯底的內容。深色模式提高不透明度至 0.5/0.3。" }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
@@ -92,7 +94,7 @@
       "refersTo": "button-primary",
       "description": "主要動作按鈕，Ink Black 背景。",
       "html": "<button class=\"ds-btn-primary\">新增訂閱</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-primary:hover { background: oklch(0.5 0.18 300 / 0.9); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.15s; } .ds-btn-primary:hover { background: oklch(0.5 0.18 300 / 0.9); box-shadow: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08); transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
     },
     {
       "name": "Outline Button",
@@ -108,7 +110,7 @@
       "refersTo": "button-destructive",
       "description": "破壞性操作按鈕（刪除訂閱）。",
       "html": "<button class=\"ds-btn-destructive\">刪除訂閱</button>",
-      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.577 0.245 27.325); color: oklch(1 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.9); }"
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.577 0.245 27.325); color: oklch(1 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.15s; } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.9); box-shadow: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08); transform: translateY(-1px); } .ds-btn-destructive:active { transform: translateY(0); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }"
     },
     {
       "name": "Card",
@@ -133,6 +135,14 @@
       "description": "文字輸入框（搜尋、表單欄位）。",
       "html": "<input class=\"ds-input\" placeholder=\"搜尋訂閱...\" />",
       "css": ".ds-input { width: 100%; height: 36px; background: transparent; color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 8px; padding: 4px 12px; font-size: 14px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input::placeholder { color: oklch(0.556 0 0); } .ds-input:focus-visible { border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
+    },
+    {
+      "name": "Dialog",
+      "kind": "custom",
+      "refersTo": "dialog",
+      "description": "浮動於畫面最上層的對話框，帶遮罩襯底，用 lifted 陰影強調離畫面最遠。",
+      "html": "<div class=\"ds-dialog\"><h3 class=\"ds-card-title\">新增訂閱服務</h3></div>",
+      "css": ".ds-dialog { background: oklch(1 0 0); color: oklch(0.145 0 0); border-radius: 8px; padding: 24px; max-width: 28rem; box-shadow: 0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1); }"
     }
   ],
   "narrative": {
@@ -141,20 +151,24 @@
     "keyCharacteristics": [
       "中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立",
       "元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言",
-      "目前為平面為主、極淡陰影（shadow-xs/shadow-sm）僅作邊界暗示，非立體層次系統",
+      "靜態內容維持平面陰影，互動/浮動元素有明確的 raised/lifted 抬升層次 - 層次感只給會動的東西",
       "無自訂字體，沿用 Tailwind 預設系統字型堆疊；尚無系統化的字級/字重階層"
     ],
-    "rules": [],
+    "rules": [
+      { "name": "The Earned Depth Rule", "body": "陰影層次只給使用者會操作、會浮動的東西（按鈕、可點卡片、選單、對話框）。統計卡、標籤這類純顯示內容維持平面 - 陰影是互動回饋，不是裝飾。", "section": "elevation" }
+    ],
     "dos": [
       "Do 保持紅色（Warning Red）只用在破壞性操作與驗證錯誤，維持它的警示訊號強度。",
       "Do 讓 Quiet Violet 只落在主要動作語意角色，不擴散進中性表面。",
       "Do 新元件優先重用既有 rounded-md(8px)/rounded-xl(14px) 兩級圓角，不要引入第三種圓角尺度。",
-      "Do 新頁面統計數字延續 text-2xl font-bold 的視覺重量，這是目前唯一算一致的字級用法。"
+      "Do 新頁面統計數字延續 text-2xl font-bold 的視覺重量，這是目前唯一算一致的字級用法。",
+      "Do 新的互動元件用 shadow-raised，浮動選單用 shadow-raised，Dialog 用 shadow-lifted，不要手刻新的陰影值。"
     ],
     "donts": [
       "Don't 把 Warning Red 用在非警示/破壞性語境。",
       "Don't 把 Quiet Violet 也用在中性表面（次要背景、邊框）上裝飾。",
-      "Don't 個別元件各自加深陰影追求「立體感」；應系統性設計一組 elevation token。"
+      "Don't 給靜態顯示內容加 hover 陰影/位移；那是在暗示不存在的可點擊行為。",
+      "Don't 個別元件各自手刻陰影值追求「立體感」；一律用 shadow-raised/shadow-lifted 兩個 token。"
     ]
   }
 }
