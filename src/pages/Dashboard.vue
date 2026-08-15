@@ -1,7 +1,16 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Doughnut } from 'vue-chartjs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import PageHeader from '@/components/common/PageHeader.vue'
+import { useSubscriptionData } from '@/composables/useSubscriptionData'
+import { useExpenseData } from '@/composables/useExpenseData'
+import { toDoughnutChartData } from '@/lib/chart-data'
+import { getChartPalette } from '@/lib/utils'
+
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 defineOptions({ name: 'DashboardPage' })
 
@@ -21,20 +30,38 @@ const upcomingRenewals = [
   { name: 'VPS-HK', amount: 'NT$28', date: '2025年7月26日', daysLeft: 13 },
 ]
 
-const spendingByCategory = [
-  { category: '音樂串流', amount: 'NT$1,710', percentage: 45 },
-  { category: '影片串流', amount: 'NT$856', percentage: 22 },
-  { category: '生產力工具', amount: 'NT$780', percentage: 20 },
-  { category: 'VPS服務', amount: 'NT$336', percentage: 9 },
-  { category: '其他', amount: 'NT$150', percentage: 4 },
-]
-
 const topVendors = [
   { name: 'Spotify', amount: 'NT$1,710', subscriptions: 1 },
   { name: 'YouTube', amount: 'NT$856', subscriptions: 1 },
   { name: 'Monica', amount: 'NT$780', subscriptions: 1 },
   { name: 'Cursor', amount: 'NT$716', subscriptions: 1 },
 ]
+
+// 按類別支出：合併訂閱類別與消費紀錄類別的真實統計（比照 Reports.vue 的作法）
+const { categoryStats } = useSubscriptionData()
+const { categoryStats: expenseCategoryStats } = useExpenseData()
+
+const categoryData = computed(() => [
+  ...categoryStats.value.map((item) => ({ category: item.category, amount: item.amount })),
+  ...expenseCategoryStats.value.map((item) => ({ category: item.category, amount: item.amount })),
+])
+
+// CSS 變數要在瀏覽器掛載後才讀得到值
+const chartPalette = ref<string[]>([])
+onMounted(() => {
+  chartPalette.value = getChartPalette()
+})
+
+const categoryChartData = computed(() =>
+  chartPalette.value.length > 0
+    ? toDoughnutChartData(categoryData.value, chartPalette.value)
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+)
+const categoryChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { position: 'bottom' as const, labels: { boxWidth: 12 } } },
+}
 </script>
 
 <template>
@@ -116,22 +143,13 @@ const topVendors = [
       <Card>
         <CardHeader>
           <CardTitle>按類別支出</CardTitle>
-          <CardDescription>年度類別細分</CardDescription>
+          <CardDescription>類別支出佔比</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="space-y-3">
-            <div
-              v-for="item in spendingByCategory"
-              :key="item.category"
-              class="flex items-center justify-between py-2 border-b border-border/50 last:border-b-0"
-            >
-              <div class="flex items-center gap-2">
-                <span class="text-sm">{{ item.category }}</span>
-                <Badge variant="secondary" class="text-xs">{{ item.percentage }}%</Badge>
-              </div>
-              <span class="font-medium">{{ item.amount }}</span>
-            </div>
+          <div v-if="categoryData.length > 0" class="h-64">
+            <Doughnut :data="categoryChartData" :options="categoryChartOptions" />
           </div>
+          <p v-else class="text-sm text-muted-foreground py-8 text-center">尚無支出資料</p>
         </CardContent>
       </Card>
 
