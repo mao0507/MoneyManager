@@ -49,9 +49,18 @@ const stats = computed(() => {
   const subscriptionTotal = monthlyData.value.reduce((sum, item) => sum + item.amount, 0)
   const subscriptionAverage = subscriptionTotal / monthlyData.value.length
 
-  // 消費紀錄數據
+  // 消費紀錄數據 - 照實際有紀錄的月份分組算平均，
+  // 不能直接拿當月累計當平均值（那只是還沒過完的這個月）
   const expenseTotal = expenseStats.value.totalAmount
-  const expenseAverage = expenseStats.value.monthlyTotal
+  const expenseByMonth = new Map<string, number>()
+  filteredExpenses.value.forEach((expense) => {
+    const month = expense.date.slice(0, 7)
+    expenseByMonth.set(month, (expenseByMonth.get(month) ?? 0) + expense.amount)
+  })
+  const expenseAverage = expenseByMonth.size
+    ? Array.from(expenseByMonth.values()).reduce((sum, amount) => sum + amount, 0) /
+      expenseByMonth.size
+    : 0
 
   // 總計
   const totalSpent = subscriptionTotal + expenseTotal

@@ -173,6 +173,61 @@ describe('useSubscriptionData', () => {
     expect(originalItems.value[0].nextPayment).toBe('2026-04-01')
   })
 
+  it('surfaces the error and stops loading when fetchSubscriptions fails', async () => {
+    mockSupabase.from.mockReturnValue(
+      createQueryBuilder({ data: null, error: { message: '連線失敗' } }),
+    )
+    const { fetchError, isLoading, originalItems } = await loadComposable()
+    await signIn()
+
+    expect(fetchError.value).toBe('連線失敗')
+    expect(isLoading.value).toBe(false)
+    expect(originalItems.value).toEqual([])
+  })
+
+  it('ignores a stale fetch that resolves after the user signs out', async () => {
+    let resolveFetch: (value: { data: unknown; error: unknown }) => void = () => {}
+    const slowBuilder = createQueryBuilder({ data: [sampleRow], error: null })
+    slowBuilder.then = (resolve: (value: { data: unknown; error: unknown }) => void) => {
+      resolveFetch = resolve
+    }
+    mockSupabase.from.mockReturnValue(slowBuilder)
+
+    const { originalItems } = await loadComposable()
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+    authChangeCallback?.('SIGNED_IN', { user: { id: 'user-1' } })
+    await nextTick()
+
+    authChangeCallback?.('SIGNED_OUT', null)
+    await nextTick()
+
+    resolveFetch({ data: [sampleRow], error: null })
+    await nextTick()
+    await nextTick()
+
+    expect(originalItems.value).toEqual([])
+  })
+
+  it('updateSubscription looks up cycle from the DB when the item is not cached locally', async () => {
+    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+    const { updateSubscription, originalItems } = await loadComposable()
+    await signIn()
+    expect(originalItems.value).toEqual([])
+
+    const cycleBuilder = createQueryBuilder({ data: { cycle: 'Yearly' }, error: null })
+    const updateBuilder = createQueryBuilder({
+      data: { ...sampleRow, id: 'sub-missing', start_date: '2026-03-01', next_payment: '2027-03-01' },
+      error: null,
+    })
+    mockSupabase.from.mockReturnValueOnce(cycleBuilder).mockReturnValueOnce(updateBuilder)
+
+    await updateSubscription('sub-missing', { startDate: '2026-03-01' })
+
+    expect(updateBuilder.update).toHaveBeenCalledWith(
+      expect.objectContaining({ start_date: '2026-03-01', next_payment: '2027-03-01' }),
+    )
+  })
+
   it('removeSubscription deletes the row and drops it from state', async () => {
     mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
     const { removeSubscription, originalItems } = await loadComposable()

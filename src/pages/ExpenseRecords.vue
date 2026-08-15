@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import ExpenseCard from '@/components/common/ExpenseCard.vue'
 import MonthSelector from '@/components/common/MonthSelector.vue'
+import AddExpenseDialog from '@/components/common/AddExpenseDialog.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,8 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { useExpenseData } from '@/composables/useExpenseData'
 import { formatCurrency } from '@/lib/utils'
+import type { ExpenseFilter, ExpenseRecord } from '@/types'
 
 defineOptions({ name: 'ExpenseRecordsPage' })
+
+const filterOptions: { label: string; value: ExpenseFilter }[] = [
+  { label: '全部', value: 'All' },
+  { label: '本月', value: 'This Month' },
+  { label: '今年', value: 'This Year' },
+  { label: '過去30天', value: 'Last 30 Days' },
+]
 
 // 使用消費數據
 const {
@@ -24,10 +33,19 @@ const {
   sortBy,
   viewMode,
   selectedMonth,
+  addExpense,
 } = useExpenseData()
 
 // 本地狀態
 const activeTab = ref('records')
+const isAddDialogOpen = ref(false)
+const submitError = ref<string | null>(null)
+
+const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) => {
+  submitError.value = null
+  addExpense(data)
+  isAddDialogOpen.value = false
+}
 
 // 獲取趨勢顏色
 const getTrendColor = (amount: number, average: number) => {
@@ -207,13 +225,13 @@ const getTrendColor = (amount: number, average: number) => {
           <!-- 篩選按鈕 -->
           <div class="flex gap-2">
             <Button
-              v-for="filter in ['全部', '本月', '今年', '過去30天']"
-              :key="filter"
-              @click="filterStatus = filter as any"
-              :variant="filterStatus === filter ? 'default' : 'outline'"
+              v-for="filter in filterOptions"
+              :key="filter.value"
+              @click="filterStatus = filter.value"
+              :variant="filterStatus === filter.value ? 'default' : 'outline'"
               size="sm"
             >
-              {{ filter }}
+              {{ filter.label }}
             </Button>
           </div>
 
@@ -281,7 +299,7 @@ const getTrendColor = (amount: number, average: number) => {
             <span>顯示 {{ sortedExpenses.length }} 筆消費紀錄</span>
           </div>
           <div class="flex gap-2">
-            <Button size="sm">
+            <Button size="sm" @click="isAddDialogOpen = true">
               <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -349,7 +367,7 @@ const getTrendColor = (amount: number, average: number) => {
             {{ searchQuery ? '嘗試調整搜尋或篩選條件。' : '開始記錄您的第一筆消費。' }}
           </p>
           <div class="mt-6">
-            <Button>
+            <Button @click="isAddDialogOpen = true">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -417,5 +435,12 @@ const getTrendColor = (amount: number, average: number) => {
         </div>
       </TabsContent>
     </Tabs>
+
+    <AddExpenseDialog
+      v-model:is-open="isAddDialogOpen"
+      :categories="expenseCategories"
+      :error="submitError"
+      @submit="handleExpenseSubmit"
+    />
   </div>
 </template>

@@ -47,16 +47,27 @@ function mapRowToItem(row: SubscriptionRow): SubscriptionItem {
 // 原始訂閱數據（來自 Supabase）
 const originalItems = ref<SubscriptionItem[]>([])
 const isLoading = ref(false)
+const fetchError = ref<string | null>(null)
+
+// 每次 fetch 遞增，讓過期的 fetch resolve 時能發現自己已經不是最新請求而放棄套用結果
+// 避免登出後，前一個帳號的 fetch 才 resolve 蓋掉已清空的畫面
+let fetchGeneration = 0
 
 async function fetchSubscriptions() {
+  const generation = ++fetchGeneration
   isLoading.value = true
+  fetchError.value = null
   const { data, error } = await supabase
     .from('subscriptions')
     .select('*')
     .order('created_at', { ascending: false })
 
+  if (generation !== fetchGeneration) return
+
   if (!error && data) {
     originalItems.value = (data as SubscriptionRow[]).map(mapRowToItem)
+  } else if (error) {
+    fetchError.value = error.message
   }
   isLoading.value = false
 }
@@ -68,7 +79,10 @@ watch(
     if (currentUser) {
       fetchSubscriptions()
     } else {
+      fetchGeneration++
       originalItems.value = []
+      fetchError.value = null
+      isLoading.value = false
     }
   },
   { immediate: true },
@@ -229,7 +243,20 @@ async function updateSubscription(
   if (updates.startDate !== undefined) {
     dbUpdates.start_date = updates.startDate
     const existing = originalItems.value.find((item) => item.id === id)
-    const cycle = updates.cycle ?? existing?.cycle
+    let cycle = updates.cycle ?? existing?.cycle
+
+    // 本地快取沒有這筆（例如重新整理後直接編輯），改查 DB 拿現有 cycle，
+    // 不然就會漏算 next_payment
+    if (!cycle) {
+      const { data: cycleRow, error: cycleError } = await supabase
+        .from('subscriptions')
+        .select('cycle')
+        .eq('id', id)
+        .single()
+      if (cycleError) throw cycleError
+      cycle = (cycleRow as { cycle: 'Monthly' | 'Yearly' }).cycle
+    }
+
     if (cycle) {
       dbUpdates.next_payment = calculateNextPayment(updates.startDate, cycle)
     }
@@ -244,9 +271,12 @@ async function updateSubscription(
 
   if (error) throw error
 
+  const updatedItem = mapRowToItem(data as SubscriptionRow)
   const index = originalItems.value.findIndex((item) => item.id === id)
   if (index !== -1) {
-    originalItems.value[index] = mapRowToItem(data as SubscriptionRow)
+    originalItems.value[index] = updatedItem
+  } else {
+    originalItems.value = [updatedItem, ...originalItems.value]
   }
 }
 
@@ -268,6 +298,7 @@ export function useSubscriptionData() {
     vendorStats,
     monthlyData,
     isLoading,
+    fetchError,
 
     // 狀態
     searchQuery,

@@ -7,13 +7,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { ref, computed } from 'vue'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
-import type { NewSubscriptionInput, SubscriptionItem } from '@/types'
+import type { FilterStatus, NewSubscriptionInput, SubscriptionItem } from '@/types'
+
+const filterStatusOptions: { label: string; value: FilterStatus }[] = [
+  { label: '全部', value: 'All' },
+  { label: '活躍', value: 'Active' },
+  { label: '試用', value: 'Trial' },
+  { label: '已取消', value: 'Cancelled' },
+]
 
 defineOptions({ name: 'SubscriptionsPage' })
 
 // 使用共用的訂閱數據
-const { originalItems, filteredItems, stats, searchQuery, filterStatus, addSubscription, updateSubscription, removeSubscription } =
-  useSubscriptionData()
+const {
+  originalItems,
+  filteredItems,
+  stats,
+  searchQuery,
+  filterStatus,
+  fetchError,
+  addSubscription,
+  updateSubscription,
+  removeSubscription,
+} = useSubscriptionData()
 
 // 本地狀態
 const sortBy = ref<'name' | 'price' | 'nextPayment'>('name')
@@ -126,10 +142,10 @@ const handleDelete = async (item: SubscriptionItem) => {
 
     <!-- 錯誤訊息 -->
     <div
-      v-if="pageError"
+      v-if="pageError || fetchError"
       class="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive"
     >
-      {{ pageError }}
+      {{ pageError || fetchError }}
     </div>
 
     <!-- 統計卡片 -->
@@ -247,13 +263,13 @@ const handleDelete = async (item: SubscriptionItem) => {
       <!-- 篩選按鈕 -->
       <div class="flex gap-2">
         <Button
-          v-for="status in ['全部', '活躍', '試用', '已取消']"
-          :key="status"
-          @click="filterStatus = status as any"
-          :variant="filterStatus === status ? 'default' : 'outline'"
+          v-for="status in filterStatusOptions"
+          :key="status.value"
+          @click="filterStatus = status.value"
+          :variant="filterStatus === status.value ? 'default' : 'outline'"
           size="sm"
         >
-          {{ status }}
+          {{ status.label }}
         </Button>
       </div>
 
