@@ -5,7 +5,7 @@ interface Props {
   fullscreen?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   size: 'md',
   text: 'Loading...',
   fullscreen: false,

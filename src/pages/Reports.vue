@@ -186,7 +186,7 @@ onMounted(() => {
 const monthlyTrendChartData = computed(() =>
   chartPalette.value.length > 0
     ? toTrendChartData(monthlyData.value, chartPalette.value)
-    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
 )
 const monthlyTrendChartOptions = {
   responsive: true,
@@ -197,7 +197,7 @@ const monthlyTrendChartOptions = {
 const vendorChartData = computed(() =>
   chartPalette.value.length > 0
     ? toVendorBarChartData(allVendorStats.value, chartPalette.value)
-    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
 )
 const vendorChartOptions = {
   responsive: true,

@@ -33,6 +33,10 @@ const resetError = () => {
   hasError.value = false
   error.value = null
 }
+
+const reloadPage = () => {
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -71,7 +75,7 @@ const resetError = () => {
           </div>
           <div class="flex gap-2 justify-center">
             <Button @click="resetError" variant="outline"> Try Again </Button>
-            <Button @click="() => window.location.reload()"> Refresh Page </Button>
+            <Button @click="reloadPage"> Refresh Page </Button>
           </div>
         </CardContent>
       </Card>

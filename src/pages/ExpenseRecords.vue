@@ -47,12 +47,6 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
   isAddDialogOpen.value = false
 }
 
-// 獲取趨勢顏色
-const getTrendColor = (amount: number, average: number) => {
-  if (amount > average * 1.2) return 'text-red-600 dark:text-red-400'
-  if (amount < average * 0.8) return 'text-green-600 dark:text-green-400'
-  return 'text-muted-foreground'
-}
 </script>
 
 <template>

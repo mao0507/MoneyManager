@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Teleport, Transition } from 'vue'
-
 interface Props {
   open?: boolean
 }

@@ -55,7 +55,7 @@ onMounted(() => {
 const categoryChartData = computed(() =>
   chartPalette.value.length > 0
     ? toDoughnutChartData(categoryData.value, chartPalette.value)
-    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
 )
 const categoryChartOptions = {
   responsive: true,
