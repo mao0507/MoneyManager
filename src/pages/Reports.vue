@@ -400,7 +400,7 @@ const vendorChartOptions = {
             <CardDescription>支出模式的詳細分析</CardDescription>
           </CardHeader>
           <CardContent>
-            <div class="grid gap-6 md:grid-cols-2">
+            <div class="grid gap-4 md:grid-cols-2">
               <div class="space-y-4">
                 <h4 class="font-medium">增長趨勢</h4>
                 <div class="space-y-3">

@@ -358,7 +358,7 @@ const handleDelete = async (item: SubscriptionItem) => {
     <div
       v-if="sortedItems.length > 0"
       :class="
-        viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'
+        viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'
       "
     >
       <SubscriptionCard

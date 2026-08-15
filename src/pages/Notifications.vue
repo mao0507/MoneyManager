@@ -135,7 +135,7 @@ const getPriorityColor = (priority: string) => {
       </Button>
     </PageHeader>
 
-    <div class="grid gap-6 lg:grid-cols-3">
+    <div class="grid gap-4 lg:grid-cols-3">
       <!-- 通知設定 -->
       <div class="lg:col-span-1">
         <Card>

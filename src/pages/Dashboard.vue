@@ -65,7 +65,7 @@ const categoryChartOptions = {
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6">
     <PageHeader title="儀表板" description="訂閱費用和活動概覽" />
 
     <!-- 本月支出是最常被查看的數字，給它比次要指標更高的視覺重量，而不是三張等重卡片 -->
@@ -92,18 +92,18 @@ const categoryChartOptions = {
       </div>
     </section>
 
-    <section class="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2">
+    <section class="grid gap-4 grid-cols-1 sm:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>最近付款</CardTitle>
           <CardDescription>過去7天內付款的訂閱</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div
               v-for="item in recentlyPaid"
               :key="item.name"
-              class="flex items-center justify-between py-2 border-b border-border/50 last:border-b-0"
+              class="flex items-center justify-between py-1.5 border-b border-border/50 last:border-b-0"
             >
               <div>
                 <div class="text-sm font-medium">{{ item.name }}</div>
@@ -121,11 +121,11 @@ const categoryChartOptions = {
           <CardDescription>未來7天內續費的訂閱</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div
               v-for="item in upcomingRenewals"
               :key="item.name"
-              class="flex items-center justify-between py-2 border-b border-border/50 last:border-b-0"
+              class="flex items-center justify-between py-1.5 border-b border-border/50 last:border-b-0"
             >
               <div>
                 <div class="text-sm font-medium">{{ item.name }}</div>
@@ -159,11 +159,11 @@ const categoryChartOptions = {
           <CardDescription>支出最高的供應商</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div
               v-for="item in topVendors"
               :key="item.name"
-              class="flex items-center justify-between py-2 border-b border-border/50 last:border-b-0"
+              class="flex items-center justify-between py-1.5 border-b border-border/50 last:border-b-0"
             >
               <div>
                 <div class="text-sm font-medium">{{ item.name }}</div>

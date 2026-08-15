@@ -322,8 +322,8 @@ const getTrendColor = (amount: number, average: number) => {
           v-if="sortedExpenses.length > 0"
           :class="
             viewMode === 'grid'
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-              : 'space-y-4'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+              : 'space-y-3'
           "
         >
           <ExpenseCard v-for="expense in sortedExpenses" :key="expense.id" :expense="expense" />

@@ -161,7 +161,7 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 - **Background:** Paper White
 - **Shadow Strategy:** 靜態卡（統計卡）維持 `shadow-sm`；可點擊卡（`SubscriptionCard`）hover 轉 `shadow-raised` + 上移 0.5（`-translate-y-0.5`），見 Elevation & Depth
 - **Border:** 無（僅陰影區隔）
-- **Internal Padding:** `py-6`（垂直）+ 子元件各自 `px-6`
+- **Internal Padding:** `py-5`（垂直）+ 子元件各自 `px-5`（Linear/Notion 密度收緊時從 `py-6`/`px-6` 調整，全站經由 Card 元件系統一次改到位）
 
 ### Badges
 - **Style:** `rounded-md`，`px-2 py-0.5`，`text-xs font-medium`

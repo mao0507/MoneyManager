@@ -57,10 +57,10 @@ const userProfile = {
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6">
     <PageHeader title="設定" description="管理您的帳戶設定和偏好" />
 
-    <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+    <section class="grid gap-4 grid-cols-1 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>個人資料</CardTitle>
