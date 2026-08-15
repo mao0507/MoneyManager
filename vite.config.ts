@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
@@ -30,5 +30,8 @@ export default defineConfig({
   preview: {
     port: 4173,
     open: true,
+  },
+  test: {
+    environment: 'node',
   },
 })

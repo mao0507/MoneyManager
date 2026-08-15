@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/composables/useAuth'
+import ErrorBoundary from '@/components/common/ErrorBoundary.vue'
 
 const route = useRoute()
 const { isAuthenticated, signOut } = useAuth()
@@ -91,7 +92,9 @@ const isActive = (path: string) => computed(() => route.path === path)
     </header>
 
     <main class="container mx-auto px-4 py-6 md:py-8">
-      <RouterView />
+      <ErrorBoundary :key="route.fullPath">
+        <RouterView />
+      </ErrorBoundary>
     </main>
   </div>
 </template>
