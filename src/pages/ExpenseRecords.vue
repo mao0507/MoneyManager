@@ -33,6 +33,7 @@ const {
   sortBy,
   viewMode,
   selectedMonth,
+  fetchError,
   addExpense,
 } = useExpenseData()
 
@@ -41,12 +42,25 @@ const activeTab = ref('records')
 const isAddDialogOpen = ref(false)
 const submitError = ref<string | null>(null)
 
-const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) => {
+const handleExpenseSubmit = async (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) => {
   submitError.value = null
-  addExpense(data)
-  isAddDialogOpen.value = false
+  try {
+    await addExpense(data)
+    isAddDialogOpen.value = false
+  } catch (error) {
+    submitError.value = error instanceof Error ? error.message : '新增消費紀錄失敗，請稍後再試'
+  }
 }
 
+const openAddDialog = () => {
+  submitError.value = null
+  isAddDialogOpen.value = true
+}
+
+const handleDialogOpenChange = (open: boolean) => {
+  isAddDialogOpen.value = open
+  if (!open) submitError.value = null
+}
 </script>
 
 <template>
@@ -79,6 +93,14 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
         </svg>
       </Button>
     </PageHeader>
+
+    <!-- 錯誤訊息 -->
+    <div
+      v-if="fetchError"
+      class="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive"
+    >
+      {{ fetchError }}
+    </div>
 
     <!-- 統計卡片 -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -293,7 +315,7 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
             <span>顯示 {{ sortedExpenses.length }} 筆消費紀錄</span>
           </div>
           <div class="flex gap-2">
-            <Button size="sm" @click="isAddDialogOpen = true">
+            <Button size="sm" @click="openAddDialog">
               <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -361,7 +383,7 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
             {{ searchQuery ? '嘗試調整搜尋或篩選條件。' : '開始記錄您的第一筆消費。' }}
           </p>
           <div class="mt-6">
-            <Button @click="isAddDialogOpen = true">
+            <Button @click="openAddDialog">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -415,7 +437,11 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
                   :key="category.id"
                   class="flex items-center gap-2 p-2 rounded-lg border"
                 >
-                  <component :is="category.icon" class="size-5 text-muted-foreground" aria-hidden="true" />
+                  <component
+                    :is="category.icon"
+                    class="size-5 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <div class="flex-1">
                     <p class="text-sm font-medium">{{ category.name }}</p>
                     <p class="text-xs text-muted-foreground">
@@ -431,7 +457,8 @@ const handleExpenseSubmit = (data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
     </Tabs>
 
     <AddExpenseDialog
-      v-model:is-open="isAddDialogOpen"
+      :is-open="isAddDialogOpen"
+      @update:is-open="handleDialogOpenChange"
       :categories="expenseCategories"
       :error="submitError"
       @submit="handleExpenseSubmit"

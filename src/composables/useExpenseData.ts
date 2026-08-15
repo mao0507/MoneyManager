@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   BookOpen,
   Car,
@@ -17,9 +17,10 @@ import type {
   ExpenseFilter,
   ExpenseSortBy,
 } from '@/types'
-import { generateId } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from './useAuth'
 
-// 消費類別數據
+// 消費類別是固定的前端設定，不是使用者資料，不需要建表
 const expenseCategories = ref<ExpenseCategory[]>([
   { id: '1', name: '訂閱', icon: Repeat, color: 'bg-indigo-500' },
   { id: '2', name: '餐飲', icon: Utensils, color: 'bg-orange-500' },
@@ -32,145 +33,81 @@ const expenseCategories = ref<ExpenseCategory[]>([
   { id: '9', name: '其他', icon: Package, color: 'bg-gray-500' },
 ])
 
-// 原始消費紀錄數據
-const originalExpenses = ref<ExpenseRecord[]>([
-  {
-    id: '1',
-    title: '午餐',
-    description: '公司附近的日式料理',
-    amount: 180,
-    category: '餐飲',
-    date: '2025-01-15',
-    paymentMethod: '信用卡',
-    tags: ['工作餐', '日式'],
-    createdAt: '2025-01-15T12:00:00Z',
-    updatedAt: '2025-01-15T12:00:00Z',
+interface ExpenseRow {
+  id: string
+  title: string
+  description: string | null
+  amount: number
+  category: string
+  date: string
+  payment_method: string
+  tags: string[] | null
+  receipt: string | null
+  subscription_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+function mapRowToExpense(row: ExpenseRow): ExpenseRecord {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description ?? undefined,
+    amount: row.amount,
+    category: row.category,
+    date: row.date,
+    paymentMethod: row.payment_method,
+    tags: row.tags ?? undefined,
+    receipt: row.receipt ?? undefined,
+    subscriptionId: row.subscription_id ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+// 原始消費紀錄數據（來自 Supabase）
+const originalExpenses = ref<ExpenseRecord[]>([])
+const isLoading = ref(false)
+const fetchError = ref<string | null>(null)
+
+// 比照 useSubscriptionData：登出後才 resolve 的舊 fetch 不能覆蓋已清空的畫面
+let fetchGeneration = 0
+
+async function fetchExpenses() {
+  const generation = ++fetchGeneration
+  isLoading.value = true
+  fetchError.value = null
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('*')
+    .order('date', { ascending: false })
+    .order('created_at', { ascending: false })
+
+  if (generation !== fetchGeneration) return
+
+  if (!error && data) {
+    originalExpenses.value = (data as ExpenseRow[]).map(mapRowToExpense)
+  } else if (error) {
+    fetchError.value = error.message
+  }
+  isLoading.value = false
+}
+
+const { user } = useAuth()
+watch(
+  user,
+  (currentUser) => {
+    if (currentUser) {
+      fetchExpenses()
+    } else {
+      fetchGeneration++
+      originalExpenses.value = []
+      fetchError.value = null
+      isLoading.value = false
+    }
   },
-  {
-    id: '2',
-    title: 'Uber 車費',
-    description: '從公司到家的車費',
-    amount: 120,
-    category: '交通',
-    date: '2025-01-15',
-    paymentMethod: 'Apple Pay',
-    tags: ['通勤'],
-    createdAt: '2025-01-15T18:30:00Z',
-    updatedAt: '2025-01-15T18:30:00Z',
-  },
-  {
-    id: '3',
-    title: 'Netflix 訂閱',
-    description: '月費訂閱',
-    amount: 390,
-    category: '訂閱',
-    date: '2025-01-14',
-    paymentMethod: '信用卡',
-    tags: ['串流', '月費'],
-    subscriptionId: 'netflix-001',
-    createdAt: '2025-01-14T00:00:00Z',
-    updatedAt: '2025-01-14T00:00:00Z',
-  },
-  {
-    id: '4',
-    title: '星巴克咖啡',
-    description: '下午茶時間',
-    amount: 150,
-    category: '餐飲',
-    date: '2025-01-14',
-    paymentMethod: '悠遊卡',
-    tags: ['咖啡', '下午茶'],
-    createdAt: '2025-01-14T15:00:00Z',
-    updatedAt: '2025-01-14T15:00:00Z',
-  },
-  {
-    id: '5',
-    title: '藥局購物',
-    description: '感冒藥和維他命',
-    amount: 450,
-    category: '醫療',
-    date: '2025-01-13',
-    paymentMethod: '現金',
-    tags: ['藥品', '維他命'],
-    createdAt: '2025-01-13T10:00:00Z',
-    updatedAt: '2025-01-13T10:00:00Z',
-  },
-  {
-    id: '6',
-    title: '書店購書',
-    description: '程式設計相關書籍',
-    amount: 680,
-    category: '教育',
-    date: '2025-01-12',
-    paymentMethod: '信用卡',
-    tags: ['程式設計', '學習'],
-    createdAt: '2025-01-12T14:00:00Z',
-    updatedAt: '2025-01-12T14:00:00Z',
-  },
-  {
-    id: '7',
-    title: '超市購物',
-    description: '週末食材採買',
-    amount: 1200,
-    category: '生活用品',
-    date: '2025-01-11',
-    paymentMethod: '信用卡',
-    tags: ['食材', '週末'],
-    createdAt: '2025-01-11T16:00:00Z',
-    updatedAt: '2025-01-11T16:00:00Z',
-  },
-  {
-    id: '8',
-    title: '電影票',
-    description: '週末看電影',
-    amount: 320,
-    category: '娛樂',
-    date: '2025-01-10',
-    paymentMethod: '信用卡',
-    tags: ['電影', '週末'],
-    createdAt: '2025-01-10T20:00:00Z',
-    updatedAt: '2025-01-10T20:00:00Z',
-  },
-  {
-    id: '9',
-    title: 'Spotify Premium',
-    description: '音樂串流訂閱',
-    amount: 149,
-    category: '訂閱',
-    date: '2025-01-08',
-    paymentMethod: '信用卡',
-    tags: ['音樂', '月費'],
-    subscriptionId: 'spotify-001',
-    createdAt: '2025-01-08T00:00:00Z',
-    updatedAt: '2025-01-08T00:00:00Z',
-  },
-  {
-    id: '10',
-    title: 'YouTube Premium',
-    description: '影片串流訂閱',
-    amount: 179,
-    category: '訂閱',
-    date: '2025-01-05',
-    paymentMethod: '信用卡',
-    tags: ['影片', '月費'],
-    subscriptionId: 'youtube-001',
-    createdAt: '2025-01-05T00:00:00Z',
-    updatedAt: '2025-01-05T00:00:00Z',
-  },
-  {
-    id: '11',
-    title: 'Adobe Creative Cloud',
-    description: '設計軟體訂閱',
-    amount: 680,
-    category: '訂閱',
-    date: '2025-01-01',
-    paymentMethod: '信用卡',
-    tags: ['軟體', '月費'],
-    subscriptionId: 'adobe-001',
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z',
-  },
-])
+  { immediate: true },
+)
 
 // 搜尋和篩選狀態
 const searchQuery = ref('')
@@ -351,6 +288,79 @@ const getCategoryInfo = (categoryName: string) => {
   )
 }
 
+async function addExpense(expense: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    throw new Error('必須登入才能新增消費紀錄')
+  }
+
+  const { data, error } = await supabase
+    .from('expenses')
+    .insert({
+      user_id: currentUser.id,
+      title: expense.title,
+      description: expense.description || null,
+      amount: expense.amount,
+      category: expense.category,
+      date: expense.date,
+      payment_method: expense.paymentMethod,
+      tags: expense.tags && expense.tags.length > 0 ? expense.tags : null,
+      receipt: expense.receipt || null,
+      subscription_id: expense.subscriptionId || null,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  originalExpenses.value = [mapRowToExpense(data as ExpenseRow), ...originalExpenses.value]
+}
+
+async function updateExpense(
+  id: string,
+  expense: Partial<Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const dbUpdates: Record<string, unknown> = {}
+
+  if (expense.title !== undefined) dbUpdates.title = expense.title
+  if (expense.description !== undefined) dbUpdates.description = expense.description || null
+  if (expense.amount !== undefined) dbUpdates.amount = expense.amount
+  if (expense.category !== undefined) dbUpdates.category = expense.category
+  if (expense.date !== undefined) dbUpdates.date = expense.date
+  if (expense.paymentMethod !== undefined) dbUpdates.payment_method = expense.paymentMethod
+  if (expense.tags !== undefined) dbUpdates.tags = expense.tags.length > 0 ? expense.tags : null
+  if (expense.receipt !== undefined) dbUpdates.receipt = expense.receipt || null
+  if (expense.subscriptionId !== undefined)
+    dbUpdates.subscription_id = expense.subscriptionId || null
+
+  const { data, error } = await supabase
+    .from('expenses')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  const updatedExpense = mapRowToExpense(data as ExpenseRow)
+  const index = originalExpenses.value.findIndex((e) => e.id === id)
+  if (index !== -1) {
+    originalExpenses.value[index] = updatedExpense
+  } else {
+    originalExpenses.value = [updatedExpense, ...originalExpenses.value]
+  }
+}
+
+async function removeExpense(id: string) {
+  const { error } = await supabase.from('expenses').delete().eq('id', id)
+  if (error) throw error
+
+  originalExpenses.value = originalExpenses.value.filter((e) => e.id !== id)
+}
+
 // 導出 composable
 export function useExpenseData() {
   return {
@@ -361,6 +371,8 @@ export function useExpenseData() {
     expenseCategories,
     stats,
     categoryStats,
+    isLoading,
+    fetchError,
 
     // 狀態
     searchQuery,
@@ -370,31 +382,9 @@ export function useExpenseData() {
     selectedMonth,
 
     // 方法
-    addExpense: (expense: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) => {
-      const newExpense: ExpenseRecord = {
-        ...expense,
-        id: generateId(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-      originalExpenses.value.unshift(newExpense)
-    },
-    updateExpense: (id: string, expense: Partial<ExpenseRecord>) => {
-      const index = originalExpenses.value.findIndex((e) => e.id === id)
-      if (index > -1) {
-        originalExpenses.value[index] = {
-          ...originalExpenses.value[index],
-          ...expense,
-          updatedAt: new Date().toISOString(),
-        }
-      }
-    },
-    removeExpense: (id: string) => {
-      const index = originalExpenses.value.findIndex((e) => e.id === id)
-      if (index > -1) {
-        originalExpenses.value.splice(index, 1)
-      }
-    },
+    addExpense,
+    updateExpense,
+    removeExpense,
     getCategoryInfo,
   }
 }
