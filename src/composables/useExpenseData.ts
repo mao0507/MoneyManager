@@ -77,6 +77,7 @@ const collection = useSupabaseCollection<ExpenseRow, ExpenseRecord>({
 const originalExpenses = collection.items
 const isLoading = collection.isLoading
 const fetchError = collection.fetchError
+const refetch = collection.fetchAll
 
 // 內部 seam：月份/年份比對邏輯，原本在 stats/categoryStats/filteredExpenses 三處各寫一次
 function isInMonth(dateStr: string, month: number, year: number): boolean {
@@ -330,6 +331,7 @@ export function useExpenseData() {
     selectedMonth,
 
     // 方法
+    refetch,
     addExpense,
     updateExpense,
     removeExpense,

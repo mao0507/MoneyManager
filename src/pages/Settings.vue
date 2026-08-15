@@ -12,8 +12,10 @@ import {
 } from '@/components/ui/select'
 import { computed, ref } from 'vue'
 import { isDark } from '@/composables/useTheme'
+import { useAuth } from '@/composables/useAuth'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
 import { useExpenseData } from '@/composables/useExpenseData'
+import { formatDate } from '@/lib/format'
 
 defineOptions({ name: 'SettingsPage' })
 
@@ -55,8 +57,9 @@ const theme = computed({
   },
 })
 
-const { clearAllSubscriptions } = useSubscriptionData()
-const { clearAllExpenses } = useExpenseData()
+const { user } = useAuth()
+const { stats: subscriptionStats, clearAllSubscriptions } = useSubscriptionData()
+const { stats: expenseStats, clearAllExpenses } = useExpenseData()
 
 const clearError = ref<string | null>(null)
 const isClearing = ref(false)
@@ -76,13 +79,13 @@ const handleClearAllData = async () => {
   }
 }
 
-const userProfile = {
-  name: '使用者',
-  email: 'user@example.com',
-  memberSince: '2025年1月',
-  totalSubscriptions: 6,
-  totalSpent: 'NT$2,087',
-}
+const userProfile = computed(() => ({
+  name: (user.value?.user_metadata?.full_name as string | undefined) || user.value?.email || '使用者',
+  email: user.value?.email ?? '—',
+  memberSince: user.value?.created_at ? formatDate(user.value.created_at, 'YYYY年MM月') : '—',
+  totalSubscriptions: subscriptionStats.value.total,
+  totalSpent: `NT$${expenseStats.value.totalAmount.toLocaleString()}`,
+}))
 </script>
 
 <template>
@@ -217,9 +220,15 @@ const userProfile = {
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
-            <Button class="w-full"> 匯入訂閱資料 </Button>
-            <Button variant="outline" class="w-full"> 匯出資料 </Button>
-            <Button variant="outline" class="w-full"> 備份設定 </Button>
+            <span class="block" title="即將推出">
+              <Button class="w-full" disabled> 匯入訂閱資料 </Button>
+            </span>
+            <span class="block" title="即將推出">
+              <Button variant="outline" class="w-full" disabled> 匯出資料 </Button>
+            </span>
+            <span class="block" title="即將推出">
+              <Button variant="outline" class="w-full" disabled> 備份設定 </Button>
+            </span>
             <Button
               variant="destructive"
               class="w-full"

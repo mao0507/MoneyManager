@@ -53,6 +53,7 @@ const collection = useSupabaseCollection<SubscriptionRow, SubscriptionItem>({
 const originalItems = collection.items
 const isLoading = collection.isLoading
 const fetchError = collection.fetchError
+const refetch = collection.fetchAll
 
 // 計算統計數據（月/年互算修正留給 T4，這裡維持既有邏輯不變，只是改吃 amount number）
 const stats = computed(
@@ -260,6 +261,7 @@ export function useSubscriptionData() {
     filterStatus,
 
     // 方法
+    refetch,
     addSubscription,
     updateSubscription,
     removeSubscription,

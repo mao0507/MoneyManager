@@ -100,12 +100,6 @@ const categoryData = computed(() => [
   })),
 ])
 
-// 匯出功能
-const exportReport = (format: 'pdf' | 'csv' | 'excel') => {
-  console.log(`Exporting report as ${format}`)
-  // 這裡可以實現實際的匯出邏輯
-}
-
 // 獲取變化趨勢顏色（維持既有方向，只是把顏色改走 token，不改語意）
 const getTrendColor = (change: string) => {
   if (change.startsWith('+')) return 'text-success'
@@ -205,28 +199,32 @@ const vendorChartOptions = {
           <SelectItem value="all">全部時間</SelectItem>
         </SelectContent>
       </Select>
-      <Button variant="outline" size="sm" class="bg-card" @click="exportReport('pdf')">
-        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-        匯出 PDF
-      </Button>
-      <Button variant="outline" size="sm" class="bg-card" @click="exportReport('csv')">
-        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-          />
-        </svg>
-        匯出 CSV
-      </Button>
+      <span title="即將推出">
+        <Button variant="outline" size="sm" class="bg-card" disabled>
+          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          匯出 PDF
+        </Button>
+      </span>
+      <span title="即將推出">
+        <Button variant="outline" size="sm" class="bg-card" disabled>
+          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+            />
+          </svg>
+          匯出 CSV
+        </Button>
+      </span>
     </PageHeader>
 
     <!-- 統計概覽 -->
@@ -332,7 +330,7 @@ const vendorChartOptions = {
 
     <!-- 詳細報告標籤頁 -->
     <Tabs v-model="activeTab" class="space-y-4">
-      <TabsList class="grid w-full grid-cols-4">
+      <TabsList class="w-full">
         <TabsTrigger value="overview">概覽</TabsTrigger>
         <TabsTrigger value="trends">趨勢</TabsTrigger>
         <TabsTrigger value="categories">類別</TabsTrigger>

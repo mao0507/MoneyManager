@@ -18,10 +18,12 @@ type NewExpenseInput = Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>
 interface Props {
   isOpen: boolean
   categories: ExpenseCategory[]
+  editItem?: ExpenseRecord | null
   error?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  editItem: null,
   error: null,
 })
 
@@ -44,11 +46,24 @@ const emptyForm = (): NewExpenseInput => ({
 
 const formData = ref<NewExpenseInput>(emptyForm())
 
+// 監聽 isOpen 而非 editItem 本身 - 同一筆消費物件參照沒變時（連續兩次點編輯同一筆）
+// 監聽 editItem 不會觸發，畫面會留著上次 resetForm() 後的空表單
 watch(
   () => props.isOpen,
   (open) => {
     if (!open) return
-    formData.value = emptyForm()
+    const item = props.editItem
+    formData.value = item
+      ? {
+          title: item.title,
+          description: item.description ?? '',
+          amount: item.amount,
+          category: item.category,
+          date: item.date,
+          paymentMethod: item.paymentMethod,
+          tags: item.tags ?? [],
+        }
+      : emptyForm()
   },
   { immediate: true },
 )
@@ -76,7 +91,7 @@ const paymentMethods = ['信用卡', 'Apple Pay', 'Google Pay', 'LINE Pay', '悠
   <Dialog :open="isOpen" @update:open="emit('update:isOpen', $event)">
     <Card class="border-0 shadow-none">
       <CardHeader class="pb-4">
-        <CardTitle class="text-lg">新增消費</CardTitle>
+        <CardTitle class="text-lg">{{ editItem ? '編輯消費' : '新增消費' }}</CardTitle>
         <CardDescription>請填寫消費紀錄的詳細資訊</CardDescription>
       </CardHeader>
       <CardContent class="space-y-4">
@@ -132,7 +147,9 @@ const paymentMethods = ['信用卡', 'Apple Pay', 'Google Pay', 'LINE Pay', '悠
         <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
 
         <div class="flex gap-2 pt-4">
-          <Button @click="handleSubmit" class="flex-1" :disabled="!isFormValid()"> 新增消費 </Button>
+          <Button @click="handleSubmit" class="flex-1" :disabled="!isFormValid()">
+            {{ editItem ? '儲存變更' : '新增消費' }}
+          </Button>
           <Button variant="outline" @click="handleCancel" class="flex-1"> 取消 </Button>
         </div>
       </CardContent>
