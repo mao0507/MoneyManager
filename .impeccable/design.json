@@ -1,85 +1,95 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-15T04:20:00.000Z",
+  "generatedAt": "2026-08-15T19:20:00.000Z",
   "title": "Design System: MoneyManager",
   "extensions": {
     "colorMeta": {
-      "quiet-violet": {
-        "role": "primary",
-        "displayName": "Quiet Violet",
-        "canonical": "oklch(0.5 0.18 300)",
-        "tonalRamp": ["oklch(0.20 0.18 300)", "oklch(0.30 0.18 300)", "oklch(0.40 0.18 300)", "oklch(0.5 0.18 300)", "oklch(0.6 0.16 300)", "oklch(0.72 0.14 300)", "oklch(0.85 0.08 300)", "oklch(0.94 0.03 300)"]
-      },
-      "quiet-violet-ring": {
+      "primary-teal": {
         "role": "ring",
-        "displayName": "Quiet Violet Ring",
-        "canonical": "oklch(0.6 0.16 300)",
-        "tonalRamp": ["oklch(0.30 0.16 300)", "oklch(0.40 0.16 300)", "oklch(0.50 0.16 300)", "oklch(0.6 0.16 300)", "oklch(0.70 0.14 300)", "oklch(0.80 0.10 300)", "oklch(0.90 0.05 300)", "oklch(0.96 0.02 300)"]
+        "displayName": "Primary Teal",
+        "canonical": "#2BA8A2",
+        "tonalRamp": ["#0F3D3A", "#155A56", "#1E8C86", "#2BA8A2", "#3CC4BD", "#6ED4CE", "#A6E6E1", "#DFF3F1"]
       },
-      "ink-black": {
+      "primary-light": {
+        "role": "neutral",
+        "displayName": "Primary Light",
+        "canonical": "#3CC4BD",
+        "tonalRamp": ["#123F3C", "#1A5B57", "#268F89", "#2BA8A2", "#3CC4BD", "#6ED4CE", "#A6E6E1", "#DFF3F1"]
+      },
+      "primary-dark": {
+        "role": "foreground",
+        "displayName": "Primary Dark",
+        "canonical": "#1E8C86",
+        "tonalRamp": ["#0A2624", "#0F3D3A", "#155A56", "#1E8C86", "#2BA8A2", "#5DBAB5", "#9BD4CF", "#DFF3F1"]
+      },
+      "primary-bg": {
+        "role": "secondary",
+        "displayName": "Primary BG",
+        "canonical": "#E8F6F5",
+        "tonalRamp": ["#0A2624", "#155A56", "#2BA8A2", "#6ED4CE", "#A6E6E1", "#CDEFEC", "#E8F6F5", "#F6FBFB"]
+      },
+      "accent-gold": {
         "role": "primary",
-        "displayName": "Ink Black",
-        "canonical": "oklch(0.205 0 0)",
-        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.205 0 0)", "oklch(0.28 0 0)", "oklch(0.38 0 0)", "oklch(0.48 0 0)", "oklch(0.58 0 0)", "oklch(0.70 0 0)", "oklch(0.85 0 0)"]
+        "displayName": "Accent Gold",
+        "canonical": "#FFD23F",
+        "tonalRamp": ["#4D3D00", "#7A6100", "#A68500", "#D4AB00", "#E6B800", "#FFD23F", "#FFE47A", "#FFF3C4"]
       },
-      "paper-white-on-ink": {
-        "role": "primary-foreground",
-        "displayName": "Paper White on Ink",
-        "canonical": "oklch(0.985 0 0)",
-        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
+      "accent-light": {
+        "role": "accent",
+        "displayName": "Accent Light",
+        "canonical": "#FFE47A",
+        "tonalRamp": ["#5C4A00", "#8A7100", "#B89300", "#E6B800", "#FFD23F", "#FFE47A", "#FFEFA8", "#FFF8D9"]
       },
-      "paper-white": {
-        "role": "neutral",
-        "displayName": "Paper White",
-        "canonical": "oklch(1 0 0)",
-        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
-      },
-      "near-black-text": {
-        "role": "neutral",
-        "displayName": "Near-Black Text",
-        "canonical": "oklch(0.145 0 0)",
-        "tonalRamp": ["oklch(0.10 0 0)", "oklch(0.145 0 0)", "oklch(0.22 0 0)", "oklch(0.32 0 0)", "oklch(0.42 0 0)", "oklch(0.55 0 0)", "oklch(0.70 0 0)", "oklch(0.85 0 0)"]
-      },
-      "whisper-gray": {
-        "role": "neutral",
-        "displayName": "Whisper Gray",
-        "canonical": "oklch(0.97 0 0)",
-        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.88 0 0)", "oklch(0.92 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)", "oklch(1 0 0)"]
-      },
-      "slate-gray": {
-        "role": "neutral",
-        "displayName": "Slate Gray",
-        "canonical": "oklch(0.556 0 0)",
-        "tonalRamp": ["oklch(0.30 0 0)", "oklch(0.40 0 0)", "oklch(0.48 0 0)", "oklch(0.556 0 0)", "oklch(0.62 0 0)", "oklch(0.70 0 0)", "oklch(0.80 0 0)", "oklch(0.90 0 0)"]
-      },
-      "hairline-gray": {
-        "role": "neutral",
-        "displayName": "Hairline Gray",
-        "canonical": "oklch(0.922 0 0)",
-        "tonalRamp": ["oklch(0.70 0 0)", "oklch(0.78 0 0)", "oklch(0.85 0 0)", "oklch(0.90 0 0)", "oklch(0.922 0 0)", "oklch(0.95 0 0)", "oklch(0.97 0 0)", "oklch(0.99 0 0)"]
-      },
-      "focus-ring-gray": {
-        "role": "neutral",
-        "displayName": "Focus Ring Gray",
-        "canonical": "oklch(0.708 0 0)",
-        "tonalRamp": ["oklch(0.45 0 0)", "oklch(0.55 0 0)", "oklch(0.62 0 0)", "oklch(0.708 0 0)", "oklch(0.78 0 0)", "oklch(0.85 0 0)", "oklch(0.92 0 0)", "oklch(0.97 0 0)"]
-      },
-      "warning-red": {
+      "coral": {
         "role": "destructive",
-        "displayName": "Warning Red",
-        "canonical": "oklch(0.577 0.245 27.325)",
-        "tonalRamp": ["oklch(0.20 0.245 27.325)", "oklch(0.30 0.245 27.325)", "oklch(0.40 0.245 27.325)", "oklch(0.50 0.245 27.325)", "oklch(0.577 0.245 27.325)", "oklch(0.65 0.20 27.325)", "oklch(0.78 0.12 27.325)", "oklch(0.90 0.06 27.325)"]
+        "displayName": "Coral",
+        "canonical": "#EF6C4A",
+        "tonalRamp": ["#4A1F12", "#7A3420", "#A6432A", "#D45233", "#EF6C4A", "#FF8A6A", "#FFB39F", "#FFDCD2"]
+      },
+      "cream": {
+        "role": "surface",
+        "displayName": "Cream",
+        "canonical": "#FFF8E7",
+        "tonalRamp": ["#4A3F1A", "#7A6A2A", "#A6913D", "#D4BC60", "#FFE9A8", "#FFF3D2", "#FFF8E7", "#FFFCF5"]
+      },
+      "sky-blue": {
+        "role": "chart",
+        "displayName": "Sky Blue",
+        "canonical": "#5DADE2",
+        "tonalRamp": ["#0F2F42", "#1B4A63", "#2C6A8A", "#4290B8", "#5DADE2", "#8AC5EB", "#B9DEF3", "#E4F2FB"]
+      },
+      "surface-base": {
+        "role": "background",
+        "displayName": "Surface Base",
+        "canonical": "#EFF8F7",
+        "tonalRamp": ["#0F2926", "#16332F", "#234B46", "#5C8A87", "#A9D2CE", "#D7ECEA", "#EFF8F7", "#F8FCFB"]
+      },
+      "surface-card": {
+        "role": "card",
+        "displayName": "Surface Card",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#16332F", "#234B46", "#5C8A87", "#A9D2CE", "#D7ECEA", "#EFF8F7", "#FFFFFF", "#FFFFFF"]
+      },
+      "success": {
+        "role": "success",
+        "displayName": "Success",
+        "canonical": "#27AE60",
+        "tonalRamp": ["#0C3320", "#134D30", "#1D7345", "#239C58", "#27AE60", "#5AC788", "#94DDB3", "#D0F0DE"]
       }
     },
     "typographyMeta": {
-      "body": { "displayName": "Body", "purpose": "內文、次要說明文字、表單標籤。系統中最常見的文字角色。" },
-      "title": { "displayName": "Title", "purpose": "卡片標題（CardTitle）。粗體、行高收緊，用於區塊標題。" }
+      "body": { "displayName": "Body", "purpose": "內文、次要說明文字、表單標籤。字重從 400 提到 500，字型堆疊加 PingFang SC / Microsoft YaHei fallback。" },
+      "title": { "displayName": "Title", "purpose": "頁面大標與卡片標題。extra-bold(800) + 字距加寬，是換裝後新增的存在感，取代原本克制的字重。" }
     },
     "shadows": [
-      { "name": "card-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Card 與背景的極淡區隔（Tailwind shadow-sm），靜態內容用。" },
-      { "name": "control-boundary", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "按鈕/輸入框/Badge 靜止狀態的極淡邊界暗示（Tailwind shadow-xs）。" },
-      { "name": "raised", "value": "0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08)", "purpose": "互動元素 hover 抬升層：按鈕、可點卡片、Dropdown/Select/Popover。深色模式提高不透明度至 0.36/0.24。" },
-      { "name": "lifted", "value": "0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1)", "purpose": "Dialog 等浮在畫面最上層、有遮罩襯底的內容。深色模式提高不透明度至 0.5/0.3。" }
+      { "name": "cta-glow", "value": "0 4px 20px rgba(255, 210, 63, 0.4)", "purpose": "CTA/主要按鈕 hover 專用的金色光暈，取代純黑陰影。" },
+      { "name": "destructive-glow", "value": "0 4px 20px rgba(239, 108, 74, 0.35)", "purpose": "危險操作按鈕 hover 專用的珊瑚色光暈。" },
+      { "name": "card", "value": "0 4px 20px rgba(43, 168, 162, 0.1)", "purpose": "卡片預設陰影，teal 淡光暈取代純黑 shadow-sm。" },
+      { "name": "raised", "value": "0 4px 16px rgba(43, 168, 162, 0.12), 0 2px 4px rgba(43, 168, 162, 0.08)", "purpose": "一般互動元件 hover 抬升層（次要按鈕、下拉選單），teal 調。深色模式改回中性黑加大不透明度。" },
+      { "name": "lifted", "value": "0 12px 32px rgba(30, 60, 58, 0.18), 0 4px 8px rgba(30, 60, 58, 0.1)", "purpose": "Dialog 等浮於畫面最上層、有遮罩襯底的內容。" }
+    ],
+    "motion": [
+      { "name": "bounce-cta", "value": "cubic-bezier(0.34, 1.56, 0.64, 1)", "purpose": "按鈕過場曲線，規格書指定的彈跳手感，是換裝唯一保留的誇張動效，只用在按鈕，不擴散到其他元件。使用者確認為刻意選擇（design hook bounce-easing 已建立 ignore-value）。" }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
@@ -89,52 +99,52 @@
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Primary Button (Gold CTA)",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "主要動作按鈕，Ink Black 背景。",
-      "html": "<button class=\"ds-btn-primary\">新增訂閱</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.15s; } .ds-btn-primary:hover { background: oklch(0.5 0.18 300 / 0.9); box-shadow: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08); transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
-    },
-    {
-      "name": "Outline Button",
-      "kind": "button",
-      "refersTo": "button-outline",
-      "description": "次要動作按鈕，透明底 + 邊框。",
-      "html": "<button class=\"ds-btn-outline\">取消</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(1 0 0); color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 0.15s; } .ds-btn-outline:hover { background: oklch(0.97 0 0); }"
+      "description": "主要動作/CTA 按鈕，pill 形狀，金色背景配近黑暖色文字，hover 轉金色光暈，按下 scale(0.95)。",
+      "html": "<button class=\"ds-btn-primary\">開始使用</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FFD23F; color: #1A1400; border: none; border-radius: 9999px; padding: 8px 16px; font-size: 14px; font-weight: 500; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); } .ds-btn-primary:hover { background: rgba(255, 210, 63, 0.9); box-shadow: 0 4px 20px rgba(255, 210, 63, 0.4); } .ds-btn-primary:active { transform: scale(0.95); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(43, 168, 162, 0.5); }"
     },
     {
       "name": "Destructive Button",
       "kind": "button",
       "refersTo": "button-destructive",
-      "description": "破壞性操作按鈕（刪除訂閱）。",
+      "description": "破壞性操作按鈕（刪除訂閱），pill 形狀，珊瑚色背景，hover 轉珊瑚色光暈。",
       "html": "<button class=\"ds-btn-destructive\">刪除訂閱</button>",
-      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: oklch(0.577 0.245 27.325); color: oklch(1 0 0); border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 0.15s; } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.9); box-shadow: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08); transform: translateY(-1px); } .ds-btn-destructive:active { transform: translateY(0); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }"
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #EF6C4A; color: #FFFFFF; border: none; border-radius: 9999px; padding: 8px 16px; font-size: 14px; font-weight: 500; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); } .ds-btn-destructive:hover { background: rgba(239, 108, 74, 0.9); box-shadow: 0 4px 20px rgba(239, 108, 74, 0.35); } .ds-btn-destructive:active { transform: scale(0.95); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "次要動作按鈕，pill 形狀，teal 淡底配深 teal 文字。",
+      "html": "<button class=\"ds-btn-secondary\">取消</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #E8F6F5; color: #1E8C86; border: none; border-radius: 9999px; padding: 8px 16px; font-size: 14px; font-weight: 500; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); } .ds-btn-secondary:hover { background: rgba(232, 246, 245, 0.8); box-shadow: 0 4px 16px rgba(43, 168, 162, 0.12); } .ds-btn-secondary:active { transform: scale(0.95); }"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "內容容器，統計卡、表單卡皆用此樣式。",
-      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">月度</h3><p class=\"ds-card-value\">NT$228</p></div>",
-      "css": ".ds-card { background: oklch(1 0 0); color: oklch(0.145 0 0); border-radius: 14px; padding: 24px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); display: flex; flex-direction: column; gap: 8px; } .ds-card-title { font-size: 14px; font-weight: 500; color: oklch(0.556 0 0); margin: 0; } .ds-card-value { font-size: 24px; font-weight: 700; margin: 0; }"
+      "description": "內容容器，統計卡、表單卡皆用此樣式。白底、12px 圓角、teal 淡光暈陰影。",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">本月支出</h3><p class=\"ds-card-value\">NT$2,280</p></div>",
+      "css": ".ds-card { background: #FFFFFF; color: #1E8C86; border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(43, 168, 162, 0.1); display: flex; flex-direction: column; gap: 8px; } .ds-card-title { font-size: 14px; font-weight: 500; color: #5C8A87; margin: 0; } .ds-card-value { font-size: 24px; font-weight: 800; margin: 0; }"
     },
     {
       "name": "Badge",
       "kind": "chip",
       "refersTo": "badge-default",
-      "description": "狀態標籤（啟用/停用、月費/年費）。",
+      "description": "狀態標籤，pill 形狀，金色背景配近黑暖色文字。",
       "html": "<span class=\"ds-badge\">啟用</span>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: oklch(0.5 0.18 300); color: oklch(0.985 0 0); border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }"
+      "css": ".ds-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: #FFD23F; color: #1A1400; border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 500; white-space: nowrap; }"
     },
     {
       "name": "Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "文字輸入框（搜尋、表單欄位）。",
+      "description": "文字輸入框（搜尋、表單欄位），Cream 表面色，跟 Card 的純白背景做出區隔。",
       "html": "<input class=\"ds-input\" placeholder=\"搜尋訂閱...\" />",
-      "css": ".ds-input { width: 100%; height: 36px; background: transparent; color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 8px; padding: 4px 12px; font-size: 14px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input::placeholder { color: oklch(0.556 0 0); } .ds-input:focus-visible { border-color: oklch(0.6 0.16 300); box-shadow: 0 0 0 3px oklch(0.6 0.16 300 / 0.5); }"
+      "css": ".ds-input { width: 100%; height: 36px; background: #FFF8E7; color: #1E8C86; border: 1px solid #D7ECEA; border-radius: 8px; padding: 4px 12px; font-size: 14px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input::placeholder { color: #5C8A87; } .ds-input:focus-visible { border-color: #2BA8A2; box-shadow: 0 0 0 3px rgba(43, 168, 162, 0.5); }"
     },
     {
       "name": "Dialog",
@@ -142,35 +152,36 @@
       "refersTo": "dialog",
       "description": "浮動於畫面最上層的對話框，帶遮罩襯底，用 lifted 陰影強調離畫面最遠。",
       "html": "<div class=\"ds-dialog\"><h3 class=\"ds-card-title\">新增訂閱服務</h3></div>",
-      "css": ".ds-dialog { background: oklch(1 0 0); color: oklch(0.145 0 0); border-radius: 8px; padding: 24px; max-width: 28rem; box-shadow: 0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1); }"
+      "css": ".ds-dialog { background: #FFFFFF; color: #1E8C86; border-radius: 16px; padding: 24px; max-width: 28rem; box-shadow: 0 12px 32px rgba(30, 60, 58, 0.18), 0 4px 8px rgba(30, 60, 58, 0.1); }"
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Ledger",
-    "overview": "MoneyManager 是純自用的個人訂閱與消費管理工具，沒有對外定位或行銷需求。視覺實作是 shadcn-vue「new-york」風格搭 neutral 基底色，中性黑白灰為主，強調色（Quiet Violet 紫）只落在「主要動作」這個語意角色（主按鈕、連結、focus ring、預設 Badge），紅色是獨立的警示/刪除語意色。這是「安靜帳本」的字面體現：紙一樣白的背景、灰階分層資訊優先級，只有一處紫色落點，稀有才有力道。",
+    "northStar": "Flip7",
+    "overview": "2026-08 從「安靜帳本」（黑白灰極簡）換世界，改採使用者指定的 Flip7 design system——一套為卡牌遊戲小程式打造的復古趣味風格（teal-coral-gold）。這是品牌換裝，不是產品邏輯換裝：計算正確性、資料結構、功能範圍全部不變，只換視覺語言。Teal 是結構色（背景、標題文字、連結、focus ring），Gold 是行動色（CTA 按鈕、Badge 預設），Coral 是破壞色（刪除、錯誤）。全面 pill 形狀取代原本的 rounded-md 按鈕，colored glow 陰影系統取代純黑陰影。原規格書大量描述特定遊戲機制的元件（BOOM 按鈕、獲勝排行榜、五彩紙屑、皇冠動畫、緞帶 Logo），這些在記帳工具裡沒有對應概念，換裝時已刻意跳過，只轉譯可通用的系統層。",
     "keyCharacteristics": [
-      "中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立",
-      "元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言",
-      "靜態內容維持平面陰影，互動/浮動元素有明確的 raised/lifted 抬升層次 - 層次感只給會動的東西",
-      "全站頁面標題統一走 PageHeader 元件，md 以下導覽收進漢堡選單",
-      "同組統計卡刻意做主次視覺重量差異，不做等重複製方塊"
+      "Teal（結構/資訊）+ Gold（主要動作/CTA）+ Coral（警示/破壞性）三色分工，不再是黑白灰配單一強調色",
+      "全面 pill 形狀（rounded-full）：按鈕、Badge 都是藥丸狀，只有 Ghost/Link 兩個非實體按鈕變體例外",
+      "Colored glow 陰影系統取代純黑陰影 - 每種互動元件的陰影都帶對應色相",
+      "字體堆疊改用系統字型 + 繁中字型 fallback（PingFang SC / Microsoft YaHei），標題走 extra-bold(800) + 字距加寬",
+      "按鈕統一用彈跳曲線 cubic-bezier(0.34, 1.56, 0.64, 1) + active:scale-95，是這次換裝唯一的簽名動效"
     ],
     "rules": [
-      { "name": "The Earned Depth Rule", "body": "陰影層次只給使用者會操作、會浮動的東西（按鈕、可點卡片、選單、對話框）。統計卡、標籤這類純顯示內容維持平面 - 陰影是互動回饋，不是裝飾。", "section": "elevation" },
-      { "name": "The Unequal Weight Rule", "body": "同一區塊裡最常被查看的指標給它比同組其他指標更大的字級/版位，不要把所有統計卡做成同尺寸、同權重的重複方塊。", "section": "layout" }
+      { "name": "The Three-Way Split Rule", "body": "Gold 只落在主要動作角色，Teal 是結構色不是行動色，Coral 只用於破壞性操作與錯誤，三者角色不互相取代。", "section": "colors" },
+      { "name": "The Glow Not Black Rule", "body": "互動元件的陰影一律用對應色相的 colored glow token（shadow-cta-glow/shadow-destructive-glow/shadow-card），不要手刻純黑陰影。", "section": "elevation" },
+      { "name": "The One Bounce Rule", "body": "彈跳曲線只用在按鈕的簽名手感，不要擴散到其他元件的動效，用在別處會稀釋它的識別度。", "section": "components" }
     ],
     "dos": [
-      "Do 保持紅色（Warning Red）只用在破壞性操作與驗證錯誤，維持它的警示訊號強度。",
-      "Do 讓 Quiet Violet 只落在主要動作語意角色，不擴散進中性表面。",
-      "Do 新元件優先重用既有 rounded-md(8px)/rounded-xl(14px) 兩級圓角，不要引入第三種圓角尺度。",
-      "Do 新頁面統計數字延續 text-2xl font-bold 的視覺重量，這是目前唯一算一致的字級用法。",
-      "Do 新的互動元件用 shadow-raised，浮動選單用 shadow-raised，Dialog 用 shadow-lifted，不要手刻新的陰影值。"
+      "Do 用 colored glow shadow token 做互動元件的陰影，不要手刻純黑陰影。",
+      "Do 讓 Gold 只落在主要動作角色，Teal 是結構色不是行動色，兩者不要混用角色。",
+      "Do 新元件統一走 rounded-full（按鈕/Badge）或既有的 sm/md/lg/xl 四級圓角，不要引入第三種圓角尺度。",
+      "Do 正向狀態用 text-success、警示用 text-warning/text-destructive，淡底配本體飽和色文字，不要用 -foreground token 配淡底背景。",
+      "Do Cream 只用在 Input 表面，不要跟 Card 的純白背景混用。"
     ],
     "donts": [
-      "Don't 把 Warning Red 用在非警示/破壞性語境。",
-      "Don't 把 Quiet Violet 也用在中性表面（次要背景、邊框）上裝飾。",
-      "Don't 給靜態顯示內容加 hover 陰影/位移；那是在暗示不存在的可點擊行為。",
-      "Don't 個別元件各自手刻陰影值追求「立體感」；一律用 shadow-raised/shadow-lifted 兩個 token。"
+      "Don't 在互動元件用純黑陰影。",
+      "Don't 把遊戲專屬機制（BOOM 狀態、獲勝慶祝、五彩紙屑、皇冠動畫、復古緞帶 Logo）硬套進記帳工具的 UI。",
+      "Don't 在非 CTA 的地方使用彈跳曲線動畫。",
+      "Don't 假設類別色盤（category-1..8）已經跟新色系融合——它還沒有，是已知的下一步。"
     ]
   }
 }
