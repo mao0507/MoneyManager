@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
-import AuthBrandPanel from '@/components/common/AuthBrandPanel.vue'
+import { Wallet } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 
 defineOptions({ name: 'LoginPage' })
@@ -16,27 +16,29 @@ const handleGoogleLogin = async () => {
 </script>
 
 <template>
-  <div
-    class="grid overflow-hidden rounded-3xl border md:min-h-[calc(100dvh-3.5rem-3rem)] md:grid-cols-2"
-    style="box-shadow: var(--shadow-lifted)"
-  >
-    <AuthBrandPanel />
-
-    <div class="flex flex-col justify-center bg-card px-8 py-14 sm:px-12 lg:px-16">
+  <div class="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center px-4">
+    <div
+      class="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center shadow-[var(--shadow-lifted)]"
+    >
+      <div
+        class="mx-auto flex size-12 items-center justify-center rounded-xl bg-accent text-primary"
+      >
+        <Wallet class="size-6" aria-hidden="true" />
+      </div>
       <h1
-        class="text-3xl font-extrabold tracking-tight text-foreground"
-        style="font-family: var(--font-display); text-shadow: var(--title-glow)"
+        class="mt-4 text-2xl font-bold tracking-tight text-foreground"
+        style="font-family: var(--font-display)"
       >
         歡迎回來
       </h1>
-      <p class="mt-3 max-w-sm text-sm text-muted-foreground">
+      <p class="mt-2 text-sm text-muted-foreground">
         用 Google 帳號登入，開始追蹤訂閱與消費。
       </p>
 
       <Button
         variant="outline"
         size="lg"
-        class="mt-8 w-full border-input bg-white text-[#1F1F1F] shadow-xs hover:bg-[#F7F7F7] hover:shadow-sm sm:w-fit"
+        class="mt-6 w-full rounded-xl border-border text-foreground"
         @click="handleGoogleLogin"
       >
         <svg class="size-4" viewBox="0 0 24 24" aria-hidden="true">

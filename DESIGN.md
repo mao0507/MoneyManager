@@ -2,209 +2,159 @@
 name: MoneyManager
 description: 個人訂閱與消費管理系統
 colors:
-  primary-teal: "#2BA8A2"
-  primary-light: "#3CC4BD"
-  primary-dark: "#1E8C86"
-  primary-bg: "#E8F6F5"
-  accent-gold: "#FFD23F"
-  accent-light: "#FFE47A"
-  coral: "#EF6C4A"
-  cream: "#FFF8E7"
-  sky-blue: "#5DADE2"
-  surface-base: "#EFF8F7"
-  surface-card: "#FFFFFF"
-  success: "#27AE60"
+  light:
+    background: "#F1F4F9"
+    card: "#FFFFFF"
+    foreground: "#111827"
+    primary: "#3D5AFE"
+    destructive: "#DC2626"
+    success: "#16A34A"
+    warning: "#D97706"
+    border: "#E5E7EB"
+    muted-foreground: "#6B7280"
+  dark:
+    background: "#0F1117"
+    card: "#171923"
+    foreground: "#F3F4F6"
+    primary: "#5B7FFF"
+    destructive: "#F87171"
+    success: "#34D399"
+    warning: "#FBBF24"
+    border: "#262B3B"
+    muted-foreground: "#9CA3AF"
 typography:
   body:
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: "normal"
-    letterSpacing: "normal"
-  title:
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.5rem"
-    fontWeight: 800
-    lineHeight: "1.2"
-    letterSpacing: "0.02em"
   display:
-    fontFamily: "'Sora', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.875rem"
-    fontWeight: 800
-    lineHeight: "1.2"
-    letterSpacing: "0.02em"
+    fontFamily: "'JetBrains Mono', {typography.body.fontFamily}"
+    fontWeight: 700
+    note: "KPI 數字、金額欄位專用等寬字，不是標題字"
 rounded:
-  sm: "4px"
-  md: "8px"
-  lg: "12px"
-  xl: "16px"
+  sm: "6px"
+  md: "10px"
+  lg: "16px"
+  xl: "20px"
   pill: "9999px"
 components:
   button-primary:
-    backgroundColor: "{colors.accent-gold}"
-    textColor: "#1A1400"
-    rounded: "{rounded.pill}"
-    padding: "8px 16px"
-  button-secondary:
-    backgroundColor: "{colors.primary-bg}"
-    textColor: "{colors.primary-dark}"
-    rounded: "{rounded.pill}"
-    padding: "8px 16px"
-  button-destructive:
-    backgroundColor: "{colors.coral}"
+    backgroundColor: "{colors.light.primary}"
     textColor: "#FFFFFF"
-    rounded: "{rounded.pill}"
-    padding: "8px 16px"
+    rounded: "{rounded.xl}"
   card:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.primary-dark}"
+    backgroundColor: "{colors.light.card}"
+    textColor: "{colors.light.foreground}"
     rounded: "{rounded.lg}"
     padding: "20px"
-  badge-default:
-    backgroundColor: "{colors.accent-gold}"
-    textColor: "#1A1400"
+  sidebar-nav-active:
+    backgroundColor: "#EEF1FF"
+    textColor: "{colors.light.primary}"
+    rounded: "{rounded.xl}"
+  badge-destructive:
+    backgroundColor: "{colors.light.destructive}"
+    textColor: "#FFFFFF"
     rounded: "{rounded.pill}"
-    padding: "2px 10px"
-  input:
-    backgroundColor: "{colors.cream}"
-    textColor: "{colors.primary-dark}"
-    rounded: "{rounded.md}"
-    padding: "4px 12px"
+  badge-success-soft:
+    backgroundColor: "rgba(22, 163, 74, 0.15)"
+    textColor: "{colors.light.success}"
+    rounded: "{rounded.pill}"
 ---
 
 # Design System: MoneyManager
 
 ## Overview
 
-**World: Flip7**（teal-coral-gold，retro-playful）
+**World: WattVision（藍色側邊欄版）** — light-first、側邊欄導覽、靛藍強調色
 
-於 2026-08 從原本的「安靜帳本」（黑白灰極簡）換世界，改採使用者指定的 Flip7 設計系統 — 一套為卡牌遊戲小程式打造的復古趣味風格。這是品牌換裝，不是產品邏輯換裝：計算正確性、資料結構、功能範圍全部不變，只換視覺語言。
+於 2026-08 第三輪換裝，使用者提供一張現成的參考截圖（沿用 WattVision 品牌名，但視覺語言跟先前的「深色 cyan 頂部導覽」規格書截然不同：淺色底、靛藍強調色、左側固定側邊欄）。使用者明講「整個系統換成圖片這樣」，因此這次是**全站佈局層級**的換裝，不只是色票替換：
 
-**2026-08 第二輪「加碼」**：Flip7 色彩體系不動，補上換裝當時沒做滿的個性——品牌字、頁面大標題字重與 text-shadow、按鈕金色 CTA 的 gloss 高光層、卡片進場彈入 + 錯落延遲動畫、頁面底色的 teal/gold 光暈網格。一樣只動設計系統層（`style.css` + `PageHeader`/`Card`/`Button`/`App.vue` 品牌字），不逐頁重排版面結構。品牌字第一次選的 Baloo 2（圓潤卡通感）使用者反饋不適合記帳工具的可信度，換成 Sora（幾何、有個性但成熟），見 Typography 一節。
+- **導覽結構改變**：頂部橫向導覽 → 左側固定側邊欄（含品牌 icon、垂直選單、登出），md 以下退回漢堡選單
+- **新增頂欄**：搜尋列（目前純視覺，未接功能）、通知/說明捷徑圖示、深淺色切換
+- **強調色改變**：cyan（`#00E5FF`）→ 靛藍（`#3D5AFE`），淺色模式變成主打（`useTheme` 預設值從 `dark` 改 `light`），深色模式維持同一套靛藍語意做為可選替代
+- **Dashboard 圖表改變**：類別佔比 Doughnut → 月度支出趨勢面積圖（`Line` + `fill: true`，資料來自真實 `monthlyData`），右側新增供應商用量長條（progress bar list），底部新增近期活動表格（合併「最近付款」與「即將續費」成單一時間軸）
 
-**這次換裝的取捨（刻意的範圍決定，不是遺漏）：**
-- Flip7 原規格書大量描述特定遊戲機制的元件（BOOM 按鈕、Flip7 加成按鈕、獲勝排行榜/領獎台、五彩紙屑動畫、皇冠彈跳動畫、復古緞帶 Logo）。這些在記帳工具裡沒有對應概念，直接跳過，不勉強嫁接。
-- 保留並轉譯的是可通用的系統層：色彩角色、字級階層、圓角尺度、glow 陰影系統、按鈕/卡片/輸入框的形狀語言、彈跳過場曲線。
-- 規格書用 `rpx`（WeChat 小程式單位），本專案是一般網頁（Vite + Tailwind），已依比例換算成 `rem`（8rpx 基準 ≈ 0.25rem）。
-- 類別標籤色盤（8 色雜湊系統，`src/lib/category-colors.ts`）尚未重新調色配合 Flip7 主題，目前還是舊世界遺留的色相分佈。功能正常、對比度仍過關，只是視覺上還沒跟新色系融合，算已知落差。
-- Dashboard/Subscriptions/Reports 等頁面本身尚未逐一走查套用新裝，這次換裝改的是設計系統層（`style.css` 的 CSS variable + shadcn 共用元件 Button/Badge/Card/Input），全站頁面透過共用 token 跟共用元件自動繼承新視覺，但個別頁面裡手刻的排版細節未來若要進一步貼合 Flip7 質感（例如卡片左側色條、玻璃感等），需要逐頁另外處理。
-
-**Key Characteristics:**
-- Teal（結構/資訊）+ Gold（主要動作/CTA）+ Coral（警示/破壞性）三色分工，不再是黑白灰配單一強調色
-- 全面 pill 形狀（`rounded-full`）：按鈕、Badge 都是藥丸狀，只有 Ghost/Link 兩個非實體按鈕變體例外維持原本形狀
-- Colored glow 陰影系統取代純黑陰影 — 每種互動元件的陰影都帶對應色相（CTA 按鈕金色 glow、危險操作珊瑚色 glow、卡片 teal 淡 glow）
-- 字體堆疊改用系統字型 + 繁中字型 fallback（PingFang SC / Microsoft YaHei），標題走 extra-bold(800) + 字距加寬
-- 按鈕統一用彈跳曲線 `cubic-bezier(0.34, 1.56, 0.64, 1)` + `active:scale-95`，是這次換裝唯一的「一個動作」——不是到處加動畫，是這套系統本身的簽名手感
+**沒有換的：** 計算邏輯、資料結構、Supabase 認證流程、各頁面既有的業務元件（`SubscriptionCard`/`ExpenseCard` 等）不動，只動 `App.vue` 外殼、`style.css` token、`Dashboard.vue`。
 
 ## Colors
 
-三色分工：Teal 是結構色（背景、標題文字、連結、focus ring），Gold 是行動色（CTA 按鈕、Badge 預設、中等警示），Coral 是破壞色（刪除、錯誤、高優先級）。三者不互相取代彼此角色。
+單一強調色（靛藍）分工，警示才切到獨立紅/黃/綠語意色，延續前一版 WattVision 的分工邏輯，只是色相從冷青換成靛藍。
 
-### Primary — Accent Gold (#FFD23F)
-驅動 shadcn 的 `--primary`：Button 預設/CTA 變體、Badge 預設變體。金色亮度高，文字一律用近黑暖色墨（`#1A1400`），不要用白字（對比不夠）。Hover 用 `--shadow-cta-glow`（`rgba(255,210,63,0.4)` 光暈），不是位移陰影。
+### Primary — Indigo Blue
+2026-08 audit：`#3D5AFE` 配白字對比比 ≈5.14:1，過 WCAG AA normal text（4.5:1）跟 large text 門檻，按鈕/badge 上的白字不用調。
+驅動 `--primary`：側邊欄品牌 icon 底色、選單啟用態文字、KPI icon 底色、圖表主線、CTA 按鈕、focus ring。
+- 淺色（預設）：`#3D5AFE`，白字
+- 深色：`#5B7FFF`（提亮以維持深底可讀性），近黑文字 `#0B1020`
 
-### 結構色 — Primary Teal (#2BA8A2)
-- `--foreground`/`--card-foreground` 用 Primary Dark (`#1E8C86`)：規格書明講這色是給「淺色底文字」用的，內文、標題都吃這個角色
-- `--ring`（focus ring）與 `--sidebar-primary` 用 Primary Teal 本體：結構性回饋用結構色，不用金色，CTA 的訊號才不會被稀釋
-- `--secondary`/`--muted` 用 Primary BG (`#E8F6F5`) 淡底 + Primary Dark 文字：次要按鈕、次要 Badge
-
-### 語意色
-- **Coral** (`#EF6C4A`)：`--destructive`，刪除、驗證錯誤、高優先級通知。白字（既有專案慣例，對比偏緊但跟 destructive 一貫維持一致）。Hover 用 `--shadow-destructive-glow`。
-- **Success** (`#27AE60`)：正向狀態（啟用、自動續費、支出下降），沿用既有 `text-success` 模式（淡底 + 本體飽和色文字，不用 `-foreground` 配淡底，見舊版 Do/Don't 教訓）。
-- **Warning**：沿用 Accent Gold 本體色，跟 CTA 共色但走淡底 + `text-warning` 文字模式，視覺角色不同（一個是按鈕填色，一個是淡底文字），不會混淆。
+### 語意色（trend / status 徽章）
+- **Success**（`#16A34A` 淺 / `#34D399` 深）：正向趨勢、已完成狀態。KPI 趨勢徽章走「淡底 15% 透明度 + 本體色文字」的軟性樣式（`Badge` 的 `success` variant），不是實心填色——實心填色留給更強的警示語境
+- **Destructive-soft**（同色相的軟性版本，`Badge` 的 `destructive-soft` variant）：負向趨勢徽章跟表格裡的高急迫度狀態，一樣淡底 12% + 本體色文字
+- **Destructive/Warning 實心**：續費倒數等真正需要搶眼的警示，維持前一版建立的「左框卡片 + 淡底」與「實心 Badge」兩種強度
 
 ### 中性與表面
-- `--background`：Surface Base (`#EFF8F7`)，全站底色是淡 teal 調，不是純白
-- `--card`/`--popover`：Surface Card (`#FFFFFF`)，卡片維持純白跟底色區隔
-- `--cream` (`#FFF8E7`)：Input 專用表面色，`bg-cream` class，不跟卡片共用純白
-- `--border`/`--input`：淡 teal 灰（`#D7ECEA`），不是純中性灰
+- `--background`：淺色 `#F1F4F9`（帶一點藍灰，不是純白，維持面板感）／深色 `#0F1117`
+- `--card`/`--sidebar`：淺色純白 `#FFFFFF`，跟背景拉開一階；深色 `#171923`
+- `--border`：淺色 `#E5E7EB`，非常淡，卡片陰影（`--shadow-card`）改用極輕的 `0 1px 3px` 雙層陰影取代前一版較重的 colored glow，貼近參考圖「乾淨資料面板」而非「發光科技感」的質地
 
 ### Chart Colors
-`chart-1` 到 `chart-5` 改用規格書調色盤重新分配：teal、gold、coral、sky-blue、teal-dark，五色都出自 Flip7 色板，涵蓋足夠的色相跨度做資料序列區分。
+`chart-1..5`：靛藍主線 + 綠色成功 + 紅色警示 + 天藍/灰輔助，色相跟 KPI 語意色一致，深淺模式分開調亮度維持對比。
 
 ### 已知落差：類別色盤未跟進
-`--category-1` 到 `--category-8`（訂閱/消費類別標籤色）維持舊世界的 OKLCH 色相分佈，沒有重新調色配合 Flip7 主題。功能正常（對比度、雜湊分配邏輯都沒問題），純粹是視覺基調還沒融合，留給下次處理。
+`--category-1` 到 `--category-8` 仍是舊世界的 OKLCH 色相分佈，沒有重新調色配合靛藍主題。功能正常，純視覺基調尚未融合，是持續的已知落差（三輪換裝都沒處理，優先度一直排在後面）。
 
 ## Typography
 
-**Body Font:** `-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif` — 規格書指定，加了正體中文字型 fallback，比原本純英文字堆疊更適合這個全繁中介面。
+**Body Font:** `'Inter'` + 繁中 fallback，不變。
 
-**Display Font:** `'Sora', ` + body 字型堆疊（Google Fonts，幾何 sans、字重 500-800）。這是加碼輪新增，用在品牌字（`App.vue` 的「MoneyManager」）跟 `PageHeader` 頁面大標題。**只影響 Latin/數字字符** — 中文字沒有對應字符，會自動 fallback 回 body 字型堆疊，視覺上不變。這是刻意的取捨：全繁中介面裡，一顆「有個性」的展示字體對中文標題本身沒有實質差異，真正吃到這顆字的地方是品牌名跟未來會出現的英文/數字內容。
-
-原本第一版選 Baloo 2（圓潤、卡通感重），使用者反饋不適合記帳工具需要的可信度，換成 Sora——幾何結構、有個性但不童趣，跟 Flip7「復古趣味但仍是理財工具」的定位更貼合。
-
-**Character:** 標題 extra-bold(800) + 字距加寬 + 品牌字，比原本「安靜帳本」世界的克制字重更有存在感 — 這是換裝後的新個性，標題現在允許自己被看見。
-
-### 階層
-- **頁面標題**（`PageHeader`）：`text-3xl font-extrabold tracking-tight` + `--font-display` + 一層極淡 `text-shadow`（`--title-glow`，呼應規格書「7」數字的多層描邊效果，但收斂成一條低調陰影，不是漫畫式描邊）
-- **品牌字**（`App.vue`）：`--font-display` + `font-extrabold` + `tracking-wide`，"Money" 中性色 / "Manager" teal 強調色雙色切分
-- **Landing 頁大標**：`text-4xl font-bold`，尚未套用 `--font-display`（Landing.vue 是個別頁面檔案，這輪只動共用元件層，見 Overview 的範圍決定）
-- **卡片標題**：不變，`text-sm font-medium`（統計卡）/ `leading-none font-semibold`（一般卡片）——`CardTitle` 這輪沒有套用 display font，保持跟內文一致的克制層級，展示字體只留給頁面級大標題
-- **次要說明文字**：不變，`text-sm text-muted-foreground`
+**Display/KPI Font:** `'JetBrains Mono'`，不變——KPI 數字、金額欄位（含 Dashboard 表格的金額欄）都吃這顆字，標題文字用中文，等寬字對中文字型自動 fallback 回 Inter，視覺上無感知。
 
 ## Shapes
 
-圓角改用固定 rem 尺度（不再從單一 `--radius` 用 calc 推導）：`sm`(4px) / `md`(8px) / `lg`(12px) / `xl`(16px)，加上 Tailwind 內建的 `rounded-full` 做 pill。
+- **Card 圓角**：`16px`
+- **側邊欄選單項/按鈕**：`20px`（`rounded-xl`），比前一版更圓潤，貼近參考圖選單 pill 的視覺重量
+- **搜尋列/Input**：`20px` 圓角 + 淡底（`bg-muted/50`），focus 時轉卡片白底 + `ring` 色邊框
 
-- **按鈕、Badge**：`rounded-full`（pill），規格書明講「Pill shape... bounce transition curve」
-- **Card**：`rounded-lg`（12px），對應規格書「Feature cards, panels」尺度
-- **Input**：`rounded-md`（8px）+ Cream 底色
+## Layout
 
-## Elevation — Colored Glow System
+### 側邊欄殼層（`App.vue`）
+- 已登入頁面：`flex` 佈局，左側 `<aside>` 固定寬度 `16rem`（`w-64`），`sticky top-0 h-dvh` 讓側邊欄不隨內容捲動，`md` 以下隱藏改用頂欄漢堡選單（沿用既有 `DropdownMenu` 元件）
+- 頂欄（`sticky top-0`，`backdrop-blur`）：左側手機版漢堡 + 搜尋列（`sm` 以上顯示），右側深淺色切換／通知捷徑／說明捷徑
+- 未登入頁面（`route.meta.publicOnly`）：維持簡化版本，不套側邊欄，只有極簡品牌列
 
-取代原本「安靜帳本」的中性黑陰影，陰影本身帶對應元件的色相。
+### Dashboard 網格
+- 首列：3 張 KPI 卡（`sm:grid-cols-3`），每張卡是「icon 方塊（左上）+ 趨勢或狀態徽章（右上）+ 大數字 + 標籤」的結構，是這輪新增的卡片語言，跟前一版純文字統計卡不同
+- 次列：`lg:grid-cols-12`，左 8 欄是月度支出趨勢面積圖（真實資料），右 4 欄是供應商用量長條列表（progress bar，寬度依最大供應商金額正規化）
+- 末列：近期活動表格（日期/項目/類型/狀態/金額五欄），合併原本分開的「最近付款」與「即將續費」兩張卡片
 
-- `--shadow-cta-glow`：`0 6px 28px rgba(255,210,63,0.5), 0 2px 8px rgba(255,210,63,0.3)`，CTA 按鈕 hover 專用，加碼輪加大了 blur/spread，光暈更明顯
-- `--shadow-destructive-glow`：`0 6px 28px rgba(239,108,74,0.42), 0 2px 8px rgba(239,108,74,0.25)`，危險操作按鈕 hover 專用
-- `--shadow-card`：`0 4px 20px rgba(43,168,162,0.1)`，卡片預設陰影，teal 淡光暈取代純黑 `shadow-sm`
-- `--elevation-raised`/`--elevation-lifted`：一般互動元件（次要按鈕、下拉選單）與浮動層（Dialog）維持 teal 調陰影，不是純黑
-- `--title-glow`：`0 2px 0 rgba(30,60,58,0.1)`，`PageHeader` 標題專用的極淡 text-shadow，不是 box-shadow
-
-**Do** 用這幾個 token，**Don't** 手刻新的純黑陰影值——規格書原文：「Don't use plain black shadows on interactive elements」。
-
-## Components
-
-### Buttons
-- **Shape:** `rounded-full`（pill），Ghost/Link 兩個非填色變體例外維持 `rounded-md`/無圓角（純文字/hover 態，pill 形狀對它們沒有視覺意義）
-- **Default（CTA）：** Accent Gold 背景 + 近黑暖色文字，hover 轉 `shadow-cta-glow`，`active:scale-95`，上半部疊一層白色漸層 gloss（`::before`，規格書原文「Gradient gold background, gloss overlay via ::before」的直接落地）
-- **Destructive：** Coral 背景 + 白字，hover 轉 `shadow-destructive-glow`，`active:scale-95`
-- **Secondary：** Primary BG 淡 teal 背景 + Primary Dark 文字
-- **Outline/Ghost：** 不變（中性 hover 態）
-- **過場曲線：** 全部按鈕統一 `cubic-bezier(0.34, 1.56, 0.64, 1)`（彈跳感），這是規格書「bounce transition curve」的直接落地，是這次換裝唯一刻意保留的「有點誇張」動效，其餘地方不加類似動畫
-
-**例外：Google 登入按鈕。** 唯一不跟系統色板走的按鈕——`outline` 底 + 白底 + Google 官方四色 G 圖示（原本誤用 `currentColor` 讓 G 變單色、又套在金色 CTA 底上，完全不像真的 Google 按鈕）。這是刻意的例外：第三方 OAuth 按鈕要讓使用者認得出「這是 Google 的登入」，不該被塞進品牌強調色，可信度優先於視覺統一。
-
-### Cards
-- **Shape:** `rounded-lg`（12px）
-- **Shadow:** `--shadow-card`（teal 淡光暈）取代純黑 `shadow-sm`
-- **進場動畫：** 掛載時彈入（`card-pop` keyframe，`cubic-bezier(0.34,1.56,0.64,1)`，跟按鈕同一條彈跳曲線），同層級的卡片用 `:nth-of-type` 錯落延遲（0/60/120/180/220ms）。這是這輪加碼唯一的「頁面第一眼」動效——一次到位的進場，不是逐一 hover 才觸發的散落特效。`prefers-reduced-motion: reduce` 會關掉。
-- 規格書原本的「6rpx 彩色左邊條」樣式（依狀態變色）尚未套用到 `SubscriptionCard`/`ExpenseCard`，這次只換了基礎 Card 元件的形狀跟陰影，個別卡片元件的細節裝飾留待下次
-
-### Background Atmosphere
-`body` 底色疊兩層極淡的 radial-gradient 光暈網格（左上 teal、右上 gold，10%/8% 不透明度，`background-attachment: fixed`），取代死板純色底，呼應規格書「retro warmth」的質地。深色模式下加大不透明度維持可見度。
-
-### Inputs
-- **Shape:** `rounded-md`（8px）
-- **Background:** Cream (`#FFF8E7`)，不是透明或卡片白
-
-### Badges
-- **Shape:** `rounded-full`（pill）
-- 其餘顏色角色邏輯不變（沿用「安靜帳本」時期建立的 category/success/warning 慣例，只是底層 token 換了值）
-
-### Auth Split Panel（`AuthBrandPanel.vue`）
-2026-08 第三輪新增，Landing/Login 兩頁共用的左側品牌面板：`md` 以上兩欄分割（左品牌／右內容），`md` 以下整個面板隱藏、單欄堆疊。左面板是 teal 漸層（`#1E8C86 → #2BA8A2`）+ 4 張抽象化「飄浮卡片」裝飾（旋轉的圓角矩形，用 primary/destructive 等既有 token 上色）——這是刻意抽象化呼應 Flip7 卡牌起源的手法，不是重現規格書裡字面的緞帶 Logo 或扇形疊卡（那些已在第一輪換裝時明確排除）。兩頁的內容區塊（右側）都用 `rounded-3xl` 容器 + `--shadow-lifted`，比原本「置中單欄」的版面現代。
+### Google 登入按鈕
+延續前兩版的例外：白底 + Google 官方四色 G 圖示，不套用系統強調色。
 
 ## Do's and Don'ts
 
 ### Do:
-- Do 用 colored glow shadow token（`--shadow-cta-glow`/`--shadow-destructive-glow`/`--shadow-card`）做互動元件的陰影，不要手刻純黑陰影。
-- Do 讓 Gold 只落在「主要動作」角色（CTA 按鈕、Badge 預設），Teal 是結構色不是行動色，兩者不要混用角色。
-- Do 新元件統一走 `rounded-full`（按鈕/Badge）或既有的 `sm/md/lg/xl` 四級圓角，不要引入第三種圓角尺度。
-- Do 正向狀態用 `text-success`、警示用 `text-warning`／`text-destructive`，淡底配本體飽和色文字，不要用 `-foreground` token 配淡底背景（對比不夠，深色模式下尤其會看不到字）。
-- Do Cream (`#FFF8E7`) 只用在 Input 表面，不要跟 Card 的純白背景混用。
+- Do KPI 卡統一走「icon 方塊 + 徽章 + 大數字」結構，不要退回純文字統計卡。
+- Do 趨勢/狀態徽章用軟性淡底樣式（`success`/`destructive-soft` variant），實心填色只留給真正需要搶眼的警示（例如續費倒數 ≤3 天）。
+- Do 金額/KPI 數字一律用 `--font-display`（JetBrains Mono）。
+- Do 側邊欄用 `sticky h-dvh`，不要讓它隨頁面內容一起捲動消失。
+- Do 新增圖表優先接真實資料（`useSubscriptionData`/`useExpenseData` 既有的 computed），不要為了視覺相似度另外編一組假資料。
 
 ### Don't:
-- Don't 在互動元件用純黑陰影——glow 陰影系統是這套世界的核心識別特徵之一。
-- Don't 把遊戲專屬機制（BOOM 狀態、獲勝慶祝、五彩紙屑、皇冠動畫、復古緞帶 Logo）硬套進記帳工具的 UI，這些沒有對應的產品概念，換裝時已刻意跳過。
-- Don't 在非 CTA 的地方使用彈跳曲線動畫——這是按鈕的簽名手感，不是通用動效，用在別處會稀釋它的識別度。
-- Don't 假設類別色盤（`category-1..8`）已經跟新色系融合——它還沒有，是已知的下一步。
+- Don't 假設類別色盤跟靛藍主題完全脫節——2026-08 audit 已把 `category-1..8` chroma 微調（light 0.05→0.06、`category-7` 靛藍色相拉到 0.09 呼應 primary），跟系統整體的低飽和調性對齊；8 色仍刻意保留 hue 分散以維持可辨識度，不是缺陷。
+- Don't 把搜尋列當成純視覺元件——已接上真實搜尋（`App.vue` 的 `searchedSubscriptions`/`searchedExpenses`），輸入會即時查 `useSubscriptionData`/`useExpenseData` 已載入的資料並顯示下拉結果，點擊或 Enter 會把 query 同步進目標頁自己的 `searchQuery` state 再導頁。
+- Don't 回頭套用前一版 WattVision（cyan、深色主打、頂部導覽、colored glow 陰影）的視覺——已隨這輪換裝汰換。
+- Don't 另外建一套 spacing/typography token 疊在 Tailwind 預設之上——Tailwind v4 內建的 4px 基準間距階與 `text-xs`~`text-5xl` 字級階已經是完整量表，系統只客製 `font-sans`/`font-display` 兩個字族 token，故意不重造輪子。
+
+## Component Reference（molecules，`src/components/common/`）
+
+| 元件 | Props | Emits | 備註 |
+|---|---|---|---|
+| `SubscriptionCard` | `name, plan, amount, currency: 'TWD'\|'USD', cycle: 'Monthly'\|'Yearly', active?, nextPayment?, paymentMethod?, renewal: 'Automatic'\|'Manual', category?` | `edit`, `delete` | 品牌 icon 找不到時走 fallback icon 對照表 |
+| `ExpenseCard` | `expense: ExpenseRecord` | — | 類別圖示/顏色內部對照表 |
+| `AddSubscriptionDialog` | `isOpen, editItem?: SubscriptionItem \| null, error?: string \| null` | `update:isOpen`, `submit` | 新增/編輯共用同一顆 dialog |
+| `AddExpenseDialog` | `isOpen, categories: ExpenseCategory[], error?: string \| null` | `update:isOpen`, `submit` | |
+| `MonthSelector` | `modelValue?: Date, placeholder?` | `update:modelValue` | 預設 placeholder「選擇月份」 |
+| `PageHeader` | `title, description?` | — | 純展示 |
+| `LoadingSpinner` | `size?: 'sm'\|'md'\|'lg', text?, fullscreen?` | — | 預設 `md` / `Loading...` |
+| `ErrorBoundary` | `fallback?: Component, onError?: (error, instance, info) => void` | — | 包 `RouterView`，`onErrorCaptured` |
+| `BrandLogo` | `icon: BrandIcon` | — | simple-icons SVG 渲染 |
