@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import {
   BookOpen,
   Car,
@@ -18,7 +18,7 @@ import type {
   ExpenseSortBy,
 } from '@/types'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from './useAuth'
+import { useSupabaseCollection } from './useSupabaseCollection'
 
 // 消費類別是固定的前端設定，不是使用者資料，不需要建表
 const expenseCategories = ref<ExpenseCategory[]>([
@@ -65,49 +65,28 @@ function mapRowToExpense(row: ExpenseRow): ExpenseRecord {
   }
 }
 
-// 原始消費紀錄數據（來自 Supabase）
-const originalExpenses = ref<ExpenseRecord[]>([])
-const isLoading = ref(false)
-const fetchError = ref<string | null>(null)
+const collection = useSupabaseCollection<ExpenseRow, ExpenseRecord>({
+  table: 'expenses',
+  mapRow: mapRowToExpense,
+  orderBy: [
+    { column: 'date', ascending: false },
+    { column: 'created_at', ascending: false },
+  ],
+  getId: (item) => item.id,
+})
+const originalExpenses = collection.items
+const isLoading = collection.isLoading
+const fetchError = collection.fetchError
 
-// 比照 useSubscriptionData：登出後才 resolve 的舊 fetch 不能覆蓋已清空的畫面
-let fetchGeneration = 0
-
-async function fetchExpenses() {
-  const generation = ++fetchGeneration
-  isLoading.value = true
-  fetchError.value = null
-  const { data, error } = await supabase
-    .from('expenses')
-    .select('*')
-    .order('date', { ascending: false })
-    .order('created_at', { ascending: false })
-
-  if (generation !== fetchGeneration) return
-
-  if (!error && data) {
-    originalExpenses.value = (data as ExpenseRow[]).map(mapRowToExpense)
-  } else if (error) {
-    fetchError.value = error.message
-  }
-  isLoading.value = false
+// 內部 seam：月份/年份比對邏輯，原本在 stats/categoryStats/filteredExpenses 三處各寫一次
+function isInMonth(dateStr: string, month: number, year: number): boolean {
+  const date = new Date(dateStr)
+  return date.getMonth() === month && date.getFullYear() === year
 }
 
-const { user } = useAuth()
-watch(
-  user,
-  (currentUser) => {
-    if (currentUser) {
-      fetchExpenses()
-    } else {
-      fetchGeneration++
-      originalExpenses.value = []
-      fetchError.value = null
-      isLoading.value = false
-    }
-  },
-  { immediate: true },
-)
+function isInYear(dateStr: string, year: number): boolean {
+  return new Date(dateStr).getFullYear() === year
+}
 
 // 搜尋和篩選狀態
 const searchQuery = ref('')
@@ -131,15 +110,11 @@ const stats = computed((): ExpenseStats => {
     targetYear = selectedMonth.value.getFullYear()
   }
 
-  const monthlyExpenses = originalExpenses.value.filter((expense) => {
-    const expenseDate = new Date(expense.date)
-    return expenseDate.getMonth() === targetMonth && expenseDate.getFullYear() === targetYear
-  })
+  const monthlyExpenses = originalExpenses.value.filter((expense) =>
+    isInMonth(expense.date, targetMonth, targetYear),
+  )
 
-  const yearlyExpenses = originalExpenses.value.filter((expense) => {
-    const expenseDate = new Date(expense.date)
-    return expenseDate.getFullYear() === targetYear
-  })
+  const yearlyExpenses = originalExpenses.value.filter((expense) => isInYear(expense.date, targetYear))
 
   // 如果選中了特定月份，則統計該月份的數據
   const expensesToCalculate = selectedMonth.value ? monthlyExpenses : originalExpenses.value
@@ -170,10 +145,9 @@ const categoryStats = computed(() => {
   if (selectedMonth.value) {
     const targetMonth = selectedMonth.value.getMonth()
     const targetYear = selectedMonth.value.getFullYear()
-    expensesToAnalyze = originalExpenses.value.filter((expense) => {
-      const expenseDate = new Date(expense.date)
-      return expenseDate.getMonth() === targetMonth && expenseDate.getFullYear() === targetYear
-    })
+    expensesToAnalyze = originalExpenses.value.filter((expense) =>
+      isInMonth(expense.date, targetMonth, targetYear),
+    )
   }
 
   expensesToAnalyze.forEach((expense) => {
@@ -204,31 +178,17 @@ const filteredExpenses = computed(() => {
   if (selectedMonth.value) {
     const targetMonth = selectedMonth.value.getMonth()
     const targetYear = selectedMonth.value.getFullYear()
-    result = result.filter((expense) => {
-      const expenseDate = new Date(expense.date)
-      return expenseDate.getMonth() === targetMonth && expenseDate.getFullYear() === targetYear
-    })
+    result = result.filter((expense) => isInMonth(expense.date, targetMonth, targetYear))
   } else {
     // 時間篩選（當沒有選中特定月份時）
     const now = new Date()
     switch (filterStatus.value) {
       case 'This Month': {
-        const currentMonth = now.getMonth()
-        const currentYear = now.getFullYear()
-        result = result.filter((expense) => {
-          const expenseDate = new Date(expense.date)
-          return (
-            expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear
-          )
-        })
+        result = result.filter((expense) => isInMonth(expense.date, now.getMonth(), now.getFullYear()))
         break
       }
       case 'This Year': {
-        const currentYear = now.getFullYear()
-        result = result.filter((expense) => {
-          const expenseDate = new Date(expense.date)
-          return expenseDate.getFullYear() === currentYear
-        })
+        result = result.filter((expense) => isInYear(expense.date, now.getFullYear()))
         break
       }
       case 'Last 30 Days': {
@@ -296,26 +256,18 @@ async function addExpense(expense: Omit<ExpenseRecord, 'id' | 'createdAt' | 'upd
     throw new Error('必須登入才能新增消費紀錄')
   }
 
-  const { data, error } = await supabase
-    .from('expenses')
-    .insert({
-      user_id: currentUser.id,
-      title: expense.title,
-      description: expense.description || null,
-      amount: expense.amount,
-      category: expense.category,
-      date: expense.date,
-      payment_method: expense.paymentMethod,
-      tags: expense.tags && expense.tags.length > 0 ? expense.tags : null,
-      receipt: expense.receipt || null,
-      subscription_id: expense.subscriptionId || null,
-    })
-    .select()
-    .single()
-
-  if (error) throw error
-
-  originalExpenses.value = [mapRowToExpense(data as ExpenseRow), ...originalExpenses.value]
+  await collection.insert({
+    user_id: currentUser.id,
+    title: expense.title,
+    description: expense.description || null,
+    amount: expense.amount,
+    category: expense.category,
+    date: expense.date,
+    payment_method: expense.paymentMethod,
+    tags: expense.tags && expense.tags.length > 0 ? expense.tags : null,
+    receipt: expense.receipt || null,
+    subscription_id: expense.subscriptionId || null,
+  })
 }
 
 async function updateExpense(
@@ -335,29 +287,26 @@ async function updateExpense(
   if (expense.subscriptionId !== undefined)
     dbUpdates.subscription_id = expense.subscriptionId || null
 
-  const { data, error } = await supabase
-    .from('expenses')
-    .update(dbUpdates)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) throw error
-
-  const updatedExpense = mapRowToExpense(data as ExpenseRow)
-  const index = originalExpenses.value.findIndex((e) => e.id === id)
-  if (index !== -1) {
-    originalExpenses.value[index] = updatedExpense
-  } else {
-    originalExpenses.value = [updatedExpense, ...originalExpenses.value]
-  }
+  await collection.update(id, dbUpdates)
 }
 
 async function removeExpense(id: string) {
-  const { error } = await supabase.from('expenses').delete().eq('id', id)
+  await collection.remove(id)
+}
+
+async function clearAllExpenses() {
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    throw new Error('必須登入才能清除消費紀錄')
+  }
+
+  const { error } = await supabase.from('expenses').delete().eq('user_id', currentUser.id)
   if (error) throw error
 
-  originalExpenses.value = originalExpenses.value.filter((e) => e.id !== id)
+  originalExpenses.value = []
 }
 
 // 導出 composable
@@ -385,5 +334,6 @@ export function useExpenseData() {
     updateExpense,
     removeExpense,
     getCategoryInfo,
+    clearAllExpenses,
   }
 }

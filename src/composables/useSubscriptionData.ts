@@ -1,6 +1,6 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from './useAuth'
+import { useSupabaseCollection } from './useSupabaseCollection'
 import { calculateNextPayment } from '@/lib/subscription-calc'
 import type {
   SubscriptionItem,
@@ -44,49 +44,15 @@ function mapRowToItem(row: SubscriptionRow): SubscriptionItem {
   }
 }
 
-// 原始訂閱數據（來自 Supabase）
-const originalItems = ref<SubscriptionItem[]>([])
-const isLoading = ref(false)
-const fetchError = ref<string | null>(null)
-
-// 每次 fetch 遞增，讓過期的 fetch resolve 時能發現自己已經不是最新請求而放棄套用結果
-// 避免登出後，前一個帳號的 fetch 才 resolve 蓋掉已清空的畫面
-let fetchGeneration = 0
-
-async function fetchSubscriptions() {
-  const generation = ++fetchGeneration
-  isLoading.value = true
-  fetchError.value = null
-  const { data, error } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (generation !== fetchGeneration) return
-
-  if (!error && data) {
-    originalItems.value = (data as SubscriptionRow[]).map(mapRowToItem)
-  } else if (error) {
-    fetchError.value = error.message
-  }
-  isLoading.value = false
-}
-
-const { user } = useAuth()
-watch(
-  user,
-  (currentUser) => {
-    if (currentUser) {
-      fetchSubscriptions()
-    } else {
-      fetchGeneration++
-      originalItems.value = []
-      fetchError.value = null
-      isLoading.value = false
-    }
-  },
-  { immediate: true },
-)
+const collection = useSupabaseCollection<SubscriptionRow, SubscriptionItem>({
+  table: 'subscriptions',
+  mapRow: mapRowToItem,
+  orderBy: [{ column: 'created_at', ascending: false }],
+  getId: (item) => item.id,
+})
+const originalItems = collection.items
+const isLoading = collection.isLoading
+const fetchError = collection.fetchError
 
 // 計算統計數據（月/年互算修正留給 T4，這裡維持既有邏輯不變，只是改吃 amount number）
 const stats = computed(
@@ -200,28 +166,20 @@ async function addSubscription(input: NewSubscriptionInput) {
 
   const nextPayment = calculateNextPayment(input.startDate, input.cycle)
 
-  const { data, error } = await supabase
-    .from('subscriptions')
-    .insert({
-      user_id: currentUser.id,
-      name: input.name,
-      plan: input.plan,
-      amount: input.amount,
-      currency: input.currency,
-      cycle: input.cycle,
-      category: input.category || null,
-      payment_method: input.paymentMethod,
-      renewal: input.renewal,
-      start_date: input.startDate,
-      next_payment: nextPayment,
-      active: true,
-    })
-    .select()
-    .single()
-
-  if (error) throw error
-
-  originalItems.value = [mapRowToItem(data as SubscriptionRow), ...originalItems.value]
+  await collection.insert({
+    user_id: currentUser.id,
+    name: input.name,
+    plan: input.plan,
+    amount: input.amount,
+    currency: input.currency,
+    cycle: input.cycle,
+    category: input.category || null,
+    payment_method: input.paymentMethod,
+    renewal: input.renewal,
+    start_date: input.startDate,
+    next_payment: nextPayment,
+    active: true,
+  })
 }
 
 async function updateSubscription(
@@ -262,29 +220,26 @@ async function updateSubscription(
     }
   }
 
-  const { data, error } = await supabase
-    .from('subscriptions')
-    .update(dbUpdates)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) throw error
-
-  const updatedItem = mapRowToItem(data as SubscriptionRow)
-  const index = originalItems.value.findIndex((item) => item.id === id)
-  if (index !== -1) {
-    originalItems.value[index] = updatedItem
-  } else {
-    originalItems.value = [updatedItem, ...originalItems.value]
-  }
+  await collection.update(id, dbUpdates)
 }
 
 async function removeSubscription(id: string) {
-  const { error } = await supabase.from('subscriptions').delete().eq('id', id)
+  await collection.remove(id)
+}
+
+async function clearAllSubscriptions() {
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+
+  if (!currentUser) {
+    throw new Error('必須登入才能清除訂閱資料')
+  }
+
+  const { error } = await supabase.from('subscriptions').delete().eq('user_id', currentUser.id)
   if (error) throw error
 
-  originalItems.value = originalItems.value.filter((item) => item.id !== id)
+  originalItems.value = []
 }
 
 // 導出 composable
@@ -308,5 +263,6 @@ export function useSubscriptionData() {
     addSubscription,
     updateSubscription,
     removeSubscription,
+    clearAllSubscriptions,
   }
 }

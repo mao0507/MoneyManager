@@ -10,7 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { isDark } from '@/composables/useTheme'
+import { useSubscriptionData } from '@/composables/useSubscriptionData'
+import { useExpenseData } from '@/composables/useExpenseData'
 
 defineOptions({ name: 'SettingsPage' })
 
@@ -24,7 +27,6 @@ const notifications = ref({
 
 const currency = ref('TWD')
 const language = ref('zh-TW')
-const theme = ref('light')
 
 const currencies = [
   { value: 'TWD', label: '新台幣 (NT$)' },
@@ -42,10 +44,37 @@ const languages = [
 ]
 
 const themes = [
-  { value: 'light', label: '淺色模式' },
   { value: 'dark', label: '深色模式' },
-  { value: 'auto', label: '自動' },
+  { value: 'light', label: '淺色模式' },
 ]
+
+const theme = computed({
+  get: () => (isDark.value ? 'dark' : 'light'),
+  set: (v: string) => {
+    isDark.value = v === 'dark'
+  },
+})
+
+const { clearAllSubscriptions } = useSubscriptionData()
+const { clearAllExpenses } = useExpenseData()
+
+const clearError = ref<string | null>(null)
+const isClearing = ref(false)
+
+// ponytail: window.confirm 先擋誤刪,之後接自訂 dialog 元件再換
+const handleClearAllData = async () => {
+  if (!confirm('確定要清除所有資料嗎？此動作無法復原。')) return
+
+  clearError.value = null
+  isClearing.value = true
+  try {
+    await Promise.all([clearAllSubscriptions(), clearAllExpenses()])
+  } catch (error) {
+    clearError.value = error instanceof Error ? error.message : '清除資料失敗，請稍後再試'
+  } finally {
+    isClearing.value = false
+  }
+}
 
 const userProfile = {
   name: '使用者',
@@ -191,7 +220,15 @@ const userProfile = {
             <Button class="w-full"> 匯入訂閱資料 </Button>
             <Button variant="outline" class="w-full"> 匯出資料 </Button>
             <Button variant="outline" class="w-full"> 備份設定 </Button>
-            <Button variant="destructive" class="w-full"> 清除所有資料 </Button>
+            <Button
+              variant="destructive"
+              class="w-full"
+              :disabled="isClearing"
+              @click="handleClearAllData"
+            >
+              {{ isClearing ? '清除中…' : '清除所有資料' }}
+            </Button>
+            <p v-if="clearError" class="text-sm text-destructive">{{ clearError }}</p>
           </div>
         </CardContent>
       </Card>
