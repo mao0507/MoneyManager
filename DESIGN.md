@@ -28,7 +28,7 @@ typography:
     lineHeight: "1.2"
     letterSpacing: "0.02em"
   display:
-    fontFamily: "'Baloo 2', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Sora', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.875rem"
     fontWeight: 800
     lineHeight: "1.2"
@@ -80,7 +80,7 @@ components:
 
 於 2026-08 從原本的「安靜帳本」（黑白灰極簡）換世界，改採使用者指定的 Flip7 設計系統 — 一套為卡牌遊戲小程式打造的復古趣味風格。這是品牌換裝，不是產品邏輯換裝：計算正確性、資料結構、功能範圍全部不變，只換視覺語言。
 
-**2026-08 第二輪「加碼」**：Flip7 色彩體系不動，補上換裝當時沒做滿的個性——品牌字（Baloo 2）、頁面大標題字重與 text-shadow、按鈕金色 CTA 的 gloss 高光層、卡片進場彈入 + 錯落延遲動畫、頁面底色的 teal/gold 光暈網格。一樣只動設計系統層（`style.css` + `PageHeader`/`Card`/`Button`/`App.vue` 品牌字），不逐頁重排版面結構。
+**2026-08 第二輪「加碼」**：Flip7 色彩體系不動，補上換裝當時沒做滿的個性——品牌字、頁面大標題字重與 text-shadow、按鈕金色 CTA 的 gloss 高光層、卡片進場彈入 + 錯落延遲動畫、頁面底色的 teal/gold 光暈網格。一樣只動設計系統層（`style.css` + `PageHeader`/`Card`/`Button`/`App.vue` 品牌字），不逐頁重排版面結構。品牌字第一次選的 Baloo 2（圓潤卡通感）使用者反饋不適合記帳工具的可信度，換成 Sora（幾何、有個性但成熟），見 Typography 一節。
 
 **這次換裝的取捨（刻意的範圍決定，不是遺漏）：**
 - Flip7 原規格書大量描述特定遊戲機制的元件（BOOM 按鈕、Flip7 加成按鈕、獲勝排行榜/領獎台、五彩紙屑動畫、皇冠彈跳動畫、復古緞帶 Logo）。這些在記帳工具裡沒有對應概念，直接跳過，不勉強嫁接。
@@ -129,7 +129,9 @@ components:
 
 **Body Font:** `-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif` — 規格書指定，加了正體中文字型 fallback，比原本純英文字堆疊更適合這個全繁中介面。
 
-**Display Font:** `'Baloo 2', ` + body 字型堆疊（Google Fonts，圓潤有個性，字重 500-800）。這是加碼輪新增，用在品牌字（`App.vue` 的「MoneyManager」）跟 `PageHeader` 頁面大標題。**只影響 Latin/數字字符** — 中文字沒有對應字符，會自動 fallback 回 body 字型堆疊，視覺上不變。這是刻意的取捨：全繁中介面裡，一顆「有個性」的展示字體對中文標題本身沒有實質差異，真正吃到這顆字的地方是品牌名跟未來會出現的英文/數字內容。
+**Display Font:** `'Sora', ` + body 字型堆疊（Google Fonts，幾何 sans、字重 500-800）。這是加碼輪新增，用在品牌字（`App.vue` 的「MoneyManager」）跟 `PageHeader` 頁面大標題。**只影響 Latin/數字字符** — 中文字沒有對應字符，會自動 fallback 回 body 字型堆疊，視覺上不變。這是刻意的取捨：全繁中介面裡，一顆「有個性」的展示字體對中文標題本身沒有實質差異，真正吃到這顆字的地方是品牌名跟未來會出現的英文/數字內容。
+
+原本第一版選 Baloo 2（圓潤、卡通感重），使用者反饋不適合記帳工具需要的可信度，換成 Sora——幾何結構、有個性但不童趣，跟 Flip7「復古趣味但仍是理財工具」的定位更貼合。
 
 **Character:** 標題 extra-bold(800) + 字距加寬 + 品牌字，比原本「安靜帳本」世界的克制字重更有存在感 — 這是換裝後的新個性，標題現在允許自己被看見。
 
@@ -169,6 +171,8 @@ components:
 - **Secondary：** Primary BG 淡 teal 背景 + Primary Dark 文字
 - **Outline/Ghost：** 不變（中性 hover 態）
 - **過場曲線：** 全部按鈕統一 `cubic-bezier(0.34, 1.56, 0.64, 1)`（彈跳感），這是規格書「bounce transition curve」的直接落地，是這次換裝唯一刻意保留的「有點誇張」動效，其餘地方不加類似動畫
+
+**例外：Google 登入按鈕。** 唯一不跟系統色板走的按鈕——`outline` 底 + 白底 + Google 官方四色 G 圖示（原本誤用 `currentColor` 讓 G 變單色、又套在金色 CTA 底上，完全不像真的 Google 按鈕）。這是刻意的例外：第三方 OAuth 按鈕要讓使用者認得出「這是 Google 的登入」，不該被塞進品牌強調色，可信度優先於視覺統一。
 
 ### Cards
 - **Shape:** `rounded-lg`（12px）

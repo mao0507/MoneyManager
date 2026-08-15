@@ -7,7 +7,7 @@
     system-ui, sans-serif;
   /* 品牌字/大標題用 - 圓潤有個性，中文字沒有對應字符會自動 fallback 回 --font-sans，
      Latin/數字內容（品牌名、金額）才看得出差異 */
-  --font-display: 'Baloo 2', var(--font-sans);
+  --font-display: 'Sora', var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
