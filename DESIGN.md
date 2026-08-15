@@ -187,6 +187,9 @@ components:
 - **Shape:** `rounded-full`（pill）
 - 其餘顏色角色邏輯不變（沿用「安靜帳本」時期建立的 category/success/warning 慣例，只是底層 token 換了值）
 
+### Auth Split Panel（`AuthBrandPanel.vue`）
+2026-08 第三輪新增，Landing/Login 兩頁共用的左側品牌面板：`md` 以上兩欄分割（左品牌／右內容），`md` 以下整個面板隱藏、單欄堆疊。左面板是 teal 漸層（`#1E8C86 → #2BA8A2`）+ 4 張抽象化「飄浮卡片」裝飾（旋轉的圓角矩形，用 primary/destructive 等既有 token 上色）——這是刻意抽象化呼應 Flip7 卡牌起源的手法，不是重現規格書裡字面的緞帶 Logo 或扇形疊卡（那些已在第一輪換裝時明確排除）。兩頁的內容區塊（右側）都用 `rounded-3xl` 容器 + `--shadow-lifted`，比原本「置中單欄」的版面現代。
+
 ## Do's and Don'ts
 
 ### Do:
