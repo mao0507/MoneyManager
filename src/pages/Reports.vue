@@ -12,9 +12,22 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import PageHeader from '@/components/common/PageHeader.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Bar } from 'vue-chartjs'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
 import { useExpenseData } from '@/composables/useExpenseData'
+import { toTrendChartData, toVendorBarChartData } from '@/lib/chart-data'
+import { getChartPalette } from '@/lib/utils'
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
 
 defineOptions({ name: 'ReportsPage' })
 
@@ -154,6 +167,35 @@ const allVendorStats = computed(() => {
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 10) // 只顯示前10個
 })
+
+// CSS 變數要在瀏覽器掛載後才讀得到值
+const chartPalette = ref<string[]>([])
+onMounted(() => {
+  chartPalette.value = getChartPalette()
+})
+
+const monthlyTrendChartData = computed(() =>
+  chartPalette.value.length > 0
+    ? toTrendChartData(monthlyData.value, chartPalette.value)
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+)
+const monthlyTrendChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+}
+
+const vendorChartData = computed(() =>
+  chartPalette.value.length > 0
+    ? toVendorBarChartData(allVendorStats.value, chartPalette.value)
+    : { labels: [], datasets: [{ data: [], backgroundColor: [] }] as const },
+)
+const vendorChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  indexAxis: 'y' as const,
+  plugins: { legend: { display: false } },
+}
 </script>
 
 <template>
@@ -313,24 +355,10 @@ const allVendorStats = computed(() => {
               <CardDescription>過去6個月的支出模式</CardDescription>
             </CardHeader>
             <CardContent>
-              <div class="space-y-4">
-                <div
-                  v-for="item in monthlyData"
-                  :key="item.month"
-                  class="flex items-center justify-between"
-                >
-                  <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-primary"></div>
-                    <span class="text-sm font-medium">{{ item.month }}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-medium">NT${{ item.amount.toLocaleString() }}</span>
-                    <Badge :class="getTrendColor(item.change)" variant="secondary" class="text-xs">
-                      {{ item.change }}
-                    </Badge>
-                  </div>
-                </div>
+              <div v-if="monthlyData.length > 0" class="h-64">
+                <Bar :data="monthlyTrendChartData" :options="monthlyTrendChartOptions" />
               </div>
+              <p v-else class="text-sm text-muted-foreground py-8 text-center">尚無支出資料</p>
             </CardContent>
           </Card>
 
@@ -450,32 +478,10 @@ const allVendorStats = computed(() => {
             <CardDescription>按服務提供商的支出細分</CardDescription>
           </CardHeader>
           <CardContent>
-            <div class="space-y-4">
-              <div
-                v-for="vendor in allVendorStats"
-                :key="vendor.vendor"
-                class="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                    <span class="text-lg">{{ vendor.vendor.charAt(0) }}</span>
-                  </div>
-                  <div>
-                    <h4 class="font-medium">{{ vendor.vendor }}</h4>
-                    <p class="text-sm text-muted-foreground">
-                      {{ vendor.subscriptions }}
-                      {{ vendor.type === 'subscription' ? '訂閱' : '消費' }}
-                    </p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <div class="font-medium">NT${{ vendor.amount.toLocaleString() }}</div>
-                  <Badge :class="getTrendColor(vendor.trend)" variant="secondary" class="text-xs">
-                    {{ vendor.trend }}
-                  </Badge>
-                </div>
-              </div>
+            <div v-if="allVendorStats.length > 0" class="h-80">
+              <Bar :data="vendorChartData" :options="vendorChartOptions" />
             </div>
+            <p v-else class="text-sm text-muted-foreground py-8 text-center">尚無供應商資料</p>
           </CardContent>
         </Card>
       </TabsContent>
