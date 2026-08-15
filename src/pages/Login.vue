@@ -10,13 +10,13 @@ const route = useRoute()
 const { signInWithGoogle } = useAuth()
 
 const handleGoogleLogin = async () => {
-  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
   await signInWithGoogle(redirect)
 }
 </script>
 
 <template>
-  <div class="min-h-dvh flex items-center justify-center">
+  <div class="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center">
     <Card class="w-full max-w-sm">
       <CardHeader>
         <CardTitle class="text-center">登入 MoneyManager</CardTitle>

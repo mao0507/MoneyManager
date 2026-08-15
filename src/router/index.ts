@@ -7,12 +7,24 @@ declare module 'vue-router' {
     title: string
     description?: string
     requiresAuth?: boolean
+    // 公開頁面（介紹頁、登入頁）- 已登入的使用者不該停留在這裡，導去 dashboard
+    publicOnly?: boolean
   }
 }
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    name: 'landing',
+    component: () => import('@/pages/Landing.vue'),
+    meta: {
+      title: 'MoneyManager',
+      description: '訂閱與消費管理系統',
+      publicOnly: true,
+    },
+  },
+  {
+    path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/pages/Dashboard.vue'),
     meta: {
@@ -37,6 +49,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/Login.vue'),
     meta: {
       title: '登入',
+      publicOnly: true,
     },
   },
   {
@@ -92,14 +105,19 @@ export const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  if (!to.meta.requiresAuth) return true
+  if (!to.meta.requiresAuth && !to.meta.publicOnly) return true
 
   const {
     data: { session },
   } = await supabase.auth.getSession()
 
-  if (!session) {
+  if (to.meta.requiresAuth && !session) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+
+  // 已登入的使用者不該停留在介紹頁/登入頁，直接進 dashboard
+  if (to.meta.publicOnly && session) {
+    return { name: 'dashboard' }
   }
 
   return true

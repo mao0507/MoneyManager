@@ -20,6 +20,8 @@ MoneyManager：訂閱與消費管理系統。追蹤訂閱服務（月繳/年繳�
 
 無對外定位需求。現階段不與 Bobby、Rocket Money 等市售記帳/訂閱管理 app 競爭或做差異化訴求；若未來走向多人開放，屆時再重新評估定位。
 
+有一個公開介紹頁（`/`）當作未登入訪客的入口，說明工具功能並導向登入，但內容刻意簡潔（一句話介紹 + 三項功能 + 登入按鈕），不是行銷頁面，不做定價/案例/轉換率優化。
+
 ## Operating Context
 
 - 登入：Google SSO（Supabase Auth）
@@ -30,7 +32,7 @@ MoneyManager：訂閱與消費管理系統。追蹤訂閱服務（月繳/年繳�
 
 ## Capabilities and Constraints
 
-- 已完成：訂閱管理（CRUD 接 Supabase）、Google SSO 登入、全頁面路由保護、月/年正確換算邏輯（純函式 + 單元測試）
+- 已完成：訂閱管理（CRUD 接 Supabase）、Google SSO 登入、全頁面路由保護、月/年正確換算邏輯（純函式 + 單元測試）、公開介紹頁（`/`）+ 已登入自動跳轉 dashboard
 - 進行中/尚未接資料庫：Dashboard 訂閱花費區塊、Expense Records、Reports、Notifications、Settings 頁面（目前仍為假資料/靜態內容）
 - 技術棧：Vue 3.5+ (Composition API)、TypeScript、shadcn-vue、Tailwind CSS 4、Vue Router、Vite、Supabase
 - **已知的多人化障礙**：`useAuth`/`useSubscriptionData`/`useExpenseData` 目前是 module-level singleton 狀態（ref 宣告在 composable 函式外面），假設 runtime 裡只有一個使用者。這是刻意的技術債，不是疏漏——單人自用階段沒有理由為此增加複雜度，但之後要做多人時，這一層需要重新設計為 per-session 隔離。詳見 `docs/saas-readiness-review.md`。

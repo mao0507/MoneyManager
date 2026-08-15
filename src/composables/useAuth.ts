@@ -31,7 +31,7 @@ export function useAuth() {
     isReady,
     isAuthenticated: computed(() => !!user.value),
 
-    signInWithGoogle: (redirectPath = '/') =>
+    signInWithGoogle: (redirectPath = '/dashboard') =>
       supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${window.location.origin}${redirectPath}` },

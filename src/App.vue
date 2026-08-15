@@ -18,7 +18,7 @@ const { isAuthenticated, signOut } = useAuth()
 
 // 導航配置
 const navigationItems = [
-  { path: '/', label: '儀表板', icon: LayoutDashboard },
+  { path: '/dashboard', label: '儀表板', icon: LayoutDashboard },
   { path: '/subscriptions', label: '訂閱管理', icon: Repeat },
   { path: '/expense-records', label: '消費紀錄', icon: Receipt },
   { path: '/reports', label: '支出報表', icon: TrendingUp },
@@ -28,66 +28,71 @@ const navigationItems = [
 
 // 檢查路由是否為當前活躍狀態
 const isActive = (path: string) => computed(() => route.path === path)
+
+// 介紹頁/登入頁不顯示內部導覽 - 未登入的訪客不該看到一堆點了就被彈回登入頁的連結
+const isPublicPage = computed(() => route.meta.publicOnly === true)
 </script>
 
 <template>
   <div class="min-h-dvh">
     <header class="border-b">
       <div class="container mx-auto px-4 h-14 flex items-center gap-3">
-        <span class="font-semibold">MoneyManager</span>
+        <RouterLink to="/" class="font-semibold">MoneyManager</RouterLink>
 
-        <!-- 桌面版導覽：md 以上顯示完整文字連結 -->
-        <nav class="ml-auto hidden md:flex items-center gap-2 text-sm">
-          <RouterLink
-            v-for="item in navigationItems"
-            :key="item.path"
-            :to="item.path"
-            :class="[
-              'px-2 py-1 rounded-md transition-colors flex items-center gap-1',
-              isActive(item.path).value ? 'bg-secondary' : 'hover:bg-secondary cursor-pointer',
-            ]"
-          >
-            <component :is="item.icon" class="size-4" aria-hidden="true" />
-            {{ item.label }}
-          </RouterLink>
-          <button
-            v-if="isAuthenticated"
-            class="px-2 py-1 rounded-md hover:bg-secondary cursor-pointer"
-            @click="signOut"
-          >
-            登出
-          </button>
-        </nav>
+        <template v-if="!isPublicPage">
+          <!-- 桌面版導覽：md 以上顯示完整文字連結 -->
+          <nav class="ml-auto hidden md:flex items-center gap-2 text-sm">
+            <RouterLink
+              v-for="item in navigationItems"
+              :key="item.path"
+              :to="item.path"
+              :class="[
+                'px-2 py-1 rounded-md transition-colors flex items-center gap-1',
+                isActive(item.path).value ? 'bg-secondary' : 'hover:bg-secondary cursor-pointer',
+              ]"
+            >
+              <component :is="item.icon" class="size-4" aria-hidden="true" />
+              {{ item.label }}
+            </RouterLink>
+            <button
+              v-if="isAuthenticated"
+              class="px-2 py-1 rounded-md hover:bg-secondary cursor-pointer"
+              @click="signOut"
+            >
+              登出
+            </button>
+          </nav>
 
-        <!-- 行動版導覽：md 以下收進漢堡選單，觸控目標 44px -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="icon" class="ml-auto md:hidden size-11" aria-label="開啟選單">
-              <Menu class="size-5" aria-hidden="true" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-56">
-            <DropdownMenuItem v-for="item in navigationItems" :key="item.path" as-child>
-              <RouterLink
-                :to="item.path"
-                :class="[
-                  'flex items-center gap-2',
-                  isActive(item.path).value ? 'text-primary font-medium' : '',
-                ]"
-              >
-                <component :is="item.icon" class="size-4" aria-hidden="true" />
-                {{ item.label }}
-              </RouterLink>
-            </DropdownMenuItem>
-            <template v-if="isAuthenticated">
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" @click="signOut">
-                <LogOut class="size-4" aria-hidden="true" />
-                登出
+          <!-- 行動版導覽：md 以下收進漢堡選單，觸控目標 44px -->
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="ghost" size="icon" class="ml-auto md:hidden size-11" aria-label="開啟選單">
+                <Menu class="size-5" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-56">
+              <DropdownMenuItem v-for="item in navigationItems" :key="item.path" as-child>
+                <RouterLink
+                  :to="item.path"
+                  :class="[
+                    'flex items-center gap-2',
+                    isActive(item.path).value ? 'text-primary font-medium' : '',
+                  ]"
+                >
+                  <component :is="item.icon" class="size-4" aria-hidden="true" />
+                  {{ item.label }}
+                </RouterLink>
               </DropdownMenuItem>
-            </template>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <template v-if="isAuthenticated">
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" @click="signOut">
+                  <LogOut class="size-4" aria-hidden="true" />
+                  登出
+                </DropdownMenuItem>
+              </template>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </template>
       </div>
     </header>
 
