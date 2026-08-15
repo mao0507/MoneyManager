@@ -27,6 +27,12 @@ typography:
     fontWeight: 800
     lineHeight: "1.2"
     letterSpacing: "0.02em"
+  display:
+    fontFamily: "'Baloo 2', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.875rem"
+    fontWeight: 800
+    lineHeight: "1.2"
+    letterSpacing: "0.02em"
 rounded:
   sm: "4px"
   md: "8px"
@@ -73,6 +79,8 @@ components:
 **World: Flip7**（teal-coral-gold，retro-playful）
 
 於 2026-08 從原本的「安靜帳本」（黑白灰極簡）換世界，改採使用者指定的 Flip7 設計系統 — 一套為卡牌遊戲小程式打造的復古趣味風格。這是品牌換裝，不是產品邏輯換裝：計算正確性、資料結構、功能範圍全部不變，只換視覺語言。
+
+**2026-08 第二輪「加碼」**：Flip7 色彩體系不動，補上換裝當時沒做滿的個性——品牌字（Baloo 2）、頁面大標題字重與 text-shadow、按鈕金色 CTA 的 gloss 高光層、卡片進場彈入 + 錯落延遲動畫、頁面底色的 teal/gold 光暈網格。一樣只動設計系統層（`style.css` + `PageHeader`/`Card`/`Button`/`App.vue` 品牌字），不逐頁重排版面結構。
 
 **這次換裝的取捨（刻意的範圍決定，不是遺漏）：**
 - Flip7 原規格書大量描述特定遊戲機制的元件（BOOM 按鈕、Flip7 加成按鈕、獲勝排行榜/領獎台、五彩紙屑動畫、皇冠彈跳動畫、復古緞帶 Logo）。這些在記帳工具裡沒有對應概念，直接跳過，不勉強嫁接。
@@ -121,12 +129,15 @@ components:
 
 **Body Font:** `-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif` — 規格書指定，加了正體中文字型 fallback，比原本純英文字堆疊更適合這個全繁中介面。
 
-**Character:** 標題 extra-bold(800) + 字距加寬，比原本「安靜帳本」世界的克制字重更有存在感 — 這是換裝後的新個性，標題現在允許自己被看見。
+**Display Font:** `'Baloo 2', ` + body 字型堆疊（Google Fonts，圓潤有個性，字重 500-800）。這是加碼輪新增，用在品牌字（`App.vue` 的「MoneyManager」）跟 `PageHeader` 頁面大標題。**只影響 Latin/數字字符** — 中文字沒有對應字符，會自動 fallback 回 body 字型堆疊，視覺上不變。這是刻意的取捨：全繁中介面裡，一顆「有個性」的展示字體對中文標題本身沒有實質差異，真正吃到這顆字的地方是品牌名跟未來會出現的英文/數字內容。
+
+**Character:** 標題 extra-bold(800) + 字距加寬 + 品牌字，比原本「安靜帳本」世界的克制字重更有存在感 — 這是換裝後的新個性，標題現在允許自己被看見。
 
 ### 階層
-- **頁面標題**（`PageHeader`）：延續 `text-3xl font-bold tracking-tight`，全站一致
-- **Landing 頁大標**：`text-4xl font-bold`，換裝後可考慮拉到 extra-bold + letter-spacing 呼應規格書 Display 級距，尚未逐頁調整
-- **卡片標題**：不變，`text-sm font-medium`（統計卡）/ `leading-none font-semibold`（一般卡片）
+- **頁面標題**（`PageHeader`）：`text-3xl font-extrabold tracking-tight` + `--font-display` + 一層極淡 `text-shadow`（`--title-glow`，呼應規格書「7」數字的多層描邊效果，但收斂成一條低調陰影，不是漫畫式描邊）
+- **品牌字**（`App.vue`）：`--font-display` + `font-extrabold` + `tracking-wide`，"Money" 中性色 / "Manager" teal 強調色雙色切分
+- **Landing 頁大標**：`text-4xl font-bold`，尚未套用 `--font-display`（Landing.vue 是個別頁面檔案，這輪只動共用元件層，見 Overview 的範圍決定）
+- **卡片標題**：不變，`text-sm font-medium`（統計卡）/ `leading-none font-semibold`（一般卡片）——`CardTitle` 這輪沒有套用 display font，保持跟內文一致的克制層級，展示字體只留給頁面級大標題
 - **次要說明文字**：不變，`text-sm text-muted-foreground`
 
 ## Shapes
@@ -141,10 +152,11 @@ components:
 
 取代原本「安靜帳本」的中性黑陰影，陰影本身帶對應元件的色相。
 
-- `--shadow-cta-glow`：`0 4px 20px rgba(255,210,63,0.4)`，CTA 按鈕 hover 專用
-- `--shadow-destructive-glow`：`0 4px 20px rgba(239,108,74,0.35)`，危險操作按鈕 hover 專用
+- `--shadow-cta-glow`：`0 6px 28px rgba(255,210,63,0.5), 0 2px 8px rgba(255,210,63,0.3)`，CTA 按鈕 hover 專用，加碼輪加大了 blur/spread，光暈更明顯
+- `--shadow-destructive-glow`：`0 6px 28px rgba(239,108,74,0.42), 0 2px 8px rgba(239,108,74,0.25)`，危險操作按鈕 hover 專用
 - `--shadow-card`：`0 4px 20px rgba(43,168,162,0.1)`，卡片預設陰影，teal 淡光暈取代純黑 `shadow-sm`
 - `--elevation-raised`/`--elevation-lifted`：一般互動元件（次要按鈕、下拉選單）與浮動層（Dialog）維持 teal 調陰影，不是純黑
+- `--title-glow`：`0 2px 0 rgba(30,60,58,0.1)`，`PageHeader` 標題專用的極淡 text-shadow，不是 box-shadow
 
 **Do** 用這幾個 token，**Don't** 手刻新的純黑陰影值——規格書原文：「Don't use plain black shadows on interactive elements」。
 
@@ -152,7 +164,7 @@ components:
 
 ### Buttons
 - **Shape:** `rounded-full`（pill），Ghost/Link 兩個非填色變體例外維持 `rounded-md`/無圓角（純文字/hover 態，pill 形狀對它們沒有視覺意義）
-- **Default（CTA）：** Accent Gold 背景 + 近黑暖色文字，hover 轉 `shadow-cta-glow`，`active:scale-95`
+- **Default（CTA）：** Accent Gold 背景 + 近黑暖色文字，hover 轉 `shadow-cta-glow`，`active:scale-95`，上半部疊一層白色漸層 gloss（`::before`，規格書原文「Gradient gold background, gloss overlay via ::before」的直接落地）
 - **Destructive：** Coral 背景 + 白字，hover 轉 `shadow-destructive-glow`，`active:scale-95`
 - **Secondary：** Primary BG 淡 teal 背景 + Primary Dark 文字
 - **Outline/Ghost：** 不變（中性 hover 態）
@@ -161,7 +173,11 @@ components:
 ### Cards
 - **Shape:** `rounded-lg`（12px）
 - **Shadow:** `--shadow-card`（teal 淡光暈）取代純黑 `shadow-sm`
+- **進場動畫：** 掛載時彈入（`card-pop` keyframe，`cubic-bezier(0.34,1.56,0.64,1)`，跟按鈕同一條彈跳曲線），同層級的卡片用 `:nth-of-type` 錯落延遲（0/60/120/180/220ms）。這是這輪加碼唯一的「頁面第一眼」動效——一次到位的進場，不是逐一 hover 才觸發的散落特效。`prefers-reduced-motion: reduce` 會關掉。
 - 規格書原本的「6rpx 彩色左邊條」樣式（依狀態變色）尚未套用到 `SubscriptionCard`/`ExpenseCard`，這次只換了基礎 Card 元件的形狀跟陰影，個別卡片元件的細節裝飾留待下次
+
+### Background Atmosphere
+`body` 底色疊兩層極淡的 radial-gradient 光暈網格（左上 teal、右上 gold，10%/8% 不透明度，`background-attachment: fixed`），取代死板純色底，呼應規格書「retro warmth」的質地。深色模式下加大不透明度維持可見度。
 
 ### Inputs
 - **Shape:** `rounded-md`（8px）

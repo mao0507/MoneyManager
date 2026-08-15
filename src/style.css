@@ -5,6 +5,9 @@
 @theme inline {
   --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif,
     system-ui, sans-serif;
+  /* 品牌字/大標題用 - 圓潤有個性，中文字沒有對應字符會自動 fallback 回 --font-sans，
+     Latin/數字內容（品牌名、金額）才看得出差異 */
+  --font-display: 'Baloo 2', var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -116,9 +119,10 @@
   /* Elevation - Colored Glow System，取代原本純黑陰影 */
   --elevation-raised: 0 4px 16px rgba(43, 168, 162, 0.12), 0 2px 4px rgba(43, 168, 162, 0.08);
   --elevation-lifted: 0 12px 32px rgba(30, 60, 58, 0.18), 0 4px 8px rgba(30, 60, 58, 0.1);
-  --shadow-cta-glow: 0 4px 20px rgba(255, 210, 63, 0.4);
-  --shadow-destructive-glow: 0 4px 20px rgba(239, 108, 74, 0.35);
+  --shadow-cta-glow: 0 6px 28px rgba(255, 210, 63, 0.5), 0 2px 8px rgba(255, 210, 63, 0.3);
+  --shadow-destructive-glow: 0 6px 28px rgba(239, 108, 74, 0.42), 0 2px 8px rgba(239, 108, 74, 0.25);
   --shadow-card: 0 4px 20px rgba(43, 168, 162, 0.1);
+  --title-glow: 0 2px 0 rgba(30, 60, 58, 0.1);
 
   /* 正向語意色 */
   --success: #27AE60;
@@ -182,9 +186,10 @@
   --sidebar-ring: #3CC4BD;
   --elevation-raised: 0 4px 16px rgba(0, 0, 0, 0.36), 0 2px 4px rgba(0, 0, 0, 0.24);
   --elevation-lifted: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-cta-glow: 0 4px 20px rgba(255, 210, 63, 0.5);
-  --shadow-destructive-glow: 0 4px 20px rgba(212, 82, 51, 0.45);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.24);
+  --shadow-cta-glow: 0 6px 28px rgba(255, 210, 63, 0.55), 0 2px 8px rgba(255, 210, 63, 0.35);
+  --shadow-destructive-glow: 0 6px 28px rgba(212, 82, 51, 0.5), 0 2px 8px rgba(212, 82, 51, 0.3);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --title-glow: 0 2px 0 rgba(0, 0, 0, 0.3);
 
   --success: #2ECC71;
   --success-foreground: #0F2926;
@@ -216,5 +221,15 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    /* 淡 teal/gold 光暈網格 - 讓底色不是死板純色，呼應遊戲包裝的溫暖質地 */
+    background-image:
+      radial-gradient(ellipse 900px 500px at 8% -10%, rgba(43, 168, 162, 0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(255, 210, 63, 0.08), transparent 55%);
+    background-attachment: fixed;
+  }
+  .dark body {
+    background-image:
+      radial-gradient(ellipse 900px 500px at 8% -10%, rgba(60, 196, 189, 0.14), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(255, 210, 63, 0.08), transparent 55%);
   }
 }

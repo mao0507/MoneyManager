@@ -37,7 +37,13 @@ const isPublicPage = computed(() => route.meta.publicOnly === true)
   <div class="min-h-dvh">
     <header class="border-b">
       <div class="container mx-auto px-4 h-14 flex items-center gap-3">
-        <RouterLink to="/" class="font-semibold">MoneyManager</RouterLink>
+        <RouterLink
+          to="/"
+          class="text-lg font-extrabold tracking-wide"
+          style="font-family: var(--font-display)"
+        >
+          <span class="text-foreground">Money</span><span class="text-[color:var(--ring)]">Manager</span>
+        </RouterLink>
 
         <template v-if="!isPublicPage">
           <!-- 桌面版導覽：md 以上顯示完整文字連結 -->
