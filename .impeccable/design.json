@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-14T02:00:00.000Z",
+  "generatedAt": "2026-08-15T04:20:00.000Z",
   "title": "Design System: MoneyManager",
   "extensions": {
     "colorMeta": {
@@ -152,10 +152,12 @@
       "中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立",
       "元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言",
       "靜態內容維持平面陰影，互動/浮動元素有明確的 raised/lifted 抬升層次 - 層次感只給會動的東西",
-      "無自訂字體，沿用 Tailwind 預設系統字型堆疊；尚無系統化的字級/字重階層"
+      "全站頁面標題統一走 PageHeader 元件，md 以下導覽收進漢堡選單",
+      "同組統計卡刻意做主次視覺重量差異，不做等重複製方塊"
     ],
     "rules": [
-      { "name": "The Earned Depth Rule", "body": "陰影層次只給使用者會操作、會浮動的東西（按鈕、可點卡片、選單、對話框）。統計卡、標籤這類純顯示內容維持平面 - 陰影是互動回饋，不是裝飾。", "section": "elevation" }
+      { "name": "The Earned Depth Rule", "body": "陰影層次只給使用者會操作、會浮動的東西（按鈕、可點卡片、選單、對話框）。統計卡、標籤這類純顯示內容維持平面 - 陰影是互動回饋，不是裝飾。", "section": "elevation" },
+      { "name": "The Unequal Weight Rule", "body": "同一區塊裡最常被查看的指標給它比同組其他指標更大的字級/版位，不要把所有統計卡做成同尺寸、同權重的重複方塊。", "section": "layout" }
     ],
     "dos": [
       "Do 保持紅色（Warning Red）只用在破壞性操作與驗證錯誤，維持它的警示訊號強度。",

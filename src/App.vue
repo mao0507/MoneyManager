@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Bell, LayoutDashboard, Receipt, Repeat, Settings, TrendingUp } from 'lucide-vue-next'
+import { Bell, LayoutDashboard, LogOut, Menu, Receipt, Repeat, Settings, TrendingUp } from 'lucide-vue-next'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import { useAuth } from '@/composables/useAuth'
 
 const route = useRoute()
@@ -26,7 +34,9 @@ const isActive = (path: string) => computed(() => route.path === path)
     <header class="border-b">
       <div class="container mx-auto px-4 h-14 flex items-center gap-3">
         <span class="font-semibold">MoneyManager</span>
-        <nav class="ml-auto flex items-center gap-2 text-sm">
+
+        <!-- 桌面版導覽：md 以上顯示完整文字連結 -->
+        <nav class="ml-auto hidden md:flex items-center gap-2 text-sm">
           <RouterLink
             v-for="item in navigationItems"
             :key="item.path"
@@ -47,6 +57,36 @@ const isActive = (path: string) => computed(() => route.path === path)
             登出
           </button>
         </nav>
+
+        <!-- 行動版導覽：md 以下收進漢堡選單，觸控目標 44px -->
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="ghost" size="icon" class="ml-auto md:hidden size-11" aria-label="開啟選單">
+              <Menu class="size-5" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" class="w-56">
+            <DropdownMenuItem v-for="item in navigationItems" :key="item.path" as-child>
+              <RouterLink
+                :to="item.path"
+                :class="[
+                  'flex items-center gap-2',
+                  isActive(item.path).value ? 'text-primary font-medium' : '',
+                ]"
+              >
+                <component :is="item.icon" class="size-4" aria-hidden="true" />
+                {{ item.label }}
+              </RouterLink>
+            </DropdownMenuItem>
+            <template v-if="isAuthenticated">
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" @click="signOut">
+                <LogOut class="size-4" aria-hidden="true" />
+                登出
+              </DropdownMenuItem>
+            </template>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
 

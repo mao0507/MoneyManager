@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import PageHeader from '@/components/common/PageHeader.vue'
 
 defineOptions({ name: 'DashboardPage' })
 
@@ -37,25 +38,34 @@ const topVendors = [
 </script>
 
 <template>
-  <div>
-    <div>
-      <h1 class="text-2xl font-bold">儀表板</h1>
-      <p class="text-sm text-muted-foreground mt-1">訂閱費用和活動概覽</p>
-    </div>
+  <div class="space-y-8">
+    <PageHeader title="儀表板" description="訂閱費用和活動概覽" />
 
-    <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3 mt-6">
-      <Card v-for="(s, i) in stats" :key="i">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">{{ s.title }}</CardTitle>
+    <!-- 本月支出是最常被查看的數字，給它比次要指標更高的視覺重量，而不是三張等重卡片 -->
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Card class="lg:col-span-1">
+        <CardHeader class="pb-2">
+          <CardTitle class="text-sm font-medium text-muted-foreground">{{ stats[0].title }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">{{ s.value }}</div>
-          <p class="text-xs text-muted-foreground">{{ s.hint }}</p>
+          <div class="text-4xl font-bold tracking-tight">{{ stats[0].value }}</div>
+          <p class="text-xs text-muted-foreground mt-1">{{ stats[0].hint }}</p>
         </CardContent>
       </Card>
+      <div class="grid grid-cols-2 gap-4 sm:col-span-1 lg:col-span-2">
+        <Card v-for="s in stats.slice(1)" :key="s.title">
+          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle class="text-sm font-medium">{{ s.title }}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ s.value }}</div>
+            <p class="text-xs text-muted-foreground">{{ s.hint }}</p>
+          </CardContent>
+        </Card>
+      </div>
     </section>
 
-    <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mt-6">
+    <section class="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>最近付款</CardTitle>

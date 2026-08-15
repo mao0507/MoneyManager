@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import PageHeader from '@/components/common/PageHeader.vue'
 import {
   Select,
   SelectContent,
@@ -56,13 +57,10 @@ const userProfile = {
 </script>
 
 <template>
-  <div>
-    <div>
-      <h1 class="text-2xl font-bold">設定</h1>
-      <p class="text-sm text-muted-foreground mt-1">管理您的帳戶設定和偏好</p>
-    </div>
+  <div class="space-y-8">
+    <PageHeader title="設定" description="管理您的帳戶設定和偏好" />
 
-    <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mt-6">
+    <section class="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>個人資料</CardTitle>

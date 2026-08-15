@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import PageHeader from '@/components/common/PageHeader.vue'
 import { ref, computed } from 'vue'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
 import { useExpenseData } from '@/composables/useExpenseData'
@@ -157,48 +158,41 @@ const allVendorStats = computed(() => {
 
 <template>
   <div class="space-y-6">
-    <!-- 頁面標題和操作 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight">支出報表</h1>
-        <p class="text-muted-foreground">訂閱和消費支出的詳細分析</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <Select v-model="timeRange">
-          <SelectTrigger class="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="3months">Last 3 months</SelectItem>
-            <SelectItem value="6months">Last 6 months</SelectItem>
-            <SelectItem value="1year">Last year</SelectItem>
-            <SelectItem value="all">All time</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="outline" size="sm" @click="exportReport('pdf')">
-          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          匯出 PDF
-        </Button>
-        <Button variant="outline" size="sm" @click="exportReport('csv')">
-          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-            />
-          </svg>
-          匯出 CSV
-        </Button>
-      </div>
-    </div>
+    <PageHeader title="支出報表" description="訂閱和消費支出的詳細分析">
+      <Select v-model="timeRange">
+        <SelectTrigger class="w-40">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="3months">Last 3 months</SelectItem>
+          <SelectItem value="6months">Last 6 months</SelectItem>
+          <SelectItem value="1year">Last year</SelectItem>
+          <SelectItem value="all">All time</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button variant="outline" size="sm" @click="exportReport('pdf')">
+        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        匯出 PDF
+      </Button>
+      <Button variant="outline" size="sm" @click="exportReport('csv')">
+        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+          />
+        </svg>
+        匯出 CSV
+      </Button>
+    </PageHeader>
 
     <!-- 統計概覽 -->
     <div class="grid gap-4 md:grid-cols-4">

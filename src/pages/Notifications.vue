@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { AlarmClock, CreditCard, Megaphone, PartyPopper, XCircle } from 'lucide-vue-next'
+import PageHeader from '@/components/common/PageHeader.vue'
 import { ref, computed } from 'vue'
 
 defineOptions({ name: 'NotificationsPage' })
@@ -125,21 +126,14 @@ const getPriorityColor = (priority: string) => {
 
 <template>
   <div class="space-y-6">
-    <!-- 頁面標題 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight">通知設定</h1>
-        <p class="text-muted-foreground">管理通知偏好設定並查看最近的提醒</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <Badge v-if="unreadCount > 0" variant="destructive" class="text-sm">
-          {{ unreadCount }} 未讀
-        </Badge>
-        <Button v-if="unreadCount > 0" variant="outline" size="sm" @click="markAllAsRead">
-          全部標為已讀
-        </Button>
-      </div>
-    </div>
+    <PageHeader title="通知設定" description="管理通知偏好設定並查看最近的提醒">
+      <Badge v-if="unreadCount > 0" variant="destructive" class="text-sm">
+        {{ unreadCount }} 未讀
+      </Badge>
+      <Button v-if="unreadCount > 0" variant="outline" size="sm" @click="markAllAsRead">
+        全部標為已讀
+      </Button>
+    </PageHeader>
 
     <div class="grid gap-6 lg:grid-cols-3">
       <!-- 通知設定 -->

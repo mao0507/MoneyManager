@@ -112,20 +112,20 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 
 **Body Font:** `ui-sans-serif, system-ui, sans-serif`（Tailwind 預設堆疊，未自訂字體）
 
-**Character:** 純功能性字體，無風格宣言。目前沒有跨頁面統一的字級 token，标题/內文字級是各頁面用 Tailwind utility（`text-2xl`、`text-3xl`、`text-sm`）手動指定，同語意角色（例如「頁面標題」）在不同頁面可能用不同字級。
+**Character:** 純功能性字體，無風格宣言。頁面標題已收斂成統一元件（見下），其餘字級仍是各頁 Tailwind utility 手動指定。
 
-### 已觀察到的用法（非正式階層，供參考）
-- **頁面標題**：`text-2xl font-bold`（Dashboard）或 `text-3xl font-bold tracking-tight`（Subscriptions）— 兩頁不一致
+### 階層
+- **頁面標題**：`PageHeader` 元件統一輸出 `text-3xl font-bold tracking-tight`，全站 6 頁一致（原本 Dashboard/Settings 用 `text-2xl`、其他頁用 `text-3xl` 的不一致已修正）
 - **卡片標題**（`CardTitle`）：`text-sm font-medium`（統計卡）或 `leading-none font-semibold`（一般卡片預設）
-- **統計數字**：`text-2xl font-bold`
+- **統計數字**：主要指標 `text-4xl font-bold tracking-tight`，次要指標 `text-2xl font-bold`（Dashboard 首張卡片刻意放大，做出主次層次，不是三個等重方塊，見 Components）
 - **次要說明文字**：`text-sm text-muted-foreground` 或 `text-xs text-muted-foreground`
-
-### 待定方向
-若要往「安靜帳本」的方向做，建議下一步是把上述隨頁字級收斂成統一的 display/title/body/label 階層，而不是每頁各自決定。
 
 ## Layout
 
-沿用 Tailwind 預設間距尺度（無專案自訂 spacing token）。頁面容器統一 `container mx-auto px-4`，內容區塊用 `space-y-6` 做垂直節奏。統計卡片區塊為 `grid grid-cols-2 md:grid-cols-4 gap-4`（手機 2 欄、桌面 4 欄），列表/表單區塊多為 `flex flex-col sm:flex-row` 響應式切換。無自訂斷點，使用 Tailwind 預設斷點（`sm`/`md`/`lg`）。
+沿用 Tailwind 預設間距尺度（無專案自訂 spacing token）。頁面容器統一 `container mx-auto px-4`，內容區塊用 `space-y-6`～`space-y-8` 做垂直節奏。統計卡片區塊多為 `grid grid-cols-2 md:grid-cols-4 gap-4`（手機 2 欄、桌面 4 欄），列表/表單區塊多為 `flex flex-col sm:flex-row` 響應式切換。無自訂斷點，使用 Tailwind 預設斷點（`sm`/`md`/`lg`）。
+
+### Named Rules
+**The Unequal Weight Rule.** 同一區塊裡最常被查看的指標（例如 Dashboard 的「本月支出」）給它比同組其他指標更大的字級/版位，不要把所有統計卡做成同尺寸、同權重的重複方塊——那是框架預設的偷懶結構，不是資訊優先級的呈現。
 
 ## Elevation & Depth
 
@@ -173,7 +173,10 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 - **Error:** `aria-invalid` 時邊框與 ring 轉 Warning Red
 
 ### Navigation
-頂部橫向導覽列（`App.vue`），文字 + Lucide icon（`size-4`，與專案其餘元件同一套圖示庫），當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
+頂部橫向導覽列（`App.vue`）。`md`（768px）以上顯示完整文字 + Lucide icon（`size-4`）的水平連結列；`md` 以下收進漢堡選單（重用既有 `DropdownMenu`，觸發按鈕 `size-11` 符合 44px 觸控目標下限），選單內同樣圖示 + 文字，當前頁面文字轉強調色並加粗。桌面版當前頁面用 Whisper Gray 底色標示 active 狀態，無底線或其他強調樣式。
+
+### Page Header
+所有頁面標題統一走 `src/components/common/PageHeader.vue`：標題 + 可選說明文字在左，`actions` slot（按鈕/篩選器等）在右，窄螢幕自動堆疊成上下兩排（`flex-col sm:flex-row`）。新頁面一律用這個元件，不要重新手刻標題區塊。
 
 ### Subscription Service Logo
 `SubscriptionCard` 服務圖示優先顯示官方品牌 logo（`simple-icons`，MIT 授權，`src/lib/brand-icons.ts`），用該品牌自己的顏色（例如 Netflix 紅、Spotify 綠），不套用系統中性色 — 這是唯一允許品牌色出現的地方，因為它代表的是「這是哪家公司的服務」這個事實，不是裝飾。目前收錄 Netflix、Spotify、YouTube、Apple、Google、GitHub、Notion、Dropbox、LINE、iCloud、Max、Alibaba Cloud、Cursor。找不到對應品牌時 fallback 到中性 Lucide icon（`Bot`/`Server`/`Smartphone`）。Amazon、Microsoft、Adobe、Disney、OpenAI 等品牌 simple-icons 已因商標考量下架，不手動補回，一律走 fallback。
