@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { useExpenseData } from '@/composables/useExpenseData'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/format'
 import { getCategoryColorStyle } from '@/lib/category-colors'
 import type { ExpenseFilter, ExpenseRecord } from '@/types'
 
@@ -67,7 +67,7 @@ const handleDialogOpenChange = (open: boolean) => {
 <template>
   <div class="space-y-6">
     <PageHeader title="消費紀錄" description="管理您的日常消費記錄和支出分析">
-      <Button variant="outline" size="icon" title="重新整理">
+      <Button variant="outline" size="icon" title="重新整理" class="bg-card">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -77,7 +77,7 @@ const handleDialogOpenChange = (open: boolean) => {
           />
         </svg>
       </Button>
-      <Button variant="outline" size="icon" title="設定">
+      <Button variant="outline" size="icon" title="設定" class="bg-card">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -246,6 +246,7 @@ const handleDialogOpenChange = (open: boolean) => {
               :key="filter.value"
               @click="filterStatus = filter.value"
               :variant="filterStatus === filter.value ? 'default' : 'outline'"
+              :class="filterStatus === filter.value ? '' : 'bg-card'"
               size="sm"
             >
               {{ filter.label }}
@@ -260,7 +261,7 @@ const handleDialogOpenChange = (open: boolean) => {
               @click="
                 sortBy = sortBy === 'date' ? 'amount' : sortBy === 'amount' ? 'category' : 'date'
               "
-              class="h-9"
+              class="h-9 bg-card"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -273,7 +274,7 @@ const handleDialogOpenChange = (open: boolean) => {
               排序: {{ sortBy === 'date' ? '日期' : sortBy === 'amount' ? '金額' : '類別' }}
             </Button>
 
-            <div class="flex border rounded-md h-9">
+            <div class="flex border rounded-md h-9 bg-card">
               <Button
                 variant="ghost"
                 size="sm"
@@ -327,7 +328,7 @@ const handleDialogOpenChange = (open: boolean) => {
               </svg>
               新增消費
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" class="bg-card">
               <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -338,7 +339,7 @@ const handleDialogOpenChange = (open: boolean) => {
               </svg>
               匯入
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" class="bg-card">
               <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"

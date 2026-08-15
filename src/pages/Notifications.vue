@@ -130,7 +130,7 @@ const getPriorityColor = (priority: string) => {
       <Badge v-if="unreadCount > 0" variant="destructive" class="text-sm">
         {{ unreadCount }} 未讀
       </Badge>
-      <Button v-if="unreadCount > 0" variant="outline" size="sm" @click="markAllAsRead">
+      <Button v-if="unreadCount > 0" variant="outline" size="sm" class="bg-card" @click="markAllAsRead">
         全部標為已讀
       </Button>
     </PageHeader>
@@ -316,9 +316,9 @@ const getPriorityColor = (priority: string) => {
                   d="M15 17h5l-5 5v-5zM4 19h6v-6H4v6zM4 5h6V1H4v4zM15 3h5l-5-5v5z"
                 />
               </svg>
-              <h3 class="mt-2 text-sm font-medium text-foreground">No notifications</h3>
+              <h3 class="mt-2 text-sm font-medium text-foreground">沒有通知</h3>
               <p class="mt-1 text-sm text-muted-foreground">
-                You're all caught up! New notifications will appear here.
+                目前沒有新通知，有新動態時會顯示在這裡。
               </p>
             </div>
           </CardContent>

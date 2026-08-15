@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/format'
 
 interface Props {
   modelValue?: Date
@@ -106,7 +106,7 @@ const confirmSelection = () => {
     <PopoverTrigger as-child>
       <Button
         variant="outline"
-        class="w-full justify-start text-left font-normal"
+        class="w-full justify-start text-left font-normal bg-card"
         :class="!selectedMonth && 'text-muted-foreground'"
       >
         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

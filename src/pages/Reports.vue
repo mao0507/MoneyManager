@@ -199,13 +199,13 @@ const vendorChartOptions = {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="3months">Last 3 months</SelectItem>
-          <SelectItem value="6months">Last 6 months</SelectItem>
-          <SelectItem value="1year">Last year</SelectItem>
-          <SelectItem value="all">All time</SelectItem>
+          <SelectItem value="3months">最近 3 個月</SelectItem>
+          <SelectItem value="6months">最近 6 個月</SelectItem>
+          <SelectItem value="1year">最近一年</SelectItem>
+          <SelectItem value="all">全部時間</SelectItem>
         </SelectContent>
       </Select>
-      <Button variant="outline" size="sm" @click="exportReport('pdf')">
+      <Button variant="outline" size="sm" class="bg-card" @click="exportReport('pdf')">
         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -216,7 +216,7 @@ const vendorChartOptions = {
         </svg>
         匯出 PDF
       </Button>
-      <Button variant="outline" size="sm" @click="exportReport('csv')">
+      <Button variant="outline" size="sm" class="bg-card" @click="exportReport('csv')">
         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -255,7 +255,7 @@ const vendorChartOptions = {
               {{ getTrendIcon(monthlyData[monthlyData.length - 1]?.change || '0%') }}
               {{ monthlyData[monthlyData.length - 1]?.change || '0%' }}
             </span>
-            from last month
+較上月
           </p>
         </CardContent>
       </Card>
@@ -279,13 +279,13 @@ const vendorChartOptions = {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">NT${{ stats.averageMonthly.toFixed(0) }}</div>
-          <p class="text-xs text-muted-foreground">per month average</p>
+          <p class="text-xs text-muted-foreground">每月平均</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Active Subscriptions</CardTitle>
+          <CardTitle class="text-sm font-medium">活躍訂閱</CardTitle>
           <svg
             class="h-4 w-4 text-muted-foreground"
             fill="none"
@@ -302,7 +302,7 @@ const vendorChartOptions = {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ stats.activeSubscriptions }}</div>
-          <p class="text-xs text-muted-foreground">currently active</p>
+          <p class="text-xs text-muted-foreground">目前活躍</p>
         </CardContent>
       </Card>
 
@@ -325,7 +325,7 @@ const vendorChartOptions = {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ stats.totalCategories }}</div>
-          <p class="text-xs text-muted-foreground">spending categories</p>
+          <p class="text-xs text-muted-foreground">支出類別</p>
         </CardContent>
       </Card>
     </div>

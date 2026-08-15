@@ -112,7 +112,7 @@ const handleDelete = async (item: SubscriptionItem) => {
 <template>
   <div class="space-y-6">
     <PageHeader title="訂閱管理" description="管理所有訂閱服務">
-      <Button variant="outline" size="icon" title="Refresh">
+      <Button variant="outline" size="icon" title="重新整理" class="bg-card">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -122,7 +122,7 @@ const handleDelete = async (item: SubscriptionItem) => {
           />
         </svg>
       </Button>
-      <Button variant="outline" size="icon" title="Settings">
+      <Button variant="outline" size="icon" title="設定" class="bg-card">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -169,7 +169,7 @@ const handleDelete = async (item: SubscriptionItem) => {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ stats.total }}</div>
-          <p class="text-xs text-muted-foreground">subscriptions</p>
+          <p class="text-xs text-muted-foreground">總訂閱數</p>
         </CardContent>
       </Card>
 
@@ -192,7 +192,7 @@ const handleDelete = async (item: SubscriptionItem) => {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ stats.active }}</div>
-          <p class="text-xs text-muted-foreground">active subscriptions</p>
+          <p class="text-xs text-muted-foreground">活躍訂閱數</p>
         </CardContent>
       </Card>
 
@@ -215,7 +215,7 @@ const handleDelete = async (item: SubscriptionItem) => {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">NT${{ stats.monthlyTotal.toFixed(0) }}</div>
-          <p class="text-xs text-muted-foreground">per month</p>
+          <p class="text-xs text-muted-foreground">每月</p>
         </CardContent>
       </Card>
 
@@ -238,7 +238,7 @@ const handleDelete = async (item: SubscriptionItem) => {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">NT${{ stats.yearlyTotal.toFixed(0) }}</div>
-          <p class="text-xs text-muted-foreground">per year</p>
+          <p class="text-xs text-muted-foreground">每年</p>
         </CardContent>
       </Card>
     </div>
@@ -267,6 +267,7 @@ const handleDelete = async (item: SubscriptionItem) => {
           :key="status.value"
           @click="filterStatus = status.value"
           :variant="filterStatus === status.value ? 'default' : 'outline'"
+          :class="filterStatus === status.value ? '' : 'bg-card'"
           size="sm"
         >
           {{ status.label }}
@@ -278,6 +279,7 @@ const handleDelete = async (item: SubscriptionItem) => {
         <Button
           variant="outline"
           size="sm"
+          class="bg-card"
           @click="
             sortBy = sortBy === 'name' ? 'price' : sortBy === 'price' ? 'nextPayment' : 'name'
           "
@@ -293,7 +295,7 @@ const handleDelete = async (item: SubscriptionItem) => {
           排序：{{ sortBy === 'name' ? '名稱' : sortBy === 'price' ? '價格' : '日期' }}
         </Button>
 
-        <div class="flex border rounded-md">
+        <div class="flex border rounded-md bg-card">
           <Button
             variant="ghost"
             size="sm"
@@ -345,7 +347,7 @@ const handleDelete = async (item: SubscriptionItem) => {
           </svg>
           新增訂閱
         </Button>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" class="bg-card">
           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -356,7 +358,7 @@ const handleDelete = async (item: SubscriptionItem) => {
           </svg>
           匯入
         </Button>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" class="bg-card">
           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -410,12 +412,12 @@ const handleDelete = async (item: SubscriptionItem) => {
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
         />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-foreground">No subscriptions found</h3>
+      <h3 class="mt-2 text-sm font-medium text-foreground">找不到訂閱</h3>
       <p class="mt-1 text-sm text-muted-foreground">
         {{
           searchQuery
-            ? 'Try adjusting your search or filter criteria.'
-            : 'Get started by adding your first subscription.'
+            ? '請調整搜尋或篩選條件。'
+            : '新增第一筆訂閱開始使用。'
         }}
       </p>
       <div class="mt-6">
