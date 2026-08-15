@@ -26,6 +26,7 @@ import { useSubscriptionData } from '@/composables/useSubscriptionData'
 import { useExpenseData } from '@/composables/useExpenseData'
 import { toTrendChartData, toVendorBarChartData } from '@/lib/chart-data'
 import { getChartPalette } from '@/lib/utils'
+import { getCategoryColorStyle } from '@/lib/category-colors'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
 
@@ -85,36 +86,19 @@ const stats = computed(() => {
   }
 })
 
-// 類別數據（整合訂閱和消費紀錄類別）
-const categoryData = computed(() => {
-  const colors = [
-    'bg-indigo-500',
-    'bg-orange-500',
-    'bg-blue-500',
-    'bg-pink-500',
-    'bg-purple-500',
-    'bg-red-500',
-    'bg-green-500',
-    'bg-yellow-500',
-    'bg-gray-500',
-  ]
-
-  // 合併訂閱類別和消費紀錄類別
-  const allCategories = [
-    ...categoryStats.value.map((item, index) => ({
-      ...item,
-      color: colors[index % colors.length],
-      type: 'subscription',
-    })),
-    ...expenseCategoryStats.value.map((item, index) => ({
-      ...item,
-      color: colors[(index + categoryStats.value.length) % colors.length],
-      type: 'expense',
-    })),
-  ]
-
-  return allCategories
-})
+// 類別數據（整合訂閱和消費紀錄類別）- 顏色依類別名稱雜湊決定，同名類別跨訂閱/消費一致
+const categoryData = computed(() => [
+  ...categoryStats.value.map((item) => ({
+    ...item,
+    colorStyle: { backgroundColor: getCategoryColorStyle(item.category).backgroundColor },
+    type: 'subscription',
+  })),
+  ...expenseCategoryStats.value.map((item) => ({
+    ...item,
+    colorStyle: { backgroundColor: getCategoryColorStyle(item.category).backgroundColor },
+    type: 'expense',
+  })),
+])
 
 // 匯出功能
 const exportReport = (format: 'pdf' | 'csv' | 'excel') => {
@@ -122,10 +106,10 @@ const exportReport = (format: 'pdf' | 'csv' | 'excel') => {
   // 這裡可以實現實際的匯出邏輯
 }
 
-// 獲取變化趨勢顏色
+// 獲取變化趨勢顏色（維持既有方向，只是把顏色改走 token，不改語意）
 const getTrendColor = (change: string) => {
-  if (change.startsWith('+')) return 'text-green-600 dark:text-green-400'
-  if (change.startsWith('-')) return 'text-red-600 dark:text-red-400'
+  if (change.startsWith('+')) return 'text-success'
+  if (change.startsWith('-')) return 'text-destructive'
   return 'text-muted-foreground'
 }
 
@@ -468,9 +452,8 @@ const vendorChartOptions = {
                 </div>
                 <div class="w-full bg-muted rounded-full h-2">
                   <div
-                    :class="item.color"
                     class="h-2 rounded-full transition-all duration-300"
-                    :style="{ width: `${item.percentage}%` }"
+                    :style="{ width: `${item.percentage}%`, ...item.colorStyle }"
                   ></div>
                 </div>
               </div>

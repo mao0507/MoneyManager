@@ -13,6 +13,16 @@ colors:
   hairline-gray: "oklch(0.922 0 0)"
   focus-ring-gray: "oklch(0.708 0 0)"
   warning-red: "oklch(0.577 0.245 27.325)"
+  success-green: "oklch(0.6 0.15 145)"
+  warning-amber: "oklch(0.75 0.15 80)"
+  category-1: "oklch(0.94 0.05 64)"
+  category-2: "oklch(0.94 0.05 97)"
+  category-3: "oklch(0.94 0.05 130)"
+  category-4: "oklch(0.94 0.05 164)"
+  category-5: "oklch(0.94 0.05 197)"
+  category-6: "oklch(0.94 0.05 230)"
+  category-7: "oklch(0.94 0.05 264)"
+  category-8: "oklch(0.94 0.05 343)"
 typography:
   body:
     fontFamily: "ui-sans-serif, system-ui, sans-serif"
@@ -75,19 +85,19 @@ components:
 
 **Creative North Star: "The Quiet Ledger"（安靜帳本）**
 
-MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md），沒有對外定位或行銷需求。目前的視覺實作是 shadcn-vue「new-york」風格搭 neutral 基底色 — 純黑白灰階，紅色只用於警示與刪除等破壞性操作。畫面刻意不強調自己，讓數字（月/年花費、訂閱狀態）當主角。
+MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md），沒有對外定位或行銷需求。目前的視覺實作是 shadcn-vue「new-york」風格搭 neutral 基底色 — 黑白灰階為底，色彩只落在「有意義」的地方：主要動作、狀態、類別分類。畫面刻意不強調自己，讓數字（月/年花費、訂閱狀態）當主角。
 
-這是「安靜帳本」的字面體現：紙一樣白的背景、灰階分層資訊優先級，只有一個紫色落在「主要動作」這個語意角色上，稀有才有力道 — 不裝飾、不擴散。
+這是「安靜帳本」的字面體現：紙一樣白的背景、灰階分層資訊優先級，色彩不是裝飾而是編碼 — 紫色代表「這是主要動作」、綠色代表「這是好事/啟用中」、琥珀色代表「注意但不緊急」、紅色代表「警示/破壞性」，類別色盤代表「這是哪一類」。每個色相只對應一個語意角色，稀有才有力道。
 
 **Key Characteristics:**
-- 中性色階（黑/白/灰）為主，強調色（Quiet Violet 紫）只落在主要動作/連結/focus，語意色（紅=警示/刪除）維持獨立
+- 中性色階（黑/白/灰）為底，強調色（Quiet Violet 紫）只落在主要動作/連結/focus；狀態與類別語意色系統化管理（見 Colors）
 - 元件圓角統一走 shadcn 預設尺度（6px/8px/10px/14px），無自訂形狀語言
 - 靜態內容（統計卡）維持平面 `shadow-sm`；真正互動的元素（按鈕 hover/press、可點擊卡片、浮動層）有明確的 raised/lifted 陰影層次，層次感只給「會動的東西」，不是通篇加陰影
 - 無自訂字體，沿用 Tailwind 預設系統字型堆疊；尚無系統化的字級/字重階層，各頁面標題字級（`text-2xl`/`text-3xl`）為隨頁面手動指定，非統一 token
 
 ## Colors
 
-黑白灰為主的中性階，強調色（紫）只落在主要動作角色，紅色是獨立的語意色（警示/刪除）。
+黑白灰為主的中性階；紫色是唯一的品牌強調色，只落在主要動作角色；狀態與類別各有自己的語意色系統，彼此色相互不重疊，維持各自的辨識度。
 
 ### Primary
 - **Quiet Violet** (`oklch(0.5 0.18 300)`): 主要按鈕背景、預設 Badge 背景、連結文字、focus ring（`quiet-violet-ring`，`oklch(0.6 0.16 300)`，較淺一階讓 ring 不搶戲）。系統唯一的品牌強調色，中低彩度，避免壓過內容。
@@ -103,10 +113,17 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 - **Focus Ring Gray** (`oklch(0.708 0 0)`): focus 狀態的 ring 顏色（無色相中性灰，非品牌色）。
 
 ### 語意色
-- **Warning Red** (`oklch(0.577 0.245 27.325)`): 破壞性操作（刪除訂閱）與驗證錯誤。系統中唯一有明顯色相的顏色，因此天生具有警示效果 — 不要把紅色用在非警示/破壞性語境，否則會稀釋它的訊號強度。
+- **Warning Red** (`oklch(0.577 0.245 27.325)`): 破壞性操作（刪除訂閱）與驗證錯誤。不要把紅色用在非警示/破壞性語境，否則會稀釋它的訊號強度。
+- **Success Green** (`oklch(0.6 0.15 145)`，深色模式 `oklch(0.75 0.16 145)`): 正向狀態 — 訂閱「啟用」、續費「自動」、趨勢下降（支出減少視為好事）。文字/圖示直接用 `text-success`，避免跟 `--success-foreground`（設計給實心填色背景搭配的深色文字）混用，淡底色 + 飽和文字才有對比。
+- **Warning Amber** (`oklch(0.75 0.15 80)`，深色模式 `oklch(0.8 0.16 80)`): 中等警示，目前只用在通知優先級（`medium`）。同樣用 `text-warning` 而非 `-foreground` 搭淡底色。
 
-### 保留但目前未使用
-- `chart-1` 到 `chart-5`（`--color-chart-*`）已定義多色相圖表色盤，但目前頁面（Reports、Dashboard 的分類/供應商分佈）都是文字列表呈現，尚未接上真正的圖表元件。實作圖表時才會用到，記錄於此避免重複定義。
+### 類別色盤（Category Colors）
+訂閱與消費紀錄的分類標籤（Badge）與圖示底色共用一套 8 色盤（`--category-1` 到 `--category-8`，`src/lib/category-colors.ts`），依類別名稱字串雜湊決定顏色，同名類別（例如「其他」）跨訂閱/消費兩個領域自動拿到同一個顏色，不用手動維護對照表。8 個色相（64°/97°/130°/164°/197°/230°/264°/343°）刻意避開 Quiet Violet（300°附近）與 Warning Red（27°附近），確保類別色不會跟品牌色或警示色混淆。淡底色 + 飽和文字的 tint 模式（`L=0.94 C=0.05` 底 / `L≈0.42-0.46 C=0.16` 字，深色模式對應反轉），跟既有 Badge 的視覺重量一致。
+
+**用法：** `getCategoryColorStyle(category)` 回傳 `{ backgroundColor, color }` inline style 物件，不是 Tailwind class — 因為 class 名稱是動態組出來的字串（`bg-category-${index}`），Tailwind 的靜態掃描器看不到，永遠不會產生對應 utility，只能用 CSS variable + inline style。套用時 Badge 用 `variant="outline"` 打底（避免跟 default/secondary variant 內建的顏色 class 打架），再用 `:style` 蓋上真正的類別色。
+
+### Chart Colors
+- `chart-1` 到 `chart-5`（`--color-chart-*`）是 Reports/Dashboard 圖表元件（Doughnut/Bar，`vue-chartjs`）實際在用的資料色盤，透過 `getChartPalette()`（`src/lib/utils.ts`）在執行期讀取 CSS 變數。跟類別色盤是兩套獨立系統：圖表色盤服務「資料序列」的視覺區分，類別色盤服務「單一類別」的標籤識別，語意不同不共用。
 
 ## Typography
 
@@ -165,7 +182,9 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 
 ### Badges
 - **Style:** `rounded-md`，`px-2 py-0.5`，`text-xs font-medium`
-- **Variants:** default（Quiet Violet 背景）/ secondary（Whisper Gray）/ destructive（Warning Red）/ outline（透明背景 + 文字色邊框）
+- **Variants:** default（Quiet Violet 背景，只用在真正的主要動作/預設語意，不要當成「有底色的 badge」萬用選項）/ secondary（Whisper Gray）/ destructive（Warning Red）/ outline（透明背景 + 文字色邊框，類別色盤與狀態色 badge 的打底 variant）
+- **狀態 Badge（啟用/自動續費等正向狀態）：** `variant="outline"` + `text-success` + `border-success/30`，不要用 `variant="default"`（那是 Quiet Violet，只保留給主要動作）
+- **類別 Badge：** `variant="outline"` + `getCategoryColorStyle()` inline style，見 Colors → 類別色盤
 
 ### Inputs / Fields
 - **Style:** 透明背景、1px Hairline Gray 邊框、`rounded-md`、`shadow-xs`
@@ -189,13 +208,17 @@ MoneyManager 是純自用的個人訂閱與消費管理工具（見 PRODUCT.md�
 
 ### Do:
 - **Do** 保持紅色（Warning Red）只用在破壞性操作與驗證錯誤，維持它的警示訊號強度。
-- **Do** 讓 Quiet Violet 只落在「主要動作」語意角色（主按鈕、連結、focus ring、預設 Badge），不擴散進中性表面。
+- **Do** 讓 Quiet Violet 只落在「主要動作」語意角色（主按鈕、連結、focus ring），不擴散進狀態或類別標籤。
+- **Do** 新的類別（訂閱或消費）不用手動指定顏色 — 丟進 `getCategoryColorStyle()`，色盤自動雜湊分配，同名類別跨領域自動一致。
+- **Do** 正向狀態（啟用、自動續費、支出下降）用 `text-success`，跟 Warning Red 的警示語意分開，不要用中性 `secondary` 掩蓋掉「這是好事」的訊號。
 - **Do** 新元件優先重用既有 `rounded-md`(8px)/`rounded-xl`(14px) 兩級圓角，不要引入第三種圓角尺度。
 - **Do** 新頁面統計數字延續 `text-2xl font-bold` 的視覺重量，這是目前唯一算一致的字級用法。
 - **Do** 新的互動元件（按鈕、可點卡片）用 `shadow-raised` token，浮動層（選單/彈窗）用 `shadow-raised`、Dialog 用 `shadow-lifted`，不要手刻新的陰影值。
 
 ### Don't:
 - **Don't** 把 Warning Red 用在非警示/破壞性語境（例如純裝飾或當作一般強調色），會稀釋它的訊號意義。
-- **Don't** 把 Quiet Violet 也用在中性表面（次要背景、邊框）上裝飾，會稀釋它作為「主要動作」訊號的力道。
+- **Don't** 把 Quiet Violet 用在狀態或類別標籤上（例如「啟用」「自動續費」這類非主要動作的正向狀態）；它只代表「主要動作」，混用會讓使用者分不清哪個才是真正該點的按鈕。
+- **Don't** 用 `-foreground` token（`--success-foreground`/`--warning-foreground`）當文字色搭配淡色/半透明背景 — 那組 token 是設計給「實心填色背景 + 深色文字」的場景，套在淡底色上對比度不夠（深色模式下幾乎看不到字，已在 Notifications 修過一次）。淡底色一律用飽和的 `text-success`/`text-warning`/`text-destructive` 本體色當文字。
 - **Don't** 給靜態顯示內容（統計卡、標籤）加 hover 陰影/位移；那是在暗示不存在的可點擊行為。
 - **Don't** 個別元件各自手刻陰影值追求「立體感」；一律用 `shadow-raised`/`shadow-lifted` 兩個 token。
+- **Don't** 用動態組字串的方式產生 Tailwind class（`` `bg-category-${i}` ``）；Tailwind 的靜態掃描器看不到，永遠不會生成對應 utility。需要動態顏色一律走 CSS variable + inline `:style`。

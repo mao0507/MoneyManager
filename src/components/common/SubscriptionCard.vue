@@ -14,6 +14,7 @@ import { computed } from 'vue'
 import { Bot, Server, Smartphone } from 'lucide-vue-next'
 import { formatCurrency } from '@/lib/utils'
 import { findBrandIcon } from '@/lib/brand-icons'
+import { getCategoryColorStyle } from '@/lib/category-colors'
 import BrandLogo from './BrandLogo.vue'
 
 interface Props {
@@ -48,21 +49,6 @@ const fallbackServiceIcon = (name: string) => {
 }
 
 const brandIcon = computed(() => findBrandIcon(props.name))
-
-// 獲取類別顏色
-const getCategoryColor = (category?: string) => {
-  const colors: Record<string, string> = {
-    音樂串流: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    影片串流: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    生產力工具: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    VPS服務: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    域名服務: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-    軟體工具: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
-  }
-  return (
-    colors[category || ''] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-  )
-}
 </script>
 
 <template>
@@ -81,7 +67,11 @@ const getCategoryColor = (category?: string) => {
             <h3 class="font-semibold text-foreground truncate">{{ props.name }}</h3>
             <p class="text-sm text-muted-foreground truncate">{{ props.plan }}</p>
             <div v-if="props.category" class="mt-1">
-              <Badge :class="getCategoryColor(props.category)" variant="secondary" class="text-xs">
+              <Badge
+                variant="outline"
+                :style="getCategoryColorStyle(props.category)"
+                class="text-xs border-transparent"
+              >
                 {{ props.category }}
               </Badge>
             </div>
@@ -93,10 +83,11 @@ const getCategoryColor = (category?: string) => {
           <!-- 狀態標籤 -->
           <div class="flex flex-col gap-1">
             <Badge
-              :variant="props.active ? 'default' : 'secondary'"
+              :variant="props.active ? 'outline' : 'secondary'"
+              :class="props.active ? 'text-success border-success/30' : ''"
               class="text-xs w-16 justify-center"
             >
-              <div v-if="props.active" class="mr-1 h-1.5 w-1.5 rounded-full bg-green-500"></div>
+              <div v-if="props.active" class="mr-1 h-1.5 w-1.5 rounded-full bg-success"></div>
               {{ props.active ? '啟用' : '停用' }}
             </Badge>
             <Badge
@@ -180,7 +171,11 @@ const getCategoryColor = (category?: string) => {
         </div>
         <div class="flex items-center justify-between">
           <span class="text-sm text-muted-foreground">續費</span>
-          <Badge :variant="props.renewal === 'Automatic' ? 'default' : 'secondary'" class="text-xs">
+          <Badge
+            :variant="props.renewal === 'Automatic' ? 'outline' : 'secondary'"
+            :class="props.renewal === 'Automatic' ? 'text-success border-success/30' : ''"
+            class="text-xs"
+          >
             {{ props.renewal === 'Automatic' ? '自動' : '手動' }}
           </Badge>
         </div>

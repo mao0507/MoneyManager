@@ -161,7 +161,6 @@ export interface ExpenseCategory {
   id: string
   name: string
   icon: Component
-  color: string
   budget?: number
 }
 

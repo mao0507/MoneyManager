@@ -22,15 +22,15 @@ import { useAuth } from './useAuth'
 
 // 消費類別是固定的前端設定，不是使用者資料，不需要建表
 const expenseCategories = ref<ExpenseCategory[]>([
-  { id: '1', name: '訂閱', icon: Repeat, color: 'bg-indigo-500' },
-  { id: '2', name: '餐飲', icon: Utensils, color: 'bg-orange-500' },
-  { id: '3', name: '交通', icon: Car, color: 'bg-blue-500' },
-  { id: '4', name: '購物', icon: ShoppingBag, color: 'bg-pink-500' },
-  { id: '5', name: '娛樂', icon: Clapperboard, color: 'bg-purple-500' },
-  { id: '6', name: '醫療', icon: HeartPulse, color: 'bg-red-500' },
-  { id: '7', name: '教育', icon: BookOpen, color: 'bg-green-500' },
-  { id: '8', name: '生活用品', icon: Home, color: 'bg-yellow-500' },
-  { id: '9', name: '其他', icon: Package, color: 'bg-gray-500' },
+  { id: '1', name: '訂閱', icon: Repeat },
+  { id: '2', name: '餐飲', icon: Utensils },
+  { id: '3', name: '交通', icon: Car },
+  { id: '4', name: '購物', icon: ShoppingBag },
+  { id: '5', name: '娛樂', icon: Clapperboard },
+  { id: '6', name: '醫療', icon: HeartPulse },
+  { id: '7', name: '教育', icon: BookOpen },
+  { id: '8', name: '生活用品', icon: Home },
+  { id: '9', name: '其他', icon: Package },
 ])
 
 interface ExpenseRow {
@@ -283,7 +283,6 @@ const getCategoryInfo = (categoryName: string) => {
       id: '0',
       name: categoryName,
       icon: Package,
-      color: 'bg-gray-500',
     }
   )
 }

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { useExpenseData } from '@/composables/useExpenseData'
 import { formatCurrency } from '@/lib/utils'
+import { getCategoryColorStyle } from '@/lib/category-colors'
 import type { ExpenseFilter, ExpenseRecord } from '@/types'
 
 defineOptions({ name: 'ExpenseRecordsPage' })
@@ -437,11 +438,12 @@ const handleDialogOpenChange = (open: boolean) => {
                   :key="category.id"
                   class="flex items-center gap-2 p-2 rounded-lg border"
                 >
-                  <component
-                    :is="category.icon"
-                    class="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                  />
+                  <div
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                    :style="getCategoryColorStyle(category.name)"
+                  >
+                    <component :is="category.icon" class="size-4" aria-hidden="true" />
+                  </div>
                   <div class="flex-1">
                     <p class="text-sm font-medium">{{ category.name }}</p>
                     <p class="text-xs text-muted-foreground">

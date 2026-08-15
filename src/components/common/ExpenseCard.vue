@@ -25,6 +25,7 @@ import {
 } from 'lucide-vue-next'
 import type { ExpenseRecord } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { getCategoryColorStyle } from '@/lib/category-colors'
 
 interface Props {
   expense: ExpenseRecord
@@ -48,20 +49,6 @@ const getCategoryIcon = (category: string) => {
   return icons[category] || Package
 }
 
-const getCategoryColor = (category: string) => {
-  const colors: Record<string, string> = {
-    餐飲: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-    交通: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    購物: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400',
-    娛樂: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    醫療: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    教育: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    生活用品: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-    其他: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
-  }
-  return colors[category] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-}
-
 const getPaymentMethodIcon = (method: string) => {
   const icons: Record<string, typeof CreditCard> = {
     信用卡: CreditCard,
@@ -83,7 +70,8 @@ const getPaymentMethodIcon = (method: string) => {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
           <div
-            class="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center text-primary"
+            class="w-10 h-10 rounded-xl flex items-center justify-center"
+            :style="getCategoryColorStyle(props.expense.category)"
           >
             <component :is="getCategoryIcon(props.expense.category)" class="size-5" aria-hidden="true" />
           </div>
@@ -95,7 +83,11 @@ const getPaymentMethodIcon = (method: string) => {
           </div>
         </div>
         <div class="flex flex-col items-end gap-1">
-          <Badge :class="getCategoryColor(props.expense.category)" class="text-xs">
+          <Badge
+            variant="outline"
+            :style="getCategoryColorStyle(props.expense.category)"
+            class="text-xs border-transparent"
+          >
             {{ props.expense.category }}
           </Badge>
           <div class="flex items-center gap-1 text-xs text-muted-foreground">

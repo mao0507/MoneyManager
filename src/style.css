@@ -27,6 +27,26 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-category-1: var(--category-1);
+  --color-category-1-foreground: var(--category-1-foreground);
+  --color-category-2: var(--category-2);
+  --color-category-2-foreground: var(--category-2-foreground);
+  --color-category-3: var(--category-3);
+  --color-category-3-foreground: var(--category-3-foreground);
+  --color-category-4: var(--category-4);
+  --color-category-4-foreground: var(--category-4-foreground);
+  --color-category-5: var(--category-5);
+  --color-category-5-foreground: var(--category-5-foreground);
+  --color-category-6: var(--category-6);
+  --color-category-6-foreground: var(--category-6-foreground);
+  --color-category-7: var(--category-7);
+  --color-category-7-foreground: var(--category-7-foreground);
+  --color-category-8: var(--category-8);
+  --color-category-8-foreground: var(--category-8-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -81,6 +101,32 @@
   --elevation-raised: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08);
   /* Dialog/Dropdown/Popover 等浮動於畫面上方的層 */
   --elevation-lifted: 0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1);
+
+  /* 正向語意色 - 啟用狀態、自動續費、支出下降等「好事」，避免用 primary 紫（紫只留給主要動作） */
+  --success: oklch(0.6 0.15 145);
+  --success-foreground: oklch(0.985 0 0);
+  /* 中等警示 - Notifications 優先級用，比 destructive 紅弱一階 */
+  --warning: oklch(0.75 0.15 80);
+  --warning-foreground: oklch(0.2 0 0);
+
+  /* 類別標籤色盤 - 8 個色相依 category 名稱雜湊決定，避開 primary(300°) 與 destructive(27°) 附近色相，
+     讓兩個語意色維持獨有辨識度。訂閱/消費兩邊類別共用同一套盤，同名類別（例如「其他」）顏色自動一致。 */
+  --category-1: oklch(0.94 0.05 64);
+  --category-1-foreground: oklch(0.42 0.16 64);
+  --category-2: oklch(0.94 0.05 97);
+  --category-2-foreground: oklch(0.4 0.14 97);
+  --category-3: oklch(0.94 0.05 130);
+  --category-3-foreground: oklch(0.42 0.16 130);
+  --category-4: oklch(0.94 0.05 164);
+  --category-4-foreground: oklch(0.42 0.16 164);
+  --category-5: oklch(0.94 0.05 197);
+  --category-5-foreground: oklch(0.42 0.16 197);
+  --category-6: oklch(0.94 0.05 230);
+  --category-6-foreground: oklch(0.45 0.16 230);
+  --category-7: oklch(0.94 0.05 264);
+  --category-7-foreground: oklch(0.46 0.16 264);
+  --category-8: oklch(0.94 0.05 343);
+  --category-8-foreground: oklch(0.45 0.16 343);
 }
 
 .dark {
@@ -119,6 +165,28 @@
   /* 深色背景上黑色陰影幾乎不可見，加大不透明度維持層次可讀性 */
   --elevation-raised: 0 4px 12px -2px oklch(0 0 0 / 0.36), 0 2px 4px -2px oklch(0 0 0 / 0.24);
   --elevation-lifted: 0 12px 32px -8px oklch(0 0 0 / 0.5), 0 4px 8px -4px oklch(0 0 0 / 0.3);
+
+  --success: oklch(0.75 0.16 145);
+  --success-foreground: oklch(0.15 0 0);
+  --warning: oklch(0.8 0.16 80);
+  --warning-foreground: oklch(0.15 0 0);
+
+  --category-1: oklch(0.28 0.07 64);
+  --category-1-foreground: oklch(0.82 0.13 64);
+  --category-2: oklch(0.28 0.07 97);
+  --category-2-foreground: oklch(0.8 0.12 97);
+  --category-3: oklch(0.28 0.07 130);
+  --category-3-foreground: oklch(0.82 0.13 130);
+  --category-4: oklch(0.28 0.07 164);
+  --category-4-foreground: oklch(0.82 0.13 164);
+  --category-5: oklch(0.28 0.07 197);
+  --category-5-foreground: oklch(0.82 0.13 197);
+  --category-6: oklch(0.28 0.07 230);
+  --category-6-foreground: oklch(0.84 0.13 230);
+  --category-7: oklch(0.28 0.07 264);
+  --category-7-foreground: oklch(0.85 0.13 264);
+  --category-8: oklch(0.28 0.07 343);
+  --category-8-foreground: oklch(0.84 0.13 343);
 }
 
 @layer base {
