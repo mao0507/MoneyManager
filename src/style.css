@@ -3,6 +3,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', ui-sans-serif,
+    system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -22,6 +24,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-cream: var(--cream);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -47,10 +50,11 @@
   --color-category-7-foreground: var(--category-7-foreground);
   --color-category-8: var(--category-8);
   --color-category-8-foreground: var(--category-8-foreground);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Flip7 系統的固定 rem 尺度（4px 一階），不再從單一 --radius 用 calc 推導 */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -64,53 +68,66 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.5 0.18 300);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.6 0.16 300);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  /* 互動元件 hover 的抬升層 - 比 shadow-sm 更明顯的雙層陰影，帶真實 offset/blur */
-  --elevation-raised: 0 4px 12px -2px oklch(0.205 0 0 / 0.12), 0 2px 4px -2px oklch(0.205 0 0 / 0.08);
-  /* Dialog/Dropdown/Popover 等浮動於畫面上方的層 */
-  --elevation-lifted: 0 12px 32px -8px oklch(0.205 0 0 / 0.18), 0 4px 8px -4px oklch(0.205 0 0 / 0.1);
+  /* Flip7 配色系統 - teal/coral/gold，直接沿用規格書的 hex 值，不轉 OKLCH 保留精確度 */
+  --background: #EFF8F7;
+  /* Surface Base */
+  --foreground: #1E8C86;
+  /* Primary Dark - 規格書明講這色是給「淺色底文字」用的 */
+  --card: #FFFFFF;
+  /* Surface Card */
+  --card-foreground: #1E8C86;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E8C86;
+  --primary: #FFD23F;
+  /* Accent Gold - shadcn 的 primary 驅動 Button 預設/CTA 變體與 Badge 預設，對應規格書「Primary (Gold CTA)」 */
+  --primary-foreground: #1A1400;
+  /* 金色背景亮度高，白字對比不夠，用深褐墨色 */
+  --secondary: #E8F6F5;
+  /* Primary BG - teal 淡底 */
+  --secondary-foreground: #1E8C86;
+  --muted: #EFF8F7;
+  --muted-foreground: #5C8A87;
+  /* 中彩度青灰，次要文字 */
+  --accent: #FFE47A;
+  /* Accent Light - hover 淡金 */
+  --accent-foreground: #1A1400;
+  --destructive: #EF6C4A;
+  /* Coral */
+  --destructive-foreground: #FFFFFF;
+  --border: #D7ECEA;
+  --input: #D7ECEA;
+  --ring: #2BA8A2;
+  /* Primary Teal - focus ring 用結構色而非 CTA 金色 */
+  --cream: #FFF8E7;
+  /* Input 表面色，規格書明講 */
+  --chart-1: #2BA8A2;
+  --chart-2: #FFD23F;
+  --chart-3: #EF6C4A;
+  --chart-4: #5DADE2;
+  --chart-5: #1E8C86;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1E8C86;
+  --sidebar-primary: #2BA8A2;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E8F6F5;
+  --sidebar-accent-foreground: #1E8C86;
+  --sidebar-border: #D7ECEA;
+  --sidebar-ring: #2BA8A2;
+  /* Elevation - Colored Glow System，取代原本純黑陰影 */
+  --elevation-raised: 0 4px 16px rgba(43, 168, 162, 0.12), 0 2px 4px rgba(43, 168, 162, 0.08);
+  --elevation-lifted: 0 12px 32px rgba(30, 60, 58, 0.18), 0 4px 8px rgba(30, 60, 58, 0.1);
+  --shadow-cta-glow: 0 4px 20px rgba(255, 210, 63, 0.4);
+  --shadow-destructive-glow: 0 4px 20px rgba(239, 108, 74, 0.35);
+  --shadow-card: 0 4px 20px rgba(43, 168, 162, 0.1);
 
-  /* 正向語意色 - 啟用狀態、自動續費、支出下降等「好事」，避免用 primary 紫（紫只留給主要動作） */
-  --success: oklch(0.6 0.15 145);
-  --success-foreground: oklch(0.985 0 0);
-  /* 中等警示 - Notifications 優先級用，比 destructive 紅弱一階 */
-  --warning: oklch(0.75 0.15 80);
-  --warning-foreground: oklch(0.2 0 0);
+  /* 正向語意色 */
+  --success: #27AE60;
+  --success-foreground: #FFFFFF;
+  /* 中等警示 - 沿用 Accent Gold，跟 CTA 共色但用淡底+本體色文字（見 Do/Don't），不會混淆 */
+  --warning: #FFD23F;
+  --warning-foreground: #1A1400;
 
-  /* 類別標籤色盤 - 8 個色相依 category 名稱雜湊決定，避開 primary(300°) 與 destructive(27°) 附近色相，
-     讓兩個語意色維持獨有辨識度。訂閱/消費兩邊類別共用同一套盤，同名類別（例如「其他」）顏色自動一致。 */
+  /* 類別標籤色盤 - 沿用既有 8 色雜湊系統，尚未重新調色配合 Flip7 主題，見 DESIGN.md 已知落差 */
   --category-1: oklch(0.94 0.05 64);
   --category-1-foreground: oklch(0.42 0.16 64);
   --category-2: oklch(0.94 0.05 97);
@@ -130,46 +147,49 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.72 0.16 300);
-  --primary-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.6 0.16 300);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-  /* 深色背景上黑色陰影幾乎不可見，加大不透明度維持層次可讀性 */
-  --elevation-raised: 0 4px 12px -2px oklch(0 0 0 / 0.36), 0 2px 4px -2px oklch(0 0 0 / 0.24);
-  --elevation-lifted: 0 12px 32px -8px oklch(0 0 0 / 0.5), 0 4px 8px -4px oklch(0 0 0 / 0.3);
+  --background: #0F2926;
+  --foreground: #DFF3F1;
+  --card: #16332F;
+  --card-foreground: #DFF3F1;
+  --popover: #16332F;
+  --popover-foreground: #DFF3F1;
+  --primary: #FFD23F;
+  --primary-foreground: #1A1400;
+  --secondary: #1E403C;
+  --secondary-foreground: #7FE0D8;
+  --muted: #1E403C;
+  --muted-foreground: #8FBAB6;
+  --accent: #3A331A;
+  --accent-foreground: #FFE47A;
+  --destructive: #D45233;
+  --destructive-foreground: #FFFFFF;
+  --border: #234B46;
+  --input: #234B46;
+  --ring: #3CC4BD;
+  --cream: #2A2413;
+  --chart-1: #3CC4BD;
+  --chart-2: #FFD23F;
+  --chart-3: #FF8A6A;
+  --chart-4: #5DADE2;
+  --chart-5: #7FE0D8;
+  --sidebar: #16332F;
+  --sidebar-foreground: #DFF3F1;
+  --sidebar-primary: #3CC4BD;
+  --sidebar-primary-foreground: #0F2926;
+  --sidebar-accent: #1E403C;
+  --sidebar-accent-foreground: #DFF3F1;
+  --sidebar-border: #234B46;
+  --sidebar-ring: #3CC4BD;
+  --elevation-raised: 0 4px 16px rgba(0, 0, 0, 0.36), 0 2px 4px rgba(0, 0, 0, 0.24);
+  --elevation-lifted: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-cta-glow: 0 4px 20px rgba(255, 210, 63, 0.5);
+  --shadow-destructive-glow: 0 4px 20px rgba(212, 82, 51, 0.45);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.24);
 
-  --success: oklch(0.75 0.16 145);
-  --success-foreground: oklch(0.15 0 0);
-  --warning: oklch(0.8 0.16 80);
-  --warning-foreground: oklch(0.15 0 0);
+  --success: #2ECC71;
+  --success-foreground: #0F2926;
+  --warning: #FFD23F;
+  --warning-foreground: #1A1400;
 
   --category-1: oklch(0.28 0.07 64);
   --category-1-foreground: oklch(0.82 0.13 64);
@@ -195,5 +215,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
 }

@@ -42,6 +42,7 @@ MoneyManager：訂閱與消費管理系統。追蹤訂閱服務（月繳/年繳�
 
 - 產品名稱：MoneyManager（訂閱與消費管理系統）
 - 介面語言固定為繁體中文（台灣用語），非多語系產品
+- 視覺世界：Flip7 design system（teal-coral-gold，retro-playful），2026-08 換裝定案，取代原本的「安靜帳本」極簡黑白灰世界。細節見 DESIGN.md。
 
 ## Evidence on Hand
 
