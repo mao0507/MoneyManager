@@ -61,10 +61,9 @@ const reloadPage = () => {
               />
             </svg>
           </div>
-          <CardTitle class="text-destructive">Something went wrong</CardTitle>
+          <CardTitle class="text-destructive">發生錯誤</CardTitle>
           <CardDescription>
-            An unexpected error occurred. Please try refreshing the page or contact support if the
-            problem persists.
+            系統發生未預期的錯誤，請嘗試重新整理頁面，若問題持續發生請聯絡客服。
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
@@ -74,8 +73,8 @@ const reloadPage = () => {
             </p>
           </div>
           <div class="flex gap-2 justify-center">
-            <Button @click="resetError" variant="outline"> Try Again </Button>
-            <Button @click="reloadPage"> Refresh Page </Button>
+            <Button @click="resetError" variant="outline"> 重試 </Button>
+            <Button @click="reloadPage"> 重新整理頁面 </Button>
           </div>
         </CardContent>
       </Card>

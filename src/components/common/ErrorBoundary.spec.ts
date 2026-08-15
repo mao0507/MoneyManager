@@ -25,6 +25,6 @@ describe('ErrorBoundary', () => {
     })
     await nextTick()
 
-    expect(wrapper.text()).toContain('Something went wrong')
+    expect(wrapper.text()).toContain('發生錯誤')
   })
 })
