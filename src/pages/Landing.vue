@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
-import { Receipt, Repeat, TrendingUp } from 'lucide-vue-next'
+import { ArrowRight, Receipt, Repeat, TrendingUp } from 'lucide-vue-next'
 import AuthBrandPanel from '@/components/common/AuthBrandPanel.vue'
 
 defineOptions({ name: 'LandingPage' })
@@ -33,8 +33,19 @@ const capabilities = [
         一個地方追蹤所有訂閱與日常消費，正確算出每月、每年的實際花費。
       </p>
 
-      <Button as-child size="lg" class="mt-8 w-fit">
-        <RouterLink to="/login">開始使用</RouterLink>
+      <Button
+        as-child
+        size="lg"
+        class="mt-8 h-14 w-fit px-8 text-base font-bold"
+        style="box-shadow: var(--shadow-cta-glow)"
+      >
+        <RouterLink to="/login" class="group">
+          開始使用
+          <ArrowRight
+            class="size-5 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </RouterLink>
       </Button>
 
       <div class="mt-12 grid gap-5 sm:grid-cols-3">
