@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { computed } from 'vue'
 import { Bot, Server, Smartphone } from 'lucide-vue-next'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/format'
 import { findBrandIcon } from '@/lib/brand-icons'
 import { getCategoryColorStyle } from '@/lib/category-colors'
 import BrandLogo from './BrandLogo.vue'

@@ -24,7 +24,7 @@ import {
   Wallet,
 } from 'lucide-vue-next'
 import type { ExpenseRecord } from '@/types'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/format'
 import { getCategoryColorStyle } from '@/lib/category-colors'
 
 interface Props {
