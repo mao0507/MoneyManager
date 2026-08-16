@@ -116,17 +116,43 @@ const vendorStats = computed((): VendorStats[] => {
   }))
 })
 
-// 月度數據（用於報表，暫時使用模擬數據）
-const monthlyData = computed(
-  (): MonthlyData[] => [
-    { month: '2025年1月', amount: 1234.56, change: '+5.2%' },
-    { month: '2025年2月', amount: 1456.78, change: '+18.0%' },
-    { month: '2025年3月', amount: 1678.9, change: '+15.2%' },
-    { month: '2025年4月', amount: 1890.12, change: '+12.6%' },
-    { month: '2025年5月', amount: 2012.34, change: '+6.5%' },
-    { month: '2025年6月', amount: 2134.56, change: '+6.1%' },
-  ],
-)
+// 月度數據（用於報表）- 依訂閱的 startDate 回推過去 6 個月的真實月費總額
+// 只算目前還活躍的月繳訂閱（跟 stats.monthlyTotal 同一套定義，幣別未換算，維持既有限制）
+// 已知限制：沒有付款歷史紀錄，訂閱如果中途取消，取消前的月份金額算不出來
+const monthlyData = computed((): MonthlyData[] => {
+  const now = new Date()
+  const months: MonthlyData[] = []
+  let previousAmount: number | null = null
+
+  for (let i = 5; i >= 0; i--) {
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0)
+
+    const amount = originalItems.value
+      .filter(
+        (item) =>
+          item.active && item.cycle === 'Monthly' && new Date(item.startDate) <= monthEnd,
+      )
+      .reduce((sum, item) => sum + item.amount, 0)
+
+    const change =
+      previousAmount === null || previousAmount === 0
+        ? '—'
+        : `${amount - previousAmount >= 0 ? '+' : ''}${(
+            ((amount - previousAmount) / previousAmount) *
+            100
+          ).toFixed(1)}%`
+
+    months.push({
+      month: `${monthDate.getFullYear()}年${monthDate.getMonth() + 1}月`,
+      amount,
+      change,
+    })
+    previousAmount = amount
+  }
+
+  return months
+})
 
 // 搜尋和篩選功能
 const searchQuery = ref('')
