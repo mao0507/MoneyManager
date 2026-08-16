@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { ref, computed, onMounted } from 'vue'
 import {
@@ -18,7 +19,7 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
@@ -28,7 +29,7 @@ import { toTrendChartData, toVendorBarChartData } from '@/lib/chart-data'
 import { getChartPalette } from '@/lib/utils'
 import { getCategoryColorStyle } from '@/lib/category-colors'
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
+ChartJS.register(BarElement, CategoryScale, LinearScale, ChartTooltip, Legend)
 
 defineOptions({ name: 'ReportsPage' })
 
@@ -83,6 +84,63 @@ const stats = computed(() => {
     totalCategories: categoryStats.value.length + expenseCategoryStats.value.length,
     subscriptionTotal,
     expenseTotal,
+  }
+})
+
+const currencyFormatter = new Intl.NumberFormat('zh-TW', {
+  style: 'currency',
+  currency: 'TWD',
+  maximumFractionDigits: 0,
+})
+const percentFormatter = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
+
+// 支出預測 - 用實際月平均（stats.averageMonthly）外推，不是寫死數字
+const forecast = computed(() => ({
+  nextMonth: currencyFormatter.format(stats.value.averageMonthly),
+  nextQuarter: currencyFormatter.format(stats.value.averageMonthly * 3),
+  nextYear: currencyFormatter.format(stats.value.averageMonthly * 12),
+  growth: percentFormatter(stats.value.monthlyChange),
+}))
+
+// 趨勢分析 - 全部改吃 monthlyData 實際數字，季度增長比較最近 3 個月 vs 前 3 個月的加總，
+// 資料只有 6 個月，沒有「年同比」這種需要 12 個月以上的統計，改成誠實可算的「半年變化」
+const trendInsights = computed(() => {
+  const months = monthlyData.value
+  const quarterlyGrowth = (() => {
+    if (months.length < 6) return null
+    const recent = months.slice(-3).reduce((sum, m) => sum + m.amount, 0)
+    const previous = months.slice(-6, -3).reduce((sum, m) => sum + m.amount, 0)
+    if (previous === 0) return null
+    return ((recent - previous) / previous) * 100
+  })()
+
+  const halfYearChange = (() => {
+    const first = months[0]
+    const last = months[months.length - 1]
+    if (!first || !last || first.amount === 0) return null
+    return ((last.amount - first.amount) / first.amount) * 100
+  })()
+
+  const highestMonth = months.length
+    ? months.reduce((max, m) => (m.amount > max.amount ? m : max))
+    : null
+  const lowestMonth = months.length
+    ? months.reduce((min, m) => (m.amount < min.amount ? m : min))
+    : null
+
+  const avgMonthlyGrowth = (() => {
+    if (months.length < 2) return null
+    const diffs = months.slice(1).map((m, i) => m.amount - months[i].amount)
+    return diffs.reduce((sum, d) => sum + d, 0) / diffs.length
+  })()
+
+  return {
+    monthlyGrowthRate: percentFormatter(stats.value.monthlyChange),
+    quarterlyGrowth: quarterlyGrowth === null ? '資料不足' : percentFormatter(quarterlyGrowth),
+    halfYearChange: halfYearChange === null ? '資料不足' : percentFormatter(halfYearChange),
+    highestMonth: highestMonth?.month ?? '—',
+    lowestMonth: lowestMonth?.month ?? '—',
+    avgMonthlyGrowth: avgMonthlyGrowth === null ? '—' : currencyFormatter.format(avgMonthlyGrowth),
   }
 })
 
@@ -199,32 +257,42 @@ const vendorChartOptions = {
           <SelectItem value="all">全部時間</SelectItem>
         </SelectContent>
       </Select>
-      <span title="即將推出">
-        <Button variant="outline" size="sm" class="bg-card" disabled>
-          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          匯出 PDF
-        </Button>
-      </span>
-      <span title="即將推出">
-        <Button variant="outline" size="sm" class="bg-card" disabled>
-          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-            />
-          </svg>
-          匯出 CSV
-        </Button>
-      </span>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <span tabindex="0" class="inline-block">
+            <Button variant="outline" size="sm" class="bg-card" disabled>
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              匯出 PDF
+            </Button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>即將推出</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <span tabindex="0" class="inline-block">
+            <Button variant="outline" size="sm" class="bg-card" disabled>
+              <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                />
+              </svg>
+              匯出 CSV
+            </Button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>即將推出</TooltipContent>
+      </Tooltip>
     </PageHeader>
 
     <!-- 統計概覽 -->
@@ -362,20 +430,22 @@ const vendorChartOptions = {
               <div class="space-y-4">
                 <div class="flex justify-between items-center">
                   <span class="text-sm text-muted-foreground">下個月</span>
-                  <span class="font-medium">NT$2,200</span>
+                  <span class="font-medium">{{ forecast.nextMonth }}</span>
                 </div>
                 <div class="flex justify-between items-center">
                   <span class="text-sm text-muted-foreground">下季度</span>
-                  <span class="font-medium">NT$6,600</span>
+                  <span class="font-medium">{{ forecast.nextQuarter }}</span>
                 </div>
                 <div class="flex justify-between items-center">
                   <span class="text-sm text-muted-foreground">明年</span>
-                  <span class="font-medium">NT$26,400</span>
+                  <span class="font-medium">{{ forecast.nextYear }}</span>
                 </div>
                 <Separator />
                 <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium">預期增長</span>
-                  <Badge variant="destructive" class="text-xs">+23.5%</Badge>
+                  <span class="text-sm font-medium">較上月增長</span>
+                  <Badge :variant="stats.monthlyChange <= 0 ? 'success' : 'destructive-soft'" class="text-xs">
+                    {{ forecast.growth }}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -397,15 +467,15 @@ const vendorChartOptions = {
                 <div class="space-y-3">
                   <div class="flex justify-between items-center">
                     <span class="text-sm">月度增長率</span>
-                    <Badge variant="default" class="text-xs">+6.1%</Badge>
+                    <Badge variant="default" class="text-xs">{{ trendInsights.monthlyGrowthRate }}</Badge>
                   </div>
                   <div class="flex justify-between items-center">
                     <span class="text-sm">季度增長</span>
-                    <Badge variant="default" class="text-xs">+18.3%</Badge>
+                    <Badge variant="default" class="text-xs">{{ trendInsights.quarterlyGrowth }}</Badge>
                   </div>
                   <div class="flex justify-between items-center">
-                    <span class="text-sm">年同比</span>
-                    <Badge variant="default" class="text-xs">+73.2%</Badge>
+                    <span class="text-sm">半年變化</span>
+                    <Badge variant="default" class="text-xs">{{ trendInsights.halfYearChange }}</Badge>
                   </div>
                 </div>
               </div>
@@ -414,15 +484,15 @@ const vendorChartOptions = {
                 <div class="space-y-3">
                   <div class="flex justify-between items-center">
                     <span class="text-sm">支出最高月份</span>
-                    <span class="text-sm font-medium">June 2025</span>
+                    <span class="text-sm font-medium">{{ trendInsights.highestMonth }}</span>
                   </div>
                   <div class="flex justify-between items-center">
                     <span class="text-sm">支出最低月份</span>
-                    <span class="text-sm font-medium">January 2025</span>
+                    <span class="text-sm font-medium">{{ trendInsights.lowestMonth }}</span>
                   </div>
                   <div class="flex justify-between items-center">
                     <span class="text-sm">月平均增長</span>
-                    <span class="text-sm font-medium">NT$150</span>
+                    <span class="text-sm font-medium">{{ trendInsights.avgMonthlyGrowth }}</span>
                   </div>
                 </div>
               </div>

@@ -17,7 +17,7 @@ defineOptions({ name: 'PageHeader' })
       </h1>
       <p v-if="description" class="text-muted-foreground mt-1">{{ description }}</p>
     </div>
-    <div v-if="$slots.default" class="flex items-center gap-2">
+    <div v-if="$slots.default" class="flex flex-wrap items-center gap-2">
       <slot />
     </div>
   </div>

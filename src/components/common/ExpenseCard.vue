@@ -109,7 +109,7 @@ const getPaymentMethodIcon = (method: string) => {
             <Button
               variant="ghost"
               size="icon"
-              class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="h-8 w-8 opacity-60 transition-opacity hover:bg-muted hover:opacity-100"
             >
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

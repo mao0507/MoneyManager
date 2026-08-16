@@ -2,6 +2,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import PageHeader from '@/components/common/PageHeader.vue'
 import {
   Select,
@@ -11,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { computed, ref } from 'vue'
+import { toast } from 'vue-sonner'
 import { isDark } from '@/composables/useTheme'
 import { useAuth } from '@/composables/useAuth'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
@@ -61,19 +74,15 @@ const { user } = useAuth()
 const { stats: subscriptionStats, clearAllSubscriptions } = useSubscriptionData()
 const { stats: expenseStats, clearAllExpenses } = useExpenseData()
 
-const clearError = ref<string | null>(null)
 const isClearing = ref(false)
 
-// ponytail: window.confirm 先擋誤刪,之後接自訂 dialog 元件再換
 const handleClearAllData = async () => {
-  if (!confirm('確定要清除所有資料嗎？此動作無法復原。')) return
-
-  clearError.value = null
   isClearing.value = true
   try {
     await Promise.all([clearAllSubscriptions(), clearAllExpenses()])
+    toast.success('所有資料已清除')
   } catch (error) {
-    clearError.value = error instanceof Error ? error.message : '清除資料失敗，請稍後再試'
+    toast.error(error instanceof Error ? error.message : '清除資料失敗，請稍後再試')
   } finally {
     isClearing.value = false
   }
@@ -220,24 +229,55 @@ const userProfile = computed(() => ({
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
-            <span class="block" title="即將推出">
-              <Button class="w-full" disabled> 匯入訂閱資料 </Button>
-            </span>
-            <span class="block" title="即將推出">
-              <Button variant="outline" class="w-full" disabled> 匯出資料 </Button>
-            </span>
-            <span class="block" title="即將推出">
-              <Button variant="outline" class="w-full" disabled> 備份設定 </Button>
-            </span>
-            <Button
-              variant="destructive"
-              class="w-full"
-              :disabled="isClearing"
-              @click="handleClearAllData"
-            >
-              {{ isClearing ? '清除中…' : '清除所有資料' }}
-            </Button>
-            <p v-if="clearError" class="text-sm text-destructive">{{ clearError }}</p>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span tabindex="0" class="block">
+                  <Button class="w-full" disabled> 匯入訂閱資料 </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>即將推出</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span tabindex="0" class="block">
+                  <Button variant="outline" class="w-full" disabled> 匯出資料 </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>即將推出</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span tabindex="0" class="block">
+                  <Button variant="outline" class="w-full" disabled> 備份設定 </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>即將推出</TooltipContent>
+            </Tooltip>
+
+            <AlertDialog>
+              <AlertDialogTrigger as-child>
+                <Button variant="destructive" class="w-full" :disabled="isClearing">
+                  {{ isClearing ? '清除中…' : '清除所有資料' }}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>確定要清除所有資料嗎？</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    這會刪除所有訂閱與消費紀錄，此動作無法復原。
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction
+                    class="bg-destructive text-white hover:bg-destructive/90"
+                    @click="handleClearAllData"
+                  >
+                    確定清除
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardContent>
       </Card>

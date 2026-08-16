@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { toast } from 'vue-sonner'
 import ExpenseCard from '@/components/common/ExpenseCard.vue'
 import MonthSelector from '@/components/common/MonthSelector.vue'
 import AddExpenseDialog from '@/components/common/AddExpenseDialog.vue'
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PageHeader from '@/components/common/PageHeader.vue'
 import { useExpenseData } from '@/composables/useExpenseData'
 import { formatCurrency } from '@/lib/format'
@@ -35,6 +37,7 @@ const {
   viewMode,
   selectedMonth,
   fetchError,
+  isLoading,
   refetch,
   addExpense,
   updateExpense,
@@ -52,8 +55,10 @@ const handleExpenseSubmit = async (data: Omit<ExpenseRecord, 'id' | 'createdAt' 
   try {
     if (editingItem.value) {
       await updateExpense(editingItem.value.id, data)
+      toast.success('消費紀錄已更新')
     } else {
       await addExpense(data)
+      toast.success('消費紀錄已新增')
     }
     editingItem.value = null
     isAddDialogOpen.value = false
@@ -88,17 +93,36 @@ const handleDeleteExpense = async (expense: ExpenseRecord) => {
   pageError.value = null
   try {
     await removeExpense(expense.id)
+    toast.success('消費紀錄已刪除')
   } catch (error) {
     pageError.value = error instanceof Error ? error.message : '刪除消費紀錄失敗，請稍後再試'
   }
+}
+
+const handleRefetch = async () => {
+  await refetch()
+  toast.success('已重新整理')
 }
 </script>
 
 <template>
   <div class="space-y-6">
     <PageHeader title="消費紀錄" description="管理您的日常消費記錄和支出分析">
-      <Button variant="outline" size="icon" title="重新整理" class="bg-card" @click="refetch">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <Button
+        variant="outline"
+        size="icon"
+        title="重新整理"
+        class="bg-card"
+        :disabled="isLoading"
+        @click="handleRefetch"
+      >
+        <svg
+          class="w-4 h-4"
+          :class="{ 'animate-spin': isLoading }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -326,11 +350,11 @@ const handleDeleteExpense = async (expense: ExpenseRecord) => {
         </div>
 
         <!-- 主要操作按鈕 -->
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             <span>顯示 {{ sortedExpenses.length }} 筆消費紀錄</span>
           </div>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <Button size="sm" @click="openAddDialog">
               <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -342,32 +366,42 @@ const handleDeleteExpense = async (expense: ExpenseRecord) => {
               </svg>
               新增消費
             </Button>
-            <span title="即將推出">
-              <Button variant="outline" size="sm" class="bg-card" disabled>
-                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                  />
-                </svg>
-                匯入
-              </Button>
-            </span>
-            <span title="即將推出">
-              <Button variant="outline" size="sm" class="bg-card" disabled>
-                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  />
-                </svg>
-                匯出
-              </Button>
-            </span>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span tabindex="0" class="inline-block">
+                  <Button variant="outline" size="sm" class="bg-card" disabled>
+                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                      />
+                    </svg>
+                    匯入
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>即將推出</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span tabindex="0" class="inline-block">
+                  <Button variant="outline" size="sm" class="bg-card" disabled>
+                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    匯出
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>即將推出</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 

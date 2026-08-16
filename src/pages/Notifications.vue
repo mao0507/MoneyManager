@@ -250,7 +250,7 @@ const getPriorityColor = (priority: string) => {
               <div
                 v-for="notification in notifications"
                 :key="notification.id"
-                class="flex items-start gap-4 p-4 rounded-lg border transition-colors hover:bg-muted/50"
+                class="group flex items-start gap-4 p-4 rounded-lg border transition-colors hover:bg-muted/50"
                 :class="{ 'bg-muted/30': !notification.read }"
               >
                 <!-- 通知圖示 -->
@@ -284,10 +284,11 @@ const getPriorityColor = (priority: string) => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="刪除通知"
+                      class="h-8 w-8 shrink-0 text-muted-foreground opacity-60 transition-opacity hover:text-destructive hover:opacity-100 group-hover:opacity-100"
                       @click="deleteNotification(notification.id)"
                     >
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
