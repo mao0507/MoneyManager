@@ -118,8 +118,8 @@ components:
 ## Layout
 
 ### 側邊欄殼層（`App.vue`）
-- 已登入頁面：`flex` 佈局，左側 `<aside>` 固定寬度 `16rem`（`w-64`），`sticky top-0 h-dvh` 讓側邊欄不隨內容捲動，`md` 以下隱藏改用頂欄漢堡選單（沿用既有 `DropdownMenu` 元件）
-- 頂欄（`sticky top-0`，`backdrop-blur`）：左側手機版漢堡 + 搜尋列（`sm` 以上顯示），右側深淺色切換／通知捷徑／說明捷徑
+- 已登入頁面：`flex` 佈局，左側 `<aside>` 固定寬度 `16rem`（`w-64`），`sticky top-0 h-dvh` 讓側邊欄不隨內容捲動，`md` 以下隱藏改用底部固定 tab bar（5 項常用導覽，`fixed inset-x-0 bottom-0`，含 `safe-area-inset-bottom`）取代原本的頂欄漢堡選單
+- 頂欄（`sticky top-0`，`backdrop-blur`）：搜尋列（`sm` 以上顯示），右側深淺色切換／通知捷徑／說明捷徑
 - 未登入頁面（`route.meta.publicOnly`）：維持簡化版本，不套側邊欄，只有極簡品牌列
 
 ### Dashboard 網格
@@ -127,8 +127,13 @@ components:
 - 次列：`lg:grid-cols-12`，左 8 欄是月度支出趨勢面積圖（真實資料），右 4 欄是供應商用量長條列表（progress bar，寬度依最大供應商金額正規化）
 - 末列：近期活動表格（日期/項目/類型/狀態/金額五欄），合併原本分開的「最近付款」與「即將續費」兩張卡片
 
+### Landing（合併登入）
+2026-08 第四輪：獨立的 `/login` 頁面併入 `Landing.vue`，`/login` 改成重導到 `/`。
+
+第一版首屏用「搜尋即登入引導」（大搜尋框 focus 後展開登入提示卡）——使用者實測回饋「互動不直覺、太平淡、跟系統其他頁不一致」，同輪修正掉，改用第二版：首屏直接借 `Dashboard.vue` 首列 KPI 卡的結構語言（icon 方塊 + 大數字 + 標籤）當 hero，數字打碼成 `NT$••,•••` 代表「這是你的真實數字，登入才看得到」，Google 登入鈕直接嵌在卡片裡，不用先互動才發現要登入。打碼數字用 2.4s 明滅呼吸暗示還沒解鎖（`prefers-reduced-motion` guard）。搜尋互動 command-palette 結構整組捨棄，不留殘跡。下方維持原本三小一大的 bento 功能簡介 grid。
+
 ### Google 登入按鈕
-延續前兩版的例外：白底 + Google 官方四色 G 圖示，不套用系統強調色。
+KPI 卡版本改用系統主要按鈕樣式（`bg-primary` + `--shadow-cta-glow`），G 圖示縮小置於白底圓角小方塊內維持品牌可辨識度——這是新例外，取代前兩版「整顆按鈕白底」的做法，因為登入鈕現在嵌在 KPI 卡 CTA 位置，要跟卡片本身的強調色語言一致，不是獨立漂浮的登入區塊。
 
 ## Do's and Don'ts
 

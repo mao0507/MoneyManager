@@ -44,13 +44,9 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    // Landing 頁已經合併登入功能，/login 留重導向給舊書籤/連結用
     path: '/login',
-    name: 'login',
-    component: () => import('@/pages/Login.vue'),
-    meta: {
-      title: '登入',
-      publicOnly: true,
-    },
+    redirect: (to) => ({ path: '/', query: to.query }),
   },
   {
     path: '/reports',
@@ -112,7 +108,7 @@ router.beforeEach(async (to) => {
   } = await supabase.auth.getSession()
 
   if (to.meta.requiresAuth && !session) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    return { name: 'landing', query: { redirect: to.fullPath } }
   }
 
   // 已登入的使用者不該停留在介紹頁/登入頁，直接進 dashboard
