@@ -6,7 +6,6 @@ import {
   HelpCircle,
   LayoutDashboard,
   LogOut,
-  Menu,
   Moon,
   Receipt,
   Repeat,
@@ -16,23 +15,24 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-vue-next'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 import { useAuth } from '@/composables/useAuth'
 import { isDark, toggleDark } from '@/composables/useTheme'
 import { useSubscriptionData } from '@/composables/useSubscriptionData'
 import { useExpenseData } from '@/composables/useExpenseData'
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { Toaster } from '@/components/ui/sonner'
 
 const route = useRoute()
 const router = useRouter()
 const { isAuthenticated, signOut } = useAuth()
+
+// signOut() 只清 Supabase session，不會自動導頁 —— router 的 beforeEach 只在「導航當下」檢查，
+// 登出當下沒有觸發導航，使用者會卡在原本的受保護頁面，資料悄悄清空但畫面沒變，像沒反應
+const handleSignOut = async () => {
+  await signOut()
+  router.push('/')
+}
 
 // 導航配置
 const navigationItems = [
@@ -43,6 +43,9 @@ const navigationItems = [
   { path: '/notifications', label: '通知設定', icon: Bell },
   { path: '/settings', label: '設定', icon: Settings },
 ] as const
+
+// 底部 tab bar（手機版導覽）只放最常用 5 項，通知設定改走頂欄鈴鐺圖示，避免跟側邊欄選單重複
+const bottomNavItems = navigationItems.filter((item) => item.path !== '/notifications')
 
 // 檢查路由是否為當前活躍狀態
 const isActive = (path: string) => computed(() => route.path === path)
@@ -108,6 +111,8 @@ function onSearchEnter() {
 </script>
 
 <template>
+  <TooltipProvider :delay-duration="200">
+  <Toaster rich-colors close-button />
   <div v-if="isPublicPage" class="min-h-dvh">
     <header class="border-b border-border">
       <div class="container mx-auto flex h-14 items-center gap-3 px-4">
@@ -165,7 +170,7 @@ function onSearchEnter() {
       <button
         v-if="isAuthenticated"
         class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground cursor-pointer"
-        @click="signOut"
+        @click="handleSignOut"
       >
         <LogOut class="size-4.5 shrink-0" aria-hidden="true" />
         登出
@@ -177,40 +182,14 @@ function onSearchEnter() {
         class="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/70"
       >
         <div class="flex h-16 items-center gap-3 px-4 md:px-6">
-          <!-- 行動版：漢堡選單取代側邊欄 -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="size-11 md:hidden"
-                aria-label="開啟選單"
-              >
-                <Menu class="size-5" aria-hidden="true" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" class="w-56">
-              <DropdownMenuItem v-for="item in navigationItems" :key="item.path" as-child>
-                <RouterLink
-                  :to="item.path"
-                  :class="[
-                    'flex items-center gap-2',
-                    isActive(item.path).value ? 'text-primary font-medium' : '',
-                  ]"
-                >
-                  <component :is="item.icon" class="size-4" aria-hidden="true" />
-                  {{ item.label }}
-                </RouterLink>
-              </DropdownMenuItem>
-              <template v-if="isAuthenticated">
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" @click="signOut">
-                  <LogOut class="size-4" aria-hidden="true" />
-                  登出
-                </DropdownMenuItem>
-              </template>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <RouterLink to="/dashboard" class="flex items-center gap-2 md:hidden">
+            <span
+              class="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+            >
+              <Zap class="size-4" aria-hidden="true" />
+            </span>
+            <span class="text-base font-extrabold tracking-tight">MoneyManager</span>
+          </RouterLink>
 
           <div class="relative hidden max-w-sm flex-1 sm:block">
             <Search
@@ -290,15 +269,33 @@ function onSearchEnter() {
         </div>
       </header>
 
-      <main class="flex-1 px-4 py-6 md:px-8 md:py-8">
+      <main class="flex-1 px-4 pb-24 pt-6 md:px-8 md:py-8">
         <div class="mx-auto max-w-7xl">
           <ErrorBoundary :key="route.fullPath">
             <RouterView />
           </ErrorBoundary>
         </div>
       </main>
+
+      <!-- 底部 tab bar：md 以下取代側邊欄成為主要導覽 -->
+      <nav
+        class="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden"
+        style="padding-bottom: env(safe-area-inset-bottom)"
+      >
+        <RouterLink
+          v-for="item in bottomNavItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium"
+          :class="isActive(item.path).value ? 'text-primary' : 'text-muted-foreground'"
+        >
+          <component :is="item.icon" class="size-5" aria-hidden="true" />
+          {{ item.label }}
+        </RouterLink>
+      </nav>
     </div>
   </div>
+  </TooltipProvider>
 </template>
 
 <style scoped>
