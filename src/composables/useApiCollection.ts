@@ -1,22 +1,16 @@
 import { ref, watch, type Ref } from 'vue'
-import { supabase } from '@/lib/supabase'
+import { apiClient } from '@/lib/api-client'
 import { useAuth } from './useAuth'
 
-interface OrderClause {
-  column: string
-  ascending: boolean
-}
-
-interface UseSupabaseCollectionOptions<Row, Item> {
-  table: string
+interface UseApiCollectionOptions<Row, Item> {
+  resource: string
   mapRow: (row: Row) => Item
-  orderBy: OrderClause[]
   getId: (item: Item) => string
 }
 
-// 共用的「登入者感知 Supabase 集合」深模組：處理 fetch/生成守衛/登出清空/CRUD 樂觀更新，
+// 共用的「登入者感知 API 集合」深模組：處理 fetch/生成守衛/登出清空/CRUD 樂觀更新，
 // 讓 useSubscriptionData / useExpenseData 只需專注在各自的欄位對應和統計邏輯。
-export function useSupabaseCollection<Row, Item>(options: UseSupabaseCollectionOptions<Row, Item>) {
+export function useApiCollection<Row, Item>(options: UseApiCollectionOptions<Row, Item>) {
   const items = ref<Item[]>([]) as Ref<Item[]>
   const isLoading = ref(false)
   const fetchError = ref<string | null>(null)
@@ -30,20 +24,16 @@ export function useSupabaseCollection<Row, Item>(options: UseSupabaseCollectionO
     isLoading.value = true
     fetchError.value = null
 
-    let query = supabase.from(options.table).select('*')
-    for (const clause of options.orderBy) {
-      query = query.order(clause.column, { ascending: clause.ascending })
+    try {
+      const rows = await apiClient.get<Row[]>(`/${options.resource}`)
+      if (generation !== fetchGeneration) return
+      items.value = rows.map(options.mapRow)
+    } catch (error) {
+      if (generation !== fetchGeneration) return
+      fetchError.value = error instanceof Error ? error.message : '載入失敗'
+    } finally {
+      if (generation === fetchGeneration) isLoading.value = false
     }
-    const { data, error } = await query
-
-    if (generation !== fetchGeneration) return
-
-    if (!error && data) {
-      items.value = (data as Row[]).map(options.mapRow)
-    } else if (error) {
-      fetchError.value = error.message
-    }
-    isLoading.value = false
   }
 
   const { user } = useAuth()
@@ -63,19 +53,15 @@ export function useSupabaseCollection<Row, Item>(options: UseSupabaseCollectionO
   )
 
   async function insert(payload: Record<string, unknown>): Promise<Item> {
-    const { data, error } = await supabase.from(options.table).insert(payload).select().single()
-    if (error) throw error
-
-    const item = options.mapRow(data as Row)
+    const row = await apiClient.post<Row>(`/${options.resource}`, payload)
+    const item = options.mapRow(row)
     items.value = [item, ...items.value]
     return item
   }
 
   async function update(id: string, payload: Record<string, unknown>): Promise<Item> {
-    const { data, error } = await supabase.from(options.table).update(payload).eq('id', id).select().single()
-    if (error) throw error
-
-    const item = options.mapRow(data as Row)
+    const row = await apiClient.patch<Row>(`/${options.resource}/${id}`, payload)
+    const item = options.mapRow(row)
     const index = items.value.findIndex((existing) => options.getId(existing) === id)
     if (index !== -1) {
       items.value[index] = item
@@ -86,11 +72,14 @@ export function useSupabaseCollection<Row, Item>(options: UseSupabaseCollectionO
   }
 
   async function remove(id: string): Promise<void> {
-    const { error } = await supabase.from(options.table).delete().eq('id', id)
-    if (error) throw error
-
+    await apiClient.delete(`/${options.resource}/${id}`)
     items.value = items.value.filter((existing) => options.getId(existing) !== id)
   }
 
-  return { items, isLoading, fetchError, fetchAll, insert, update, remove }
+  async function removeAll(): Promise<void> {
+    await apiClient.delete(`/${options.resource}`)
+    items.value = []
+  }
+
+  return { items, isLoading, fetchError, fetchAll, insert, update, remove, removeAll }
 }

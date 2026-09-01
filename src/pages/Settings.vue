@@ -89,9 +89,9 @@ const handleClearAllData = async () => {
 }
 
 const userProfile = computed(() => ({
-  name: (user.value?.user_metadata?.full_name as string | undefined) || user.value?.email || '使用者',
+  name: user.value?.name || user.value?.email || '使用者',
   email: user.value?.email ?? '—',
-  memberSince: user.value?.created_at ? formatDate(user.value.created_at, 'YYYY年MM月') : '—',
+  memberSince: user.value?.createdAt ? formatDate(user.value.createdAt, 'YYYY年MM月') : '—',
   totalSubscriptions: subscriptionStats.value.total,
   totalSpent: `NT$${expenseStats.value.totalAmount.toLocaleString()}`,
 }))

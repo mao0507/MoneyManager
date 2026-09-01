@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Dialog } from '@/components/ui/dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import DatePicker from '@/components/common/DatePicker.vue'
 import type { NewSubscriptionInput, SubscriptionItem } from '@/types'
 
 interface Props {
@@ -189,7 +190,7 @@ const paymentMethods = [
 
         <div class="space-y-2">
           <label class="text-sm font-medium">開始日期 *</label>
-          <Input v-model="formData.startDate" type="date" class="w-full" />
+          <DatePicker v-model="formData.startDate" />
           <p class="text-xs text-muted-foreground">下次扣款日會依開始日期與週期自動計算</p>
         </div>
 

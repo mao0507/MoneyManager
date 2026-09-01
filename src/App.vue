@@ -27,7 +27,7 @@ const route = useRoute()
 const router = useRouter()
 const { isAuthenticated, signOut } = useAuth()
 
-// signOut() 只清 Supabase session，不會自動導頁 —— router 的 beforeEach 只在「導航當下」檢查，
+// signOut() 只清登入 session，不會自動導頁 —— router 的 beforeEach 只在「導航當下」檢查，
 // 登出當下沒有觸發導航，使用者會卡在原本的受保護頁面，資料悄悄清空但畫面沒變，像沒反應
 const handleSignOut = async () => {
   await signOut()
@@ -220,7 +220,7 @@ function onSearchEnter() {
                   v-for="item in searchedSubscriptions"
                   :key="`sub-${item.id}`"
                   type="button"
-                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                  class="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
                   @mousedown.prevent="goToSubscription"
                 >
                   <Repeat class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -231,7 +231,7 @@ function onSearchEnter() {
                   v-for="expense in searchedExpenses"
                   :key="`exp-${expense.id}`"
                   type="button"
-                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                  class="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
                   @mousedown.prevent="goToExpense"
                 >
                   <Receipt class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />

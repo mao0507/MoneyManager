@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { supabase } from '@/lib/supabase'
+import { authClient } from '@/lib/auth-client'
 
 // 擴展路由元數據類型
 declare module 'vue-router' {
@@ -103,9 +103,7 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   if (!to.meta.requiresAuth && !to.meta.publicOnly) return true
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: session } = await authClient.getSession()
 
   if (to.meta.requiresAuth && !session) {
     return { name: 'landing', query: { redirect: to.fullPath } }

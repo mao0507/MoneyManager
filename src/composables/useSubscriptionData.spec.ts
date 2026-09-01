@@ -1,50 +1,37 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
-type AuthChangeCallback = (event: string, session: { user: { id: string } } | null) => void
+let sessionRef: ReturnType<typeof ref<{ data: { user: { id: string } } | null; isPending: boolean }>>
 
-let authChangeCallback: AuthChangeCallback | null = null
-
-function createQueryBuilder(result: { data?: unknown; error?: unknown }) {
-  const builder: Record<string, unknown> = {
-    select: vi.fn(() => builder),
-    order: vi.fn(() => builder),
-    insert: vi.fn(() => builder),
-    update: vi.fn(() => builder),
-    delete: vi.fn(() => builder),
-    eq: vi.fn(() => builder),
-    single: vi.fn(() => Promise.resolve(result)),
-    then: (resolve: (value: typeof result) => void) => resolve(result),
+vi.mock('@/lib/auth-client', () => {
+  sessionRef = ref({ data: null, isPending: false })
+  return {
+    authClient: {
+      useSession: () => sessionRef,
+      signIn: { social: vi.fn() },
+      signOut: vi.fn(),
+      getSession: vi.fn(),
+    },
   }
-  return builder
+})
+
+const mockApiClient = {
+  get: vi.fn(),
+  post: vi.fn(),
+  patch: vi.fn(),
+  delete: vi.fn(),
 }
 
-const mockSupabase = {
-  from: vi.fn(),
-  auth: {
-    getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
-    getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
-    onAuthStateChange: vi.fn((cb: AuthChangeCallback) => {
-      authChangeCallback = cb
-      return { data: { subscription: { unsubscribe: vi.fn() } } }
-    }),
-  },
-}
-
-vi.mock('@/lib/supabase', () => ({ supabase: mockSupabase }))
+vi.mock('@/lib/api-client', () => ({ apiClient: mockApiClient }))
 
 async function loadComposable() {
   vi.resetModules()
-  authChangeCallback = null
-  mockSupabase.auth.getSession.mockResolvedValue({ data: { session: null } })
-  mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } })
   const { useSubscriptionData } = await import('./useSubscriptionData')
   return useSubscriptionData()
 }
 
 async function signIn(userId = 'user-1') {
-  mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: userId } } })
-  authChangeCallback?.('SIGNED_IN', { user: { id: userId } })
+  sessionRef.value = { data: { user: { id: userId } }, isPending: false }
   await nextTick()
   await nextTick()
 }
@@ -57,10 +44,10 @@ const sampleRow = {
   currency: 'TWD',
   cycle: 'Monthly',
   category: '影片串流',
-  payment_method: 'Credit Card',
+  paymentMethod: 'Credit Card',
   renewal: 'Automatic',
-  start_date: '2026-01-15',
-  next_payment: '2026-02-15',
+  startDate: '2026-01-15',
+  nextPayment: '2026-02-15',
   active: true,
 }
 
@@ -70,7 +57,7 @@ describe('useSubscriptionData', () => {
   })
 
   it('fetches subscriptions for the signed-in user', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
 
     const { originalItems } = await loadComposable()
     await signIn()
@@ -94,24 +81,23 @@ describe('useSubscriptionData', () => {
   })
 
   it('clears items when the user signs out', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { originalItems } = await loadComposable()
     await signIn()
     expect(originalItems.value).toHaveLength(1)
 
-    authChangeCallback?.('SIGNED_OUT', null)
+    sessionRef.value = { data: null, isPending: false }
     await nextTick()
 
     expect(originalItems.value).toHaveLength(0)
   })
 
-  it('addSubscription computes next_payment and inserts with the current user id', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+  it('addSubscription computes nextPayment and inserts', async () => {
+    mockApiClient.get.mockResolvedValue([])
     const { addSubscription, originalItems } = await loadComposable()
     await signIn('user-42')
 
-    const builder = createQueryBuilder({ data: { ...sampleRow, id: 'sub-new' }, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.post.mockResolvedValue({ ...sampleRow, id: 'sub-new' })
 
     await addSubscription({
       name: 'Netflix',
@@ -125,22 +111,24 @@ describe('useSubscriptionData', () => {
       startDate: '2026-01-15',
     })
 
-    expect(builder.insert).toHaveBeenCalledWith(
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/subscriptions',
       expect.objectContaining({
-        user_id: 'user-42',
         name: 'Netflix',
         amount: 390,
         currency: 'TWD',
-        start_date: '2026-01-15',
-        next_payment: '2026-02-15',
+        startDate: '2026-01-15',
+        nextPayment: '2026-02-15',
       }),
     )
     expect(originalItems.value[0].id).toBe('sub-new')
   })
 
-  it('addSubscription throws when nobody is signed in', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+  it('addSubscription rejects when the server refuses the request', async () => {
+    mockApiClient.get.mockResolvedValue([])
     const { addSubscription } = await loadComposable()
+
+    mockApiClient.post.mockRejectedValue(new Error('未登入'))
 
     await expect(
       addSubscription({
@@ -156,27 +144,28 @@ describe('useSubscriptionData', () => {
     ).rejects.toThrow()
   })
 
-  it('updateSubscription recalculates next_payment when startDate changes', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+  it('updateSubscription recalculates nextPayment when startDate changes', async () => {
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { updateSubscription, originalItems } = await loadComposable()
     await signIn()
 
-    const updatedRow = { ...sampleRow, start_date: '2026-03-01', next_payment: '2026-04-01' }
-    const builder = createQueryBuilder({ data: updatedRow, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.patch.mockResolvedValue({
+      ...sampleRow,
+      startDate: '2026-03-01',
+      nextPayment: '2026-04-01',
+    })
 
     await updateSubscription('sub-1', { startDate: '2026-03-01' })
 
-    expect(builder.update).toHaveBeenCalledWith(
-      expect.objectContaining({ start_date: '2026-03-01', next_payment: '2026-04-01' }),
+    expect(mockApiClient.patch).toHaveBeenCalledWith(
+      '/subscriptions/sub-1',
+      expect.objectContaining({ startDate: '2026-03-01', nextPayment: '2026-04-01' }),
     )
     expect(originalItems.value[0].nextPayment).toBe('2026-04-01')
   })
 
   it('surfaces the error and stops loading when fetchSubscriptions fails', async () => {
-    mockSupabase.from.mockReturnValue(
-      createQueryBuilder({ data: null, error: { message: '連線失敗' } }),
-    )
+    mockApiClient.get.mockRejectedValue(new Error('連線失敗'))
     const { fetchError, isLoading, originalItems } = await loadComposable()
     await signIn()
 
@@ -186,60 +175,56 @@ describe('useSubscriptionData', () => {
   })
 
   it('ignores a stale fetch that resolves after the user signs out', async () => {
-    let resolveFetch: (value: { data: unknown; error: unknown }) => void = () => {}
-    const slowBuilder = createQueryBuilder({ data: [sampleRow], error: null })
-    slowBuilder.then = (resolve: (value: { data: unknown; error: unknown }) => void) => {
-      resolveFetch = resolve
-    }
-    mockSupabase.from.mockReturnValue(slowBuilder)
+    let resolveFetch: (value: unknown[]) => void = () => {}
+    mockApiClient.get.mockReturnValue(new Promise((resolve) => (resolveFetch = resolve)))
 
     const { originalItems } = await loadComposable()
-    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
-    authChangeCallback?.('SIGNED_IN', { user: { id: 'user-1' } })
+    sessionRef.value = { data: { user: { id: 'user-1' } }, isPending: false }
     await nextTick()
 
-    authChangeCallback?.('SIGNED_OUT', null)
+    sessionRef.value = { data: null, isPending: false }
     await nextTick()
 
-    resolveFetch({ data: [sampleRow], error: null })
+    resolveFetch([sampleRow])
     await nextTick()
     await nextTick()
 
     expect(originalItems.value).toEqual([])
   })
 
-  it('updateSubscription looks up cycle from the DB when the item is not cached locally', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+  it('updateSubscription looks up cycle from the API when the item is not cached locally', async () => {
+    mockApiClient.get.mockResolvedValue([])
     const { updateSubscription, originalItems } = await loadComposable()
     await signIn()
     expect(originalItems.value).toEqual([])
 
-    const cycleBuilder = createQueryBuilder({ data: { cycle: 'Yearly' }, error: null })
-    const updateBuilder = createQueryBuilder({
-      data: { ...sampleRow, id: 'sub-missing', start_date: '2026-03-01', next_payment: '2027-03-01' },
-      error: null,
+    mockApiClient.get.mockResolvedValueOnce({ cycle: 'Yearly' })
+    mockApiClient.patch.mockResolvedValue({
+      ...sampleRow,
+      id: 'sub-missing',
+      startDate: '2026-03-01',
+      nextPayment: '2027-03-01',
     })
-    mockSupabase.from.mockReturnValueOnce(cycleBuilder).mockReturnValueOnce(updateBuilder)
 
     await updateSubscription('sub-missing', { startDate: '2026-03-01' })
 
-    expect(updateBuilder.update).toHaveBeenCalledWith(
-      expect.objectContaining({ start_date: '2026-03-01', next_payment: '2027-03-01' }),
+    expect(mockApiClient.patch).toHaveBeenCalledWith(
+      '/subscriptions/sub-missing',
+      expect.objectContaining({ startDate: '2026-03-01', nextPayment: '2027-03-01' }),
     )
   })
 
   it('removeSubscription deletes the row and drops it from state', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { removeSubscription, originalItems } = await loadComposable()
     await signIn()
     expect(originalItems.value).toHaveLength(1)
 
-    const builder = createQueryBuilder({ data: null, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.delete.mockResolvedValue(undefined)
 
     await removeSubscription('sub-1')
 
-    expect(builder.delete).toHaveBeenCalled()
+    expect(mockApiClient.delete).toHaveBeenCalledWith('/subscriptions/sub-1')
     expect(originalItems.value).toHaveLength(0)
   })
 })

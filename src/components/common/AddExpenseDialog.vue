@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Dialog } from '@/components/ui/dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import DatePicker from '@/components/common/DatePicker.vue'
 import type { ExpenseCategory, ExpenseRecord } from '@/types'
 
 type NewExpenseInput = Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>
@@ -112,7 +113,7 @@ const paymentMethods = ['信用卡', 'Apple Pay', 'Google Pay', 'LINE Pay', '悠
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium">日期 *</label>
-            <Input v-model="formData.date" type="date" class="w-full" />
+            <DatePicker v-model="formData.date" />
           </div>
         </div>
 

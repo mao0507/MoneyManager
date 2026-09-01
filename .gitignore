@@ -15,6 +15,10 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+.dev.vars
+
+# Wrangler local state
+.wrangler/
 
 graphify-out/
 bash.exe.stackdump

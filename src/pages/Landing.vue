@@ -76,7 +76,7 @@ const features = [
 
         <button
           type="button"
-          class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-[var(--shadow-cta-glow)] transition-colors hover:bg-primary/90"
+          class="mt-5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-[var(--shadow-cta-glow)] transition-colors hover:bg-primary/90"
           @click="handleGoogleLogin"
         >
           <svg class="size-4 rounded-full bg-white p-0.5" viewBox="0 0 24 24" aria-hidden="true">

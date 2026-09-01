@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
-import { supabase } from '@/lib/supabase'
-import { useSupabaseCollection } from './useSupabaseCollection'
+import { apiClient } from '@/lib/api-client'
+import { useApiCollection } from './useApiCollection'
 import { calculateNextPayment } from '@/lib/subscription-calc'
 import type {
   SubscriptionItem,
@@ -12,42 +12,17 @@ import type {
   FilterStatus,
 } from '@/types'
 
-interface SubscriptionRow {
-  id: string
-  name: string
-  plan: string
-  amount: number
-  currency: 'TWD' | 'USD'
-  cycle: 'Monthly' | 'Yearly'
+interface SubscriptionRow extends Omit<SubscriptionItem, 'category'> {
   category: string | null
-  payment_method: string
-  renewal: 'Automatic' | 'Manual'
-  start_date: string
-  next_payment: string
-  active: boolean
 }
 
 function mapRowToItem(row: SubscriptionRow): SubscriptionItem {
-  return {
-    id: row.id,
-    name: row.name,
-    plan: row.plan,
-    amount: row.amount,
-    currency: row.currency,
-    cycle: row.cycle,
-    active: row.active,
-    startDate: row.start_date,
-    nextPayment: row.next_payment,
-    paymentMethod: row.payment_method,
-    renewal: row.renewal,
-    category: row.category ?? undefined,
-  }
+  return { ...row, category: row.category ?? undefined }
 }
 
-const collection = useSupabaseCollection<SubscriptionRow, SubscriptionItem>({
-  table: 'subscriptions',
+const collection = useApiCollection<SubscriptionRow, SubscriptionItem>({
+  resource: 'subscriptions',
   mapRow: mapRowToItem,
-  orderBy: [{ column: 'created_at', ascending: false }],
   getId: (item) => item.id,
 })
 const originalItems = collection.items
@@ -183,28 +158,19 @@ const filteredItems = computed(() => {
 })
 
 async function addSubscription(input: NewSubscriptionInput) {
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
-
-  if (!currentUser) {
-    throw new Error('必須登入才能新增訂閱')
-  }
-
   const nextPayment = calculateNextPayment(input.startDate, input.cycle)
 
   await collection.insert({
-    user_id: currentUser.id,
     name: input.name,
     plan: input.plan,
     amount: input.amount,
     currency: input.currency,
     cycle: input.cycle,
     category: input.category || null,
-    payment_method: input.paymentMethod,
+    paymentMethod: input.paymentMethod,
     renewal: input.renewal,
-    start_date: input.startDate,
-    next_payment: nextPayment,
+    startDate: input.startDate,
+    nextPayment: nextPayment,
     active: true,
   })
 }
@@ -221,29 +187,24 @@ async function updateSubscription(
   if (updates.currency !== undefined) dbUpdates.currency = updates.currency
   if (updates.cycle !== undefined) dbUpdates.cycle = updates.cycle
   if (updates.category !== undefined) dbUpdates.category = updates.category || null
-  if (updates.paymentMethod !== undefined) dbUpdates.payment_method = updates.paymentMethod
+  if (updates.paymentMethod !== undefined) dbUpdates.paymentMethod = updates.paymentMethod
   if (updates.renewal !== undefined) dbUpdates.renewal = updates.renewal
   if (updates.active !== undefined) dbUpdates.active = updates.active
 
   if (updates.startDate !== undefined) {
-    dbUpdates.start_date = updates.startDate
+    dbUpdates.startDate = updates.startDate
     const existing = originalItems.value.find((item) => item.id === id)
     let cycle = updates.cycle ?? existing?.cycle
 
-    // 本地快取沒有這筆（例如重新整理後直接編輯），改查 DB 拿現有 cycle，
-    // 不然就會漏算 next_payment
+    // 本地快取沒有這筆（例如重新整理後直接編輯），改查 API 拿現有 cycle，
+    // 不然就會漏算 nextPayment
     if (!cycle) {
-      const { data: cycleRow, error: cycleError } = await supabase
-        .from('subscriptions')
-        .select('cycle')
-        .eq('id', id)
-        .single()
-      if (cycleError) throw cycleError
-      cycle = (cycleRow as { cycle: 'Monthly' | 'Yearly' }).cycle
+      const row = await apiClient.get<{ cycle: 'Monthly' | 'Yearly' }>(`/subscriptions/${id}`)
+      cycle = row.cycle
     }
 
     if (cycle) {
-      dbUpdates.next_payment = calculateNextPayment(updates.startDate, cycle)
+      dbUpdates.nextPayment = calculateNextPayment(updates.startDate, cycle)
     }
   }
 
@@ -255,18 +216,7 @@ async function removeSubscription(id: string) {
 }
 
 async function clearAllSubscriptions() {
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
-
-  if (!currentUser) {
-    throw new Error('必須登入才能清除訂閱資料')
-  }
-
-  const { error } = await supabase.from('subscriptions').delete().eq('user_id', currentUser.id)
-  if (error) throw error
-
-  originalItems.value = []
+  await collection.removeAll()
 }
 
 // 導出 composable

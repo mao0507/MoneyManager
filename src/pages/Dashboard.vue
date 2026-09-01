@@ -45,7 +45,7 @@ const { user } = useAuth()
 
 // 手機版問候語頭像用姓名縮寫，跟 Settings 頁同一套姓名/信箱 fallback 順序
 const displayName = computed(
-  () => (user.value?.user_metadata?.full_name as string | undefined) || user.value?.email || '使用者',
+  () => user.value?.name || user.value?.email || '使用者',
 )
 const avatarInitial = computed(() => displayName.value.trim().charAt(0).toUpperCase() || 'U')
 

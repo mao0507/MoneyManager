@@ -17,8 +17,7 @@ import type {
   ExpenseFilter,
   ExpenseSortBy,
 } from '@/types'
-import { supabase } from '@/lib/supabase'
-import { useSupabaseCollection } from './useSupabaseCollection'
+import { useApiCollection } from './useApiCollection'
 
 // 消費類別是固定的前端設定，不是使用者資料，不需要建表
 const expenseCategories = ref<ExpenseCategory[]>([
@@ -33,45 +32,26 @@ const expenseCategories = ref<ExpenseCategory[]>([
   { id: '9', name: '其他', icon: Package },
 ])
 
-interface ExpenseRow {
-  id: string
-  title: string
+interface ExpenseRow extends Omit<ExpenseRecord, 'description' | 'tags' | 'receipt' | 'subscriptionId'> {
   description: string | null
-  amount: number
-  category: string
-  date: string
-  payment_method: string
   tags: string[] | null
   receipt: string | null
-  subscription_id: string | null
-  created_at: string
-  updated_at: string
+  subscriptionId: string | null
 }
 
 function mapRowToExpense(row: ExpenseRow): ExpenseRecord {
   return {
-    id: row.id,
-    title: row.title,
+    ...row,
     description: row.description ?? undefined,
-    amount: row.amount,
-    category: row.category,
-    date: row.date,
-    paymentMethod: row.payment_method,
     tags: row.tags ?? undefined,
     receipt: row.receipt ?? undefined,
-    subscriptionId: row.subscription_id ?? undefined,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    subscriptionId: row.subscriptionId ?? undefined,
   }
 }
 
-const collection = useSupabaseCollection<ExpenseRow, ExpenseRecord>({
-  table: 'expenses',
+const collection = useApiCollection<ExpenseRow, ExpenseRecord>({
+  resource: 'expenses',
   mapRow: mapRowToExpense,
-  orderBy: [
-    { column: 'date', ascending: false },
-    { column: 'created_at', ascending: false },
-  ],
   getId: (item) => item.id,
 })
 const originalExpenses = collection.items
@@ -249,25 +229,16 @@ const getCategoryInfo = (categoryName: string) => {
 }
 
 async function addExpense(expense: Omit<ExpenseRecord, 'id' | 'createdAt' | 'updatedAt'>) {
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
-
-  if (!currentUser) {
-    throw new Error('必須登入才能新增消費紀錄')
-  }
-
   await collection.insert({
-    user_id: currentUser.id,
     title: expense.title,
     description: expense.description || null,
     amount: expense.amount,
     category: expense.category,
     date: expense.date,
-    payment_method: expense.paymentMethod,
+    paymentMethod: expense.paymentMethod,
     tags: expense.tags && expense.tags.length > 0 ? expense.tags : null,
     receipt: expense.receipt || null,
-    subscription_id: expense.subscriptionId || null,
+    subscriptionId: expense.subscriptionId || null,
   })
 }
 
@@ -282,11 +253,11 @@ async function updateExpense(
   if (expense.amount !== undefined) dbUpdates.amount = expense.amount
   if (expense.category !== undefined) dbUpdates.category = expense.category
   if (expense.date !== undefined) dbUpdates.date = expense.date
-  if (expense.paymentMethod !== undefined) dbUpdates.payment_method = expense.paymentMethod
+  if (expense.paymentMethod !== undefined) dbUpdates.paymentMethod = expense.paymentMethod
   if (expense.tags !== undefined) dbUpdates.tags = expense.tags.length > 0 ? expense.tags : null
   if (expense.receipt !== undefined) dbUpdates.receipt = expense.receipt || null
   if (expense.subscriptionId !== undefined)
-    dbUpdates.subscription_id = expense.subscriptionId || null
+    dbUpdates.subscriptionId = expense.subscriptionId || null
 
   await collection.update(id, dbUpdates)
 }
@@ -296,18 +267,7 @@ async function removeExpense(id: string) {
 }
 
 async function clearAllExpenses() {
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
-
-  if (!currentUser) {
-    throw new Error('必須登入才能清除消費紀錄')
-  }
-
-  const { error } = await supabase.from('expenses').delete().eq('user_id', currentUser.id)
-  if (error) throw error
-
-  originalExpenses.value = []
+  await collection.removeAll()
 }
 
 // 導出 composable

@@ -1,50 +1,37 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
-type AuthChangeCallback = (event: string, session: { user: { id: string } } | null) => void
+let sessionRef: ReturnType<typeof ref<{ data: { user: { id: string } } | null; isPending: boolean }>>
 
-let authChangeCallback: AuthChangeCallback | null = null
-
-function createQueryBuilder(result: { data?: unknown; error?: unknown }) {
-  const builder: Record<string, unknown> = {
-    select: vi.fn(() => builder),
-    order: vi.fn(() => builder),
-    insert: vi.fn(() => builder),
-    update: vi.fn(() => builder),
-    delete: vi.fn(() => builder),
-    eq: vi.fn(() => builder),
-    single: vi.fn(() => Promise.resolve(result)),
-    then: (resolve: (value: typeof result) => void) => resolve(result),
+vi.mock('@/lib/auth-client', () => {
+  sessionRef = ref({ data: null, isPending: false })
+  return {
+    authClient: {
+      useSession: () => sessionRef,
+      signIn: { social: vi.fn() },
+      signOut: vi.fn(),
+      getSession: vi.fn(),
+    },
   }
-  return builder
+})
+
+const mockApiClient = {
+  get: vi.fn(),
+  post: vi.fn(),
+  patch: vi.fn(),
+  delete: vi.fn(),
 }
 
-const mockSupabase = {
-  from: vi.fn(),
-  auth: {
-    getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
-    getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
-    onAuthStateChange: vi.fn((cb: AuthChangeCallback) => {
-      authChangeCallback = cb
-      return { data: { subscription: { unsubscribe: vi.fn() } } }
-    }),
-  },
-}
-
-vi.mock('@/lib/supabase', () => ({ supabase: mockSupabase }))
+vi.mock('@/lib/api-client', () => ({ apiClient: mockApiClient }))
 
 async function loadComposable() {
   vi.resetModules()
-  authChangeCallback = null
-  mockSupabase.auth.getSession.mockResolvedValue({ data: { session: null } })
-  mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } })
   const { useExpenseData } = await import('./useExpenseData')
   return useExpenseData()
 }
 
 async function signIn(userId = 'user-1') {
-  mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: userId } } })
-  authChangeCallback?.('SIGNED_IN', { user: { id: userId } })
+  sessionRef.value = { data: { user: { id: userId } }, isPending: false }
   await nextTick()
   await nextTick()
 }
@@ -56,12 +43,12 @@ const sampleRow = {
   amount: 180,
   category: '餐飲',
   date: '2026-01-15',
-  payment_method: '信用卡',
+  paymentMethod: '信用卡',
   tags: ['工作餐', '日式'],
   receipt: null,
-  subscription_id: null,
-  created_at: '2026-01-15T12:00:00Z',
-  updated_at: '2026-01-15T12:00:00Z',
+  subscriptionId: null,
+  createdAt: '2026-01-15T12:00:00Z',
+  updatedAt: '2026-01-15T12:00:00Z',
 }
 
 describe('useExpenseData', () => {
@@ -70,7 +57,7 @@ describe('useExpenseData', () => {
   })
 
   it('fetches expenses for the signed-in user', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
 
     const { originalExpenses } = await loadComposable()
     await signIn()
@@ -94,21 +81,19 @@ describe('useExpenseData', () => {
   })
 
   it('clears expenses when the user signs out', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { originalExpenses } = await loadComposable()
     await signIn()
     expect(originalExpenses.value).toHaveLength(1)
 
-    authChangeCallback?.('SIGNED_OUT', null)
+    sessionRef.value = { data: null, isPending: false }
     await nextTick()
 
     expect(originalExpenses.value).toHaveLength(0)
   })
 
   it('surfaces the error and stops loading when fetchExpenses fails', async () => {
-    mockSupabase.from.mockReturnValue(
-      createQueryBuilder({ data: null, error: { message: '連線失敗' } }),
-    )
+    mockApiClient.get.mockRejectedValue(new Error('連線失敗'))
     const { fetchError, isLoading, originalExpenses } = await loadComposable()
     await signIn()
 
@@ -118,35 +103,29 @@ describe('useExpenseData', () => {
   })
 
   it('ignores a stale fetch that resolves after the user signs out', async () => {
-    let resolveFetch: (value: { data: unknown; error: unknown }) => void = () => {}
-    const slowBuilder = createQueryBuilder({ data: [sampleRow], error: null })
-    slowBuilder.then = (resolve: (value: { data: unknown; error: unknown }) => void) => {
-      resolveFetch = resolve
-    }
-    mockSupabase.from.mockReturnValue(slowBuilder)
+    let resolveFetch: (value: unknown[]) => void = () => {}
+    mockApiClient.get.mockReturnValue(new Promise((resolve) => (resolveFetch = resolve)))
 
     const { originalExpenses } = await loadComposable()
-    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
-    authChangeCallback?.('SIGNED_IN', { user: { id: 'user-1' } })
+    sessionRef.value = { data: { user: { id: 'user-1' } }, isPending: false }
     await nextTick()
 
-    authChangeCallback?.('SIGNED_OUT', null)
+    sessionRef.value = { data: null, isPending: false }
     await nextTick()
 
-    resolveFetch({ data: [sampleRow], error: null })
+    resolveFetch([sampleRow])
     await nextTick()
     await nextTick()
 
     expect(originalExpenses.value).toEqual([])
   })
 
-  it('addExpense inserts with the current user id and prepends the result', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+  it('addExpense inserts and prepends the result', async () => {
+    mockApiClient.get.mockResolvedValue([])
     const { addExpense, originalExpenses } = await loadComposable()
     await signIn('user-42')
 
-    const builder = createQueryBuilder({ data: { ...sampleRow, id: 'exp-new' }, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.post.mockResolvedValue({ ...sampleRow, id: 'exp-new' })
 
     await addExpense({
       title: '午餐',
@@ -158,26 +137,25 @@ describe('useExpenseData', () => {
       tags: ['工作餐', '日式'],
     })
 
-    expect(builder.insert).toHaveBeenCalledWith(
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/expenses',
       expect.objectContaining({
-        user_id: 'user-42',
         title: '午餐',
         amount: 180,
         category: '餐飲',
         date: '2026-01-15',
-        payment_method: '信用卡',
+        paymentMethod: '信用卡',
       }),
     )
     expect(originalExpenses.value[0].id).toBe('exp-new')
   })
 
   it('addExpense normalises empty description/tags to null', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+    mockApiClient.get.mockResolvedValue([])
     const { addExpense } = await loadComposable()
     await signIn('user-42')
 
-    const builder = createQueryBuilder({ data: { ...sampleRow, id: 'exp-new' }, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.post.mockResolvedValue({ ...sampleRow, id: 'exp-new' })
 
     await addExpense({
       title: '午餐',
@@ -189,14 +167,17 @@ describe('useExpenseData', () => {
       tags: [],
     })
 
-    expect(builder.insert).toHaveBeenCalledWith(
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/expenses',
       expect.objectContaining({ description: null, tags: null }),
     )
   })
 
-  it('addExpense throws when nobody is signed in', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [], error: null }))
+  it('addExpense rejects when the server refuses the request', async () => {
+    mockApiClient.get.mockResolvedValue([])
     const { addExpense } = await loadComposable()
+
+    mockApiClient.post.mockRejectedValue(new Error('未登入'))
 
     await expect(
       addExpense({
@@ -210,24 +191,20 @@ describe('useExpenseData', () => {
   })
 
   it('updateExpense updates the row and syncs local state', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { updateExpense, originalExpenses } = await loadComposable()
     await signIn()
 
-    const updatedRow = { ...sampleRow, amount: 250 }
-    const builder = createQueryBuilder({ data: updatedRow, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.patch.mockResolvedValue({ ...sampleRow, amount: 250 })
 
     await updateExpense('exp-1', { amount: 250 })
 
-    expect(builder.update).toHaveBeenCalledWith(expect.objectContaining({ amount: 250 }))
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/expenses/exp-1', expect.objectContaining({ amount: 250 }))
     expect(originalExpenses.value[0].amount).toBe(250)
   })
 
   it('maps a null tags column to undefined', async () => {
-    mockSupabase.from.mockReturnValue(
-      createQueryBuilder({ data: [{ ...sampleRow, tags: null }], error: null }),
-    )
+    mockApiClient.get.mockResolvedValue([{ ...sampleRow, tags: null }])
     const { originalExpenses } = await loadComposable()
     await signIn()
 
@@ -237,9 +214,7 @@ describe('useExpenseData', () => {
   it('filteredExpenses applies the month filter and the search query over fetched data', async () => {
     const inMonth = { ...sampleRow, id: 'exp-in', date: '2026-01-20', title: '午餐特輯' }
     const outOfMonth = { ...sampleRow, id: 'exp-out', date: '2025-11-01', title: '晚餐' }
-    mockSupabase.from.mockReturnValue(
-      createQueryBuilder({ data: [inMonth, outOfMonth], error: null }),
-    )
+    mockApiClient.get.mockResolvedValue([inMonth, outOfMonth])
     const { filteredExpenses, filterStatus, searchQuery } = await loadComposable()
     await signIn()
 
@@ -255,17 +230,16 @@ describe('useExpenseData', () => {
   })
 
   it('removeExpense deletes the row and drops it from state', async () => {
-    mockSupabase.from.mockReturnValue(createQueryBuilder({ data: [sampleRow], error: null }))
+    mockApiClient.get.mockResolvedValue([sampleRow])
     const { removeExpense, originalExpenses } = await loadComposable()
     await signIn()
     expect(originalExpenses.value).toHaveLength(1)
 
-    const builder = createQueryBuilder({ data: null, error: null })
-    mockSupabase.from.mockReturnValue(builder)
+    mockApiClient.delete.mockResolvedValue(undefined)
 
     await removeExpense('exp-1')
 
-    expect(builder.delete).toHaveBeenCalled()
+    expect(mockApiClient.delete).toHaveBeenCalledWith('/expenses/exp-1')
     expect(originalExpenses.value).toHaveLength(0)
   })
 })
