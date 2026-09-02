@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { and, desc, eq } from 'drizzle-orm'
 import { createDb } from '../db/client'
-import { expenses } from '../db/app-schema'
-import { requireSession } from '../middleware/require-session'
+import { expenses, subscriptions } from '../db/app-schema'
+import { ValidationError, sanitizeExpenseUpdate, validateNewExpense } from '../lib/validation'
 import type { AuthEnv } from '../auth'
 
 export const expensesRoute = new Hono<{
@@ -10,7 +10,13 @@ export const expensesRoute = new Hono<{
   Variables: { userId: string }
 }>()
 
-expensesRoute.use('*', requireSession)
+async function assertOwnsSubscription(db: ReturnType<typeof createDb>, userId: string, subscriptionId: string) {
+  const [row] = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(and(eq(subscriptions.id, subscriptionId), eq(subscriptions.userId, userId)))
+  if (!row) throw new ValidationError('subscriptionId 不存在或不屬於你')
+}
 
 expensesRoute.get('/', async (c) => {
   const db = createDb(c.env.DB)
@@ -23,12 +29,22 @@ expensesRoute.get('/', async (c) => {
 })
 
 expensesRoute.post('/', async (c) => {
-  const db = createDb(c.env.DB)
   const body = await c.req.json()
+  const userId = c.get('userId')
+  const db = createDb(c.env.DB)
+
+  try {
+    validateNewExpense(body)
+    if (body.subscriptionId) await assertOwnsSubscription(db, userId, body.subscriptionId)
+  } catch (error) {
+    if (error instanceof ValidationError) return c.json({ error: error.message }, 400)
+    throw error
+  }
+
   const now = new Date().toISOString()
   const row = {
     id: crypto.randomUUID(),
-    userId: c.get('userId'),
+    userId,
     title: body.title,
     description: body.description ?? null,
     amount: body.amount,
@@ -46,20 +62,25 @@ expensesRoute.post('/', async (c) => {
 })
 
 expensesRoute.patch('/:id', async (c) => {
-  const db = createDb(c.env.DB)
   const id = c.req.param('id')
   const userId = c.get('userId')
-  const updates = await c.req.json()
+  const body = await c.req.json()
+  const db = createDb(c.env.DB)
 
-  await db
+  let updates: ReturnType<typeof sanitizeExpenseUpdate>
+  try {
+    updates = sanitizeExpenseUpdate(body)
+    if (updates.subscriptionId) await assertOwnsSubscription(db, userId, updates.subscriptionId)
+  } catch (error) {
+    if (error instanceof ValidationError) return c.json({ error: error.message }, 400)
+    throw error
+  }
+
+  const [row] = await db
     .update(expenses)
     .set({ ...updates, updatedAt: new Date().toISOString() })
     .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
-
-  const [row] = await db
-    .select()
-    .from(expenses)
-    .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
+    .returning()
   if (!row) return c.json({ error: '找不到消費紀錄' }, 404)
   return c.json({ data: row })
 })

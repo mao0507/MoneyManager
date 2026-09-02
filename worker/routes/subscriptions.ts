@@ -2,15 +2,13 @@ import { Hono } from 'hono'
 import { and, desc, eq } from 'drizzle-orm'
 import { createDb } from '../db/client'
 import { subscriptions } from '../db/app-schema'
-import { requireSession } from '../middleware/require-session'
+import { ValidationError, sanitizeSubscriptionUpdate, validateNewSubscription } from '../lib/validation'
 import type { AuthEnv } from '../auth'
 
 export const subscriptionsRoute = new Hono<{
   Bindings: AuthEnv
   Variables: { userId: string }
 }>()
-
-subscriptionsRoute.use('*', requireSession)
 
 subscriptionsRoute.get('/', async (c) => {
   const db = createDb(c.env.DB)
@@ -33,8 +31,15 @@ subscriptionsRoute.get('/:id', async (c) => {
 })
 
 subscriptionsRoute.post('/', async (c) => {
-  const db = createDb(c.env.DB)
   const body = await c.req.json()
+  try {
+    validateNewSubscription(body)
+  } catch (error) {
+    if (error instanceof ValidationError) return c.json({ error: error.message }, 400)
+    throw error
+  }
+
+  const db = createDb(c.env.DB)
   const now = new Date().toISOString()
   const row = {
     id: crypto.randomUUID(),
@@ -58,20 +63,24 @@ subscriptionsRoute.post('/', async (c) => {
 })
 
 subscriptionsRoute.patch('/:id', async (c) => {
-  const db = createDb(c.env.DB)
   const id = c.req.param('id')
   const userId = c.get('userId')
-  const updates = await c.req.json()
+  const body = await c.req.json()
 
-  await db
+  let updates: ReturnType<typeof sanitizeSubscriptionUpdate>
+  try {
+    updates = sanitizeSubscriptionUpdate(body)
+  } catch (error) {
+    if (error instanceof ValidationError) return c.json({ error: error.message }, 400)
+    throw error
+  }
+
+  const db = createDb(c.env.DB)
+  const [row] = await db
     .update(subscriptions)
     .set({ ...updates, updatedAt: new Date().toISOString() })
     .where(and(eq(subscriptions.id, id), eq(subscriptions.userId, userId)))
-
-  const [row] = await db
-    .select()
-    .from(subscriptions)
-    .where(and(eq(subscriptions.id, id), eq(subscriptions.userId, userId)))
+    .returning()
   if (!row) return c.json({ error: '找不到訂閱' }, 404)
   return c.json({ data: row })
 })

@@ -32,7 +32,8 @@ const expenseCategories = ref<ExpenseCategory[]>([
   { id: '9', name: '其他', icon: Package },
 ])
 
-interface ExpenseRow extends Omit<ExpenseRecord, 'description' | 'tags' | 'receipt' | 'subscriptionId'> {
+interface ExpenseRow
+  extends Omit<ExpenseRecord, 'description' | 'tags' | 'receipt' | 'subscriptionId'> {
   description: string | null
   tags: string[] | null
   receipt: string | null
@@ -95,7 +96,9 @@ const stats = computed((): ExpenseStats => {
     isInMonth(expense.date, targetMonth, targetYear),
   )
 
-  const yearlyExpenses = originalExpenses.value.filter((expense) => isInYear(expense.date, targetYear))
+  const yearlyExpenses = originalExpenses.value.filter((expense) =>
+    isInYear(expense.date, targetYear),
+  )
 
   // 如果選中了特定月份，則統計該月份的數據
   const expensesToCalculate = selectedMonth.value ? monthlyExpenses : originalExpenses.value
@@ -165,7 +168,9 @@ const filteredExpenses = computed(() => {
     const now = new Date()
     switch (filterStatus.value) {
       case 'This Month': {
-        result = result.filter((expense) => isInMonth(expense.date, now.getMonth(), now.getFullYear()))
+        result = result.filter((expense) =>
+          isInMonth(expense.date, now.getMonth(), now.getFullYear()),
+        )
         break
       }
       case 'This Year': {
